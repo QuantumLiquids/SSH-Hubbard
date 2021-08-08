@@ -30,3 +30,17 @@
 *.exe
 *.out
 *.app
+
+# Data
+data/*
+
+# vscode
+.vscode/*
+.DS_Store
+src/.vscode/c_cpp_properties.json
+
+#
+src/build
+
+#tensor
+*.gqten

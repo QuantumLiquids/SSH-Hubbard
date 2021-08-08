@@ -1,0 +1,23 @@
+{
+  "CaseParams": {
+    "Lx": 2, 
+    "Ly": 4,
+    "t": 1,
+    "g": 1.414,
+    "U": 8,
+    "Np": 1,
+    "omega": 5,
+    "Numhole": 2,
+    "Sweeps": 1,
+    "Dmin": 10,
+    "Dmax": 10,
+    "CutOff": 1e-7,
+    "LanczErr": 1e-8,
+    "MaxLanczIter": 70,
+    "noise": [0.001,0.001 ],
+    "Perturbation": false, 
+    "PerturbationAmplitude": 0.5,
+    "TotalThreads": 56,
+    "SvdOuterThreads": 1
+  }
+}
