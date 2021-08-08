@@ -52,6 +52,7 @@ std::pair<size_t,size_t> CheckAndUpdateBoundaryMPSTensors(FiniteMPS<TenElemT, QN
                                                             const std::string&,
                                                             const size_t);
 
+inline size_t CountLines(std::string filename);
 
 template <typename TenElemT, typename QNT>
 double TwoSiteFiniteVMPSSweep2(//also a overload
@@ -258,9 +259,7 @@ double TwoSiteFiniteVMPSUpdate2(
       std::cout << "dir must be 'r' or 'l', but " << dir << std::endl;
       exit(1);
   }
-
-  Index<QNT> middle_index = mps[lsite_idx].GetIndexes()[2];
-  int pre_qnsct_num = middle_index.GetQNSctNum();
+ 
 
   using TenT = GQTensor<TenElemT, QNT>;
 
@@ -440,11 +439,14 @@ double TwoSiteFiniteVMPSUpdate2(
   std::stringstream sstream;
   sstream << bond;
   std::string file_basename = sweep_params.mps_path+ "/sv_bond" + sstream.str();
+
+  int pre_qnsct_num = CountLines(file_basename+".json") - 2;
+  
   MaxSVInEachBlock( s, file_basename);
 #ifdef GQMPS2_TIMING_MODE
   max_sv_timer.PrintElapsed();
 #endif
-  middle_index = mps[lsite_idx].GetIndexes()[2];
+  Index<QNT> middle_index = mps[lsite_idx].GetIndexes()[2];
   int post_qnsct_num = middle_index.GetQNSctNum();
 
   auto update_elapsed_time = update_timer.Elapsed();
@@ -460,6 +462,27 @@ double TwoSiteFiniteVMPSUpdate2(
             << " S = " << std::setw(10) << std::setprecision(7) << ee;
   std::cout << std::scientific << std::endl;
   return lancz_res.gs_eng;
+}
+
+/**
+ * Counting how many lines in a file
+ * if no file, return 0
+ */
+inline size_t CountLines(std::string filename){
+  std::ifstream ReadFile(filename,std::ios::in);//read only
+  if(ReadFile.fail()){
+    return 0;
+  }
+  size_t n=0;
+  char line[512];
+  std::string temp;
+
+  while(getline(ReadFile,temp))
+  {
+    n++;
+  }
+  ReadFile.close();
+  return n;
 }
 
 }
