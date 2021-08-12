@@ -1,5 +1,5 @@
 %plot entanglement spectrum
-EEData = jsondecode(fileread(['../data/sv_bond793.json']));
+EEData = jsondecode(fileread(['../data/sv_bond200.json']));
 
 data_size = numel(EEData);
 qnN = zeros(1,data_size);
@@ -12,7 +12,7 @@ for i = 1:data_size
     maxSV(i) = EEData{i}{2};
     qnBlockSize(i) = EEData{i}{3};
 end
-semilogy(qnSz, maxSV,'o');hold on;
+semilogy(qnSz, maxSV,'x');hold on;
 
 set(gca,'fontsize',24);
 set(gca,'linewidth',1.5);
