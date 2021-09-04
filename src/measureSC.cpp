@@ -71,7 +71,6 @@ int main(int argc, char *argv[]) {
     cout << "mps loaded" <<endl;
     gqten::hp_numeric::SetTensorTransposeNumThreads(params.TotalThreads);
     gqten::hp_numeric::SetTensorManipulationTotalThreads(params.TotalThreads);
-    gqten::hp_numeric::SetTensorDecompOuterParallelThreads(params.SvdOuterThreads);
     
     cout << "bond dimension of middel mps = " ;
     cout << mps[N/2].GetShape()[0] <<endl;

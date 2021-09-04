@@ -41,6 +41,7 @@ src/.vscode/c_cpp_properties.json
 
 #
 src/build
+build
 
 #tensor
 *.gqten

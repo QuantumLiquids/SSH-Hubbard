@@ -64,7 +64,8 @@ double TwoSiteFiniteVMPSSweep2(//also a overload
     double& noise_start
 );
 
-
+template <typename QNT>
+bool IsQNCovered(const QNSectorVec<QNT>&, const QNSectorVec<QNT>&);
 
 /**
  Function to perform two-site noised update finite vMPS algorithm.
@@ -79,14 +80,8 @@ GQTEN_Double TwoSiteFiniteVMPS2( //same function name, overload by class of Swee
     TwoSiteVMPSSweepParams &sweep_params
 ){
     assert(mps.size() == mpo.size());
-
-    std::cout << std::endl;
-    std::cout << "=====> Two-Site (Noised) Update Sweep Parameter <=====" << std::endl;
-    std::cout << "MPS/MPO size: \t " << mpo.size() << std::endl;
-    std::cout << "The number of sweep times: \t " << sweep_params.sweeps << std::endl;
-    std::cout << "Bond dimension: \t " << sweep_params.Dmin << "/" << sweep_params.Dmax << std::endl;
-    std::cout << "Cut off truncation error: \t " <<sweep_params.trunc_err << std::endl;
-    std::cout << "Lanczos max iterations \t" <<sweep_params.lancz_params.max_iterations << std::endl;
+    std::cout << "***** Two-Site Noised Update VMPS Program (Single Processor) *****" << "\n";
+    auto [left_boundary, right_boundary]=FiniteVMPSInit(mps,mpo,(SweepParams)sweep_params);
     std::cout << "Preseted noises: \t[";
     for(size_t i = 0; i < sweep_params.noises.size(); i++){
       std::cout << sweep_params.noises[i];
@@ -96,28 +91,6 @@ GQTEN_Double TwoSiteFiniteVMPS2( //same function name, overload by class of Swee
         std::cout << "]" << std::endl;
       }
     }
-    std::cout << "MPS path: \t" << sweep_params.mps_path << std::endl;
-    std::cout << "Temp path: \t" << sweep_params.temp_path << std::endl;
-
-    std::cout << "==>Checking and updating boundary tensors" << std::endl;
-    auto [left_boundary, right_boundary] = CheckAndUpdateBoundaryMPSTensors(mps, sweep_params.mps_path, sweep_params.Dmax);
-
-  
-    // If the runtime temporary directory does not exit, create it and initialize
-    // the right environments
-    if (!IsPathExist(sweep_params.temp_path)) {
-      CreatPath(sweep_params.temp_path);
-      InitEnvs(mps, mpo, sweep_params.mps_path, sweep_params.temp_path, left_boundary+2 );
-      std::cout << "no exsiting path " <<sweep_params.temp_path
-                << ", thus progress created it and generated environment tensors."
-                << std::endl;
-    } else {
-      std::cout << "finded exsiting path "<<sweep_params.temp_path
-                << ", thus progress will use the present environment tensors."
-                << std::endl;
-    }
-    UpdateBoundaryEnvs(mps, mpo, sweep_params.mps_path,
-                        sweep_params.temp_path, left_boundary, right_boundary, 2 );
     GQTEN_Double e0;
 
     std::string file = "nf.json";
@@ -166,12 +139,7 @@ double TwoSiteFiniteVMPSSweep2(//also a overload
   auto N = mps.size();
   using TenT = GQTensor<TenElemT, QNT>;
   TenVec<TenT> lenvs(N), renvs(N);
-  double e0(0.0), actual_e0(0.0), actual_laststep_e0(0.0);
-
-  const double alpha = sweep_params.alpha;
-  const double noise_decrease = sweep_params.noise_decrease;
-  const double noise_increase = sweep_params.noise_increase;
-  const double max_noise = sweep_params.max_noise;
+  double e0;
 
   double& noise_running = noise_start;
   for (size_t i = left_boundary; i < right_boundary-1; ++i) {
@@ -294,14 +262,51 @@ double TwoSiteFiniteVMPSUpdate2(
 
   bool need_expand(true);
   if (fabs(noise) < 1e-10) {
-    noise = 0.0;
+    noise = 0.0;    //just for output
     need_expand = false;
-  } else if (false // QN cover??
-    ) {
-    noise = 0.0;            //just for output
-    need_expand= false;
-  }
+  }else{
+    const size_t physical_dim_l = mps[lsite_idx].GetShape()[1];
+    const size_t physical_dim_r = mps[rsite_idx].GetShape()[1];
+    const QNSectorVec<QNT>* qnscts_right;
+    const QNSectorVec<QNT>* qnscts_left;
+    Index<QNT> fused_index1, fused_index2;
+    if (physical_dim_l == 2){
+      qnscts_left  = &(mps[lsite_idx].GetIndexes()[0].GetQNScts());
+    }else{
+      std::vector<gqten::QNSctsOffsetInfo> qnscts_offset_info_list;
+      fused_index1 = FuseTwoIndexAndRecordInfo(
+            mps[lsite_idx].GetIndexes()[0],
+            InverseIndex(mps[lsite_idx].GetIndexes()[1]),
+            qnscts_offset_info_list
+            );
+      qnscts_left = &(fused_index1.GetQNScts());
+    }
 
+    if (physical_dim_r == 2){
+      qnscts_right = &(mps[rsite_idx].GetIndexes()[2].GetQNScts());
+    }else{
+      std::vector<gqten::QNSctsOffsetInfo> qnscts_offset_info_list;
+      fused_index2 = FuseTwoIndexAndRecordInfo(
+            mps[rsite_idx].GetIndexes()[1],
+            mps[rsite_idx].GetIndexes()[2],
+            qnscts_offset_info_list
+            );
+      qnscts_right = &(fused_index2.GetQNScts());
+    }
+
+    if( dir == 'r' && 
+        IsQNCovered(*qnscts_right, *qnscts_left) 
+      ){
+      noise = 0.0;            
+      need_expand= false;
+    }else if(dir == 'l' && 
+        IsQNCovered(*qnscts_left, *qnscts_right)
+      ){
+      noise = 0.0;            
+      need_expand= false;
+    }
+  }
+  
   if (need_expand) {
     TwoSiteFiniteVMPSExpand(
         mps,
@@ -474,7 +479,6 @@ inline size_t CountLines(std::string filename){
     return 0;
   }
   size_t n=0;
-  char line[512];
   std::string temp;
 
   while(getline(ReadFile,temp))
@@ -485,4 +489,4 @@ inline size_t CountLines(std::string filename){
   return n;
 }
 
-}
+}//gqmps2

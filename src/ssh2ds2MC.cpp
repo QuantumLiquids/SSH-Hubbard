@@ -84,8 +84,7 @@ int main(int argc, char *argv[]) {
     }
 
     gqten::hp_numeric::SetTensorTransposeNumThreads(params.TotalThreads);
-    gqten::hp_numeric::SetTensorManipulationTotalThreads(params.TotalThreads);
-    gqten::hp_numeric::SetTensorDecompOuterParallelThreads(params.SvdOuterThreads);
+    gqten::hp_numeric::SetTensorManipulationThreads(params.TotalThreads);
     gqmps2::SingleVMPSSweepParams sweep_params(
         params.Sweeps,
         params.Dmin, params.Dmax, params.CutOff,

@@ -21,7 +21,6 @@ int main(int argc, char *argv[]){
     size_t TotalThreads =56;
     gqten::hp_numeric::SetTensorTransposeNumThreads(TotalThreads);
     gqten::hp_numeric::SetTensorManipulationTotalThreads(TotalThreads);
-    gqten::hp_numeric::SetTensorDecompOuterParallelThreads(1);
     
 
     CaseParams params(argv[1]);

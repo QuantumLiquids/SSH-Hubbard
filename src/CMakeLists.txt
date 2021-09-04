@@ -27,6 +27,16 @@ if(GQMPS2_TIMING_MODE)
   add_definitions(-DGQMPS2_TIMING_MODE)
 endif()
 
+option(GQTEN_MPI_TIMING_MODE "Timing mode." OFF)
+if(GQTEN_MPI_TIMING_MODE)
+  add_definitions(-DGQTEN_MPI_TIMING_MODE)
+endif()
+
+option(GQMPS2_MPI_TIMING_MODE "Timing mode." OFF)
+if(GQMPS2_MPI_TIMING_MODE)
+  add_definitions(-DGQMPS2_MPI_TIMING_MODE)
+endif()
+
 # Compilation and linking control.
 set(CMAKE_CXX_STANDARD 17)
 add_definitions(-Wall -g)
@@ -77,7 +87,11 @@ endif()
 find_path(TENSOR_HEADER_PATH "gqten")
 find_path(MPS2_HEADER_PATH "gqmps2")
 find_package(hptt)
-
+find_package(Boost
+  1.76.0
+  REQUIRED 
+  COMPONENTS serialization mpi)
+find_package(MPI REQUIRED)
 #set omp flag
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
   set(OMP_FLAGS -qopenmp)
@@ -93,16 +107,23 @@ add_compile_options( ${MATH_LIB_COMPILE_FLAGS} ${OMP_FLAGS})
 include_directories(  ${MPS2_HEADER_PATH}
  ${TENSOR_HEADER_PATH}
  ${hptt_INCLUDE_DIR}
+ ${Boost_INCLUDE_DIR}
+ ${MPI_CXX_HEADER_DIR}
 )
 
 link_libraries(
   ${hptt_LIBRARY}
   ${MATH_LIB_LINK_FLAGS}
+  Boost::serialization
+  Boost::mpi
+  ${MPI_CXX_LINK_FLAGS}
+  ${MPI_mpi_LIBRARY}
 )
 
 
 add_executable(mpogen ssh2dmpogen.cpp operators.cpp)
 add_executable(sshMC ssh2ds2MC.cpp operators.cpp myutil.cpp)
+add_executable(main_parallel main_parallel.cpp operators.cpp myutil.cpp)
 add_executable(measure measure.cpp operators.cpp myutil.cpp)
 add_executable(measureSC measureSC.cpp operators.cpp myutil.cpp)
 add_executable(ssh2ds ssh2ds.cpp operators.cpp myutil.cpp)

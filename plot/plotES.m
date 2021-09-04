@@ -1,5 +1,5 @@
 %plot entanglement spectrum
-EEData = jsondecode(fileread(['../data/sv_bond200.json']));
+EEData = jsondecode(fileread(['../data/sv_bond309.json']));
 
 data_size = numel(EEData);
 qnN = zeros(1,data_size);
