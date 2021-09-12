@@ -7,6 +7,7 @@
 #include "singlesiteupdate2.h"
 #include "twositeupdate2.h"
 #include "myutil.h"
+#include "two_site_update_noised_finite_vmps_mpi_impl2.h"
 
 
 using namespace gqmps2;
@@ -65,8 +66,18 @@ int main(int argc, char *argv[]) {
   using FiniteMPST = gqmps2::FiniteMPS<TenElemT, U1U1QN>;
   FiniteMPST mps(sites);
 
-  gqten::hp_numeric::SetTensorTransposeNumThreads(params.TotalThreads);
-  gqten::hp_numeric::SetTensorManipulationThreads(params.TotalThreads);
+  if(world.rank() == 0){
+    if(params.TotalThreads > 2 ){
+      gqten::hp_numeric::SetTensorTransposeNumThreads(params.TotalThreads-2);
+      gqten::hp_numeric::SetTensorManipulationThreads(params.TotalThreads-2);
+    }else{
+      gqten::hp_numeric::SetTensorTransposeNumThreads(params.TotalThreads);
+      gqten::hp_numeric::SetTensorManipulationThreads(params.TotalThreads);
+    }
+  }else{
+    gqten::hp_numeric::SetTensorTransposeNumThreads(params.TotalThreads);
+    gqten::hp_numeric::SetTensorManipulationThreads(params.TotalThreads);
+  }
   gqmps2::TwoSiteMPINoisedVMPSSweepParams sweep_params(
       params.Sweeps,
       params.Dmin, params.Dmax, params.CutOff,
@@ -85,7 +96,7 @@ int main(int argc, char *argv[]) {
     cout << " no mps file" << endl;
     env.abort(-1);
   }
-  auto e0 = gqmps2::TwoSiteFiniteVMPS(mps, mpo, sweep_params,world);
+  auto e0 = gqmps2::TwoSiteFiniteVMPS2(mps, mpo, sweep_params,world);
   if(world.rank() == 0){      
     std::cout << "E0/site: " << e0 / N << std::endl;               
     endTime = clock();             
