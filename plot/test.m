@@ -4,7 +4,7 @@ omega = 5;
 %g = 0.4472;
 % g=0;
 %g = 1.414;
-%g = 2;
+g = 2;
 %g = 2.4495;
 % g = 2.8284;
 % if g<0.0001
@@ -20,11 +20,11 @@ Np=3;
 U = 8; Numhole = Lx*Ly/8;
 
 
-%D = 12000;
-% FileNamePostfix=['ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'Parallel4.json'];
+D = 14000;
+%FileNamePostfix=['ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
 FileNamePostfix=['.json'];
 ChargeDensityData = jsondecode(fileread(['../data/nf',FileNamePostfix]));
-ChargeDensityData = ChargeDensityData(1:end,:);
+ChargeDensityData = ChargeDensityData(7*end/8:end,:);
 % ChargeDensity = (reshape(ChargeDensityData(:,2),Ly,[]));
 disp(mean(ChargeDensityData(:,2)));
 % ChargeDensity = (ChargeDensity+ChargeDensity(end:-1:1))/2;

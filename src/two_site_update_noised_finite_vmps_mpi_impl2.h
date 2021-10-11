@@ -26,7 +26,7 @@
 #include "gqmps2/algo_mpi/vmps/vmps_mpi_init.h"                     //MPI vmps initial
 #include "gqmps2/algo_mpi/vmps/two_site_update_finite_vmps_mpi.h"   //TwoSiteMPIVMPSSweepParams
 #include "gqmps2/algo_mpi/vmps/two_site_update_noised_finite_vmps_mpi.h" //TwoSiteMPINoisedVMPSSweepParams
-#include "gqmps2/algo_mpi/lanczos_solver_mpi.h"                     //MPI Lanczos solver  
+#include "gqmps2/algo_mpi/lanczos_solver_mpi.h"                     //MPI Lanczos solver
 #include "gqmps2/algo_mpi/vmps/two_site_update_finite_vmps_mpi_impl.h" //SlaveTwoSiteFiniteVMPS
 #include "gqmps2/algo_mpi/vmps/two_site_update_noised_finite_vmps_mpi_impl.h" //Load related tensors
 #include <thread>                                                       //thread
@@ -81,56 +81,56 @@ inline GQTEN_Double TwoSiteFiniteVMPS2(
 
 template <typename TenElemT, typename QNT>
 GQTEN_Double MasterTwoSiteFiniteVMPS2(
-  FiniteMPS<TenElemT, QNT> &mps,
-  const MPO<GQTensor<TenElemT, QNT>> &mpo,
-  TwoSiteMPINoisedVMPSSweepParams &sweep_params,
-  mpi::communicator world
+    FiniteMPS<TenElemT, QNT> &mps,
+    const MPO<GQTensor<TenElemT, QNT>> &mpo,
+    TwoSiteMPINoisedVMPSSweepParams &sweep_params,
+    mpi::communicator world
 ) {
-assert(mps.size() == mpo.size());
-std::cout << "***** Two-Site Noised Update VMPS Program (with MPI Parallel) *****" << "\n";
-MasterBroadcastOrder(program_start, world );
-auto [left_boundary, right_boundary]=TwoSiteFiniteVMPSInit(mps,mpo,(TwoSiteMPIVMPSSweepParams)sweep_params,world);
-std::cout << "Preseted noises: \t[";
-for(size_t i = 0; i < sweep_params.noises.size(); i++){
-  std::cout << sweep_params.noises[i];
-  if (i!=sweep_params.noises.size()-1) {
-    std::cout << ", ";
-  } else {
-    std::cout << "]" << std::endl;
+  assert(mps.size() == mpo.size());
+  std::cout << "***** Two-Site Noised Update VMPS Program (with MPI Parallel) *****" << "\n";
+  MasterBroadcastOrder(program_start, world );
+  auto [left_boundary, right_boundary]=TwoSiteFiniteVMPSInit(mps,mpo,(TwoSiteMPIVMPSSweepParams)sweep_params,world);
+  std::cout << "Preseted noises: \t[";
+  for(size_t i = 0; i < sweep_params.noises.size(); i++){
+    std::cout << sweep_params.noises[i];
+    if (i!=sweep_params.noises.size()-1) {
+      std::cout << ", ";
+    } else {
+      std::cout << "]" << std::endl;
+    }
   }
-}
 
-std::string file = "nf.json";
-std::ofstream ofs(file);
-ofs << "[\n";
-ofs.close();
-if (sweep_params.noises.empty()) { sweep_params.noises.push_back(0.0); }
-double e0(0.0);
-double noise;
-mps.LoadTen(left_boundary, GenMPSTenName(sweep_params.mps_path, left_boundary));
-mps.LoadTen(left_boundary+1, GenMPSTenName(sweep_params.mps_path, left_boundary+1));
-for (size_t sweep = 1; sweep <= sweep_params.sweeps; ++sweep) {
-  if ((sweep - 1) < sweep_params.noises.size()) {
-    noise = sweep_params.noises[sweep-1];
+  std::string file = "nf.json";
+  std::ofstream ofs(file);
+  ofs << "[\n";
+  ofs.close();
+  if (sweep_params.noises.empty()) { sweep_params.noises.push_back(0.0); }
+  double e0(0.0);
+  double noise;
+  mps.LoadTen(left_boundary, GenMPSTenName(sweep_params.mps_path, left_boundary));
+  mps.LoadTen(left_boundary+1, GenMPSTenName(sweep_params.mps_path, left_boundary+1));
+  for (size_t sweep = 1; sweep <= sweep_params.sweeps; ++sweep) {
+    if ((sweep - 1) < sweep_params.noises.size()) {
+      noise = sweep_params.noises[sweep-1];
+    }
+    std::cout << "sweep " << sweep << std::endl;
+    Timer sweep_timer("sweep");
+    e0 = TwoSiteFiniteVMPSSweep2(mps, mpo, sweep_params,
+                                 left_boundary, right_boundary,
+                                 noise,  world);
+
+
+    sweep_timer.PrintElapsed();
+    std::cout << "\n";
   }
-  std::cout << "sweep " << sweep << std::endl;
-  Timer sweep_timer("sweep");
-  e0 = TwoSiteFiniteVMPSSweep2(mps, mpo, sweep_params, 
-                            left_boundary, right_boundary,
-                            noise,  world);
-  
-  
-  sweep_timer.PrintElapsed();
-  std::cout << "\n";
-}
-mps.DumpTen(left_boundary, GenMPSTenName(sweep_params.mps_path, left_boundary), true);
-mps.DumpTen(left_boundary+1, GenMPSTenName(sweep_params.mps_path, left_boundary+1), true);
-ofs.open(file, std::ios::in);
-ofs.seekp(-2, std::ios::end);
-ofs << "\n]";
-ofs.close();
-MasterBroadcastOrder(program_final, world);
-return e0;
+  mps.DumpTen(left_boundary, GenMPSTenName(sweep_params.mps_path, left_boundary), true);
+  mps.DumpTen(left_boundary+1, GenMPSTenName(sweep_params.mps_path, left_boundary+1), true);
+  ofs.open(file, std::ios::in);
+  ofs.seekp(-2, std::ios::end);
+  ofs << "\n]";
+  ofs.close();
+  MasterBroadcastOrder(program_final, world);
+  return e0;
 }
 
 template <typename TenElemT, typename QNT>
@@ -151,78 +151,72 @@ double TwoSiteFiniteVMPSSweep2(
   double e0;
   const size_t update_site_size = right_boundary - left_boundary -1;
   std::thread load_related_tens_thread;
-  std::thread* dump_related_tens_threads = new std::thread[update_site_size];
-  size_t thread_num = 0;
+  std::thread dump_related_tens_thread;
   LoadRelatedTensOnTwoSiteAlgWhenNoisedRightMoving(mps, lenvs, renvs, left_boundary, left_boundary, sweep_params);
   for (size_t i = left_boundary; i <= right_boundary - 2; ++i) {
     // Load to-be-used tensors
     if( i <  right_boundary - 2 ){
       load_related_tens_thread = std::thread(
-        LoadRelatedTensOnTwoSiteAlgWhenNoisedRightMoving<TenElemT, QNT>,
-        std::ref(mps),
-        std::ref(lenvs),
-        std::ref(renvs),
-        i + 1, //note here is different,
-        left_boundary,
-        std::ref(sweep_params) 
+          LoadRelatedTensOnTwoSiteAlgWhenNoisedRightMoving<TenElemT, QNT>,
+          std::ref(mps),
+          std::ref(lenvs),
+          std::ref(renvs),
+          i + 1, //note here is different,
+          left_boundary,
+          std::ref(sweep_params)
       );
     }
     // LoadRelatedTensOnTwoSiteAlgWhenNoisedRightMoving(mps, lenvs, renvs, i, left_boundary, sweep_params);
     e0 = MasterTwoSiteFiniteVMPSUpdate2(mps, lenvs, renvs, mpo, sweep_params, 'r', i, noise,world);
     // Dump related tensor to HD and remove unused tensor from RAM
+    if( i > left_boundary ){
+      dump_related_tens_thread.join();
+    }
+    dump_related_tens_thread= std::thread(
+        DumpRelatedTensOnTwoSiteAlgWhenRightMoving<TenElemT, QNT>,
+        std::ref(mps),
+        std::ref(lenvs),
+        std::ref(renvs),
+        i,
+        std::ref(sweep_params_no_noise)
+    );
     if ( i < right_boundary - 2 ){
       load_related_tens_thread.join();
     }
-    dump_related_tens_threads[thread_num] = std::thread(
-      DumpRelatedTensOnTwoSiteAlgWhenRightMoving<TenElemT, QNT>,
-      std::ref(mps),
-      std::ref(lenvs),
-      std::ref(renvs),
-      i,
-      std::ref(sweep_params_no_noise)
-    );
-    thread_num++;
   }
-  // std::cout << "left_boundary = " << left_boundary << std::endl;
-  // std::cout << "right_boundary = " << right_boundary << std::endl;
-  // std::cout << "update_site_size = " << update_site_size << std::endl;
-  // std::cout << "now thread_num = " << thread_num << std::endl;
-  for(size_t i = 0; i < update_site_size; i++){
-    dump_related_tens_threads[i].join();
-  }
-  thread_num = 0;
+  dump_related_tens_thread.join();
+
   LoadRelatedTensOnTwoSiteAlgWhenNoisedLeftMoving(mps, lenvs, renvs, right_boundary, right_boundary, sweep_params);
   for (size_t i = right_boundary; i >= left_boundary+2; --i) {
     if(i > left_boundary+2){
       load_related_tens_thread = std::thread(
-        LoadRelatedTensOnTwoSiteAlgWhenNoisedLeftMoving<TenElemT, QNT>,
-        std::ref(mps),
-        std::ref(lenvs),
-        std::ref(renvs),
-        i - 1, //note here is different,
-        right_boundary,
-        std::ref(sweep_params) 
+          LoadRelatedTensOnTwoSiteAlgWhenNoisedLeftMoving<TenElemT, QNT>,
+          std::ref(mps),
+          std::ref(lenvs),
+          std::ref(renvs),
+          i - 1, //note here is different,
+          right_boundary,
+          std::ref(sweep_params)
       );
     }
     // LoadRelatedTensOnTwoSiteAlgWhenNoisedLeftMoving(mps, lenvs, renvs, i, right_boundary, sweep_params);
     e0 = MasterTwoSiteFiniteVMPSUpdate2(mps, lenvs, renvs, mpo, sweep_params, 'l', i, noise, world);
+    if( i < right_boundary ) {
+      dump_related_tens_thread.join();
+    }
+    dump_related_tens_thread = std::thread(
+        DumpRelatedTensOnTwoSiteAlgWhenLeftMoving<TenElemT, QNT>,
+        std::ref(mps),
+        std::ref(lenvs),
+        std::ref(renvs),
+        i,
+        std::ref(sweep_params_no_noise)
+    );
     if(i > left_boundary+2){
       load_related_tens_thread.join();
     }
-    dump_related_tens_threads[thread_num] = std::thread(
-      DumpRelatedTensOnTwoSiteAlgWhenLeftMoving<TenElemT, QNT>,
-      std::ref(mps),
-      std::ref(lenvs),
-      std::ref(renvs),
-      i,
-      std::ref(sweep_params_no_noise)
-    );
-    thread_num++;
   }
-  for(size_t i = 0; i < update_site_size; i++){
-    dump_related_tens_threads[i].join();
-  }
-  delete[] dump_related_tens_threads;
+  dump_related_tens_thread.join();
   return e0;
 }
 
@@ -240,7 +234,7 @@ double MasterTwoSiteFiniteVMPSUpdate2(
     double noise,
     mpi::communicator& world
 ) {
-    //master
+  //master
   Timer update_timer("two_site_fvmps_update");
 #ifdef GQMPS2_TIMING_MODE
   Timer initialize_timer("two_site_fvmps_setup_and_initial_state");
@@ -280,7 +274,7 @@ double MasterTwoSiteFiniteVMPSUpdate2(
   eff_ham[1] = const_cast<TenT *>(&mpo[lsite_idx]);
   eff_ham[2] = const_cast<TenT *>(&mpo[rsite_idx]);
   eff_ham[3] = renvs(renv_len);
-  
+
 
   auto init_state = new TenT;
   Contract(&mps[lsite_idx], &mps[rsite_idx], init_state_ctrct_axes, init_state);
@@ -290,10 +284,10 @@ double MasterTwoSiteFiniteVMPSUpdate2(
   Timer lancz_timer("two_site_fvmps_lancz");
   MasterBroadcastOrder(lanczos, world);
   auto lancz_res = MasterLanczosSolver(
-                       eff_ham, init_state,
-                       sweep_params.lancz_params,
-                       world
-                   );
+      eff_ham, init_state,
+      sweep_params.lancz_params,
+      world
+  );
 #ifdef GQMPS2_TIMING_MODE
   auto lancz_elapsed_time = lancz_timer.PrintElapsed();
 #else
@@ -315,10 +309,10 @@ double MasterTwoSiteFiniteVMPSUpdate2(
     }else{
       std::vector<gqten::QNSctsOffsetInfo> qnscts_offset_info_list;
       fused_index1 = FuseTwoIndexAndRecordInfo(
-            mps[lsite_idx].GetIndexes()[0],
-            InverseIndex(mps[lsite_idx].GetIndexes()[1]),
-            qnscts_offset_info_list
-            );
+          mps[lsite_idx].GetIndexes()[0],
+          InverseIndex(mps[lsite_idx].GetIndexes()[1]),
+          qnscts_offset_info_list
+      );
       qnscts_left = &(fused_index1.GetQNScts());
     }
 
@@ -327,22 +321,22 @@ double MasterTwoSiteFiniteVMPSUpdate2(
     }else{
       std::vector<gqten::QNSctsOffsetInfo> qnscts_offset_info_list;
       fused_index2 = FuseTwoIndexAndRecordInfo(
-            mps[rsite_idx].GetIndexes()[1],
-            mps[rsite_idx].GetIndexes()[2],
-            qnscts_offset_info_list
-            );
+          mps[rsite_idx].GetIndexes()[1],
+          mps[rsite_idx].GetIndexes()[2],
+          qnscts_offset_info_list
+      );
       qnscts_right = &(fused_index2.GetQNScts());
     }
 
-    if( dir == 'r' && 
-        IsQNCovered(*qnscts_right, *qnscts_left) 
-      ){
-      noise = 0.0;            
+    if( dir == 'r' &&
+        IsQNCovered(*qnscts_right, *qnscts_left)
+        ){
+      noise = 0.0;
       need_expand= false;
-    }else if(dir == 'l' && 
+    }else if(dir == 'l' &&
         IsQNCovered(*qnscts_left, *qnscts_right)
-      ){
-      noise = 0.0;            
+        ){
+      noise = 0.0;
       need_expand= false;
     }
   }
@@ -352,22 +346,22 @@ double MasterTwoSiteFiniteVMPSUpdate2(
     if(dir=='r'){
       MasterBroadcastOrder(contract_for_right_moving_expansion, world);
       MasterTwoSiteFiniteVMPSRightMovingExpand(
-        mps, 
-        lancz_res.gs_vec,
-        eff_ham,
-        target_site,
-        noise,
-        world
+          mps,
+          lancz_res.gs_vec,
+          eff_ham,
+          target_site,
+          noise,
+          world
       );
     }else{
       MasterBroadcastOrder(contract_for_left_moving_expansion, world);
       MasterTwoSiteFiniteVMPSLeftMovingExpand(
-        mps, 
-        lancz_res.gs_vec,
-        eff_ham,
-        target_site,
-        noise,
-        world
+          mps,
+          lancz_res.gs_vec,
+          eff_ham,
+          target_site,
+          noise,
+          world
       );
     }
   }
@@ -447,19 +441,19 @@ double MasterTwoSiteFiniteVMPSUpdate2(
   size_t next_site = lsite_idx+rsite_idx-target_site;
   auto mps_ten_shape = mps[next_site].GetShape();
   if(mps_ten_shape[1]==4){
-  //measure and dump singluar particle number
+    //measure and dump singluar particle number
 #ifdef GQMPS2_TIMING_MODE
-  Timer measure_timer("single_site_fvmps_measure");
+    Timer measure_timer("single_site_fvmps_measure");
 #endif
-  MeasuResElem<TenElemT> nf_res = OneSiteOpAvg(
-                        mps[next_site], nf,next_site,N );
-  std::ofstream ofs(file, std::ios_base::app);
-  ofs << "  [";
-  DumpSites(ofs, nf_res.sites); DumpAvgVal(ofs, nf_res.avg);
-  ofs << "],\n";
-  ofs.close();
+    MeasuResElem<TenElemT> nf_res = OneSiteOpAvg(
+        mps[next_site], nf,next_site,N );
+    std::ofstream ofs(file, std::ios_base::app);
+    ofs << "  [";
+    DumpSites(ofs, nf_res.sites); DumpAvgVal(ofs, nf_res.avg);
+    ofs << "],\n";
+    ofs.close();
 #ifdef GQMPS2_TIMING_MODE
-  measure_timer.PrintElapsed();
+    measure_timer.PrintElapsed();
 #endif
   }
   switch (dir) {

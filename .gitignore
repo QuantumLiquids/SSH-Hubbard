@@ -39,6 +39,9 @@ data/*
 .DS_Store
 src/.vscode/c_cpp_properties.json
 
+#CLion
+.idea
+
 #
 src/build
 build
