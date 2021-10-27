@@ -5,8 +5,8 @@ Np=3;
 
 U = 8; Numhole = Lx*Ly/8;
 
-Dset=[8000,10000,12000,14000];%bond dimension set
-trunc_err=1e7*[5.90e-6,4.90e-6,4.19e-06,3.70e-06];%Site  657
+Dset=[8000,10000,12000,14000,16000];%bond dimension set
+trunc_err=1e7*[5.90e-6,4.90e-6,4.19e-06,3.70e-06, 3.33e-06];%Site  657
 
 D = Dset(1);
 
@@ -66,7 +66,7 @@ end
 % fprintf('correlation length=%.5f\n',-1/p.p1);
 % x = fit_x;
 % loglog(x,exp(p.p2+p.p1*x),'-.');%fitted line
-% T=text(10.2,10e-3,['$\xi=',num2str(-1/p.p1),'$']);
+% T=text(10,2.5e-3,['$\xi=',num2str(-1/p.p1),'$']);
 % set(T,'Interpreter','latex');set(T,'Fontsize',24);
 
 
@@ -74,13 +74,13 @@ p = fit(log(fit_x'),log(abs(fit_y')),'poly1');
 fprintf('Kc=%.5f\n',-p.p1);
 x = fit_x(1):0.5:fit_x(end);
 fl=loglog(x,exp(p.p2)*x.^p.p1,'-.');
-T=text(10,2.5e-3,['$K_{sc}=',num2str(-p.p1),'$']);
+T=text(8,4.5e-3,['$K_{c}=',num2str(-p.p1),'$']);
 set(T,'Interpreter','latex');set(T,'Fontsize',24);
 
 
 
 
-l=legend(h,'$D=8000$', '$10000$','$12000$','$14000$');
+l=legend(h,'$D=8000$', '$10000$','$12000$','$14000$','$16000$');
 set(l,'Box','off');set(l,'Interpreter','latex');
 set(l,'Fontsize',24);
 set(l,'Location','SouthWest');
