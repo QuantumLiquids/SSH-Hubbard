@@ -542,7 +542,7 @@ int main(int argc, char *argv[]) {
 
   bool Perturbation=params.Perturbation;
   float PerturbationAmplitude=params.PA;
-  int ChargePeriod=8;
+  int ChargePeriod=4;
   if(Perturbation){
     for(size_t i=0;i<ElectronSite.size();i++) {
       int x = i/ Ly;

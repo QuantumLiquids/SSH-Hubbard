@@ -77,9 +77,23 @@ int main(int argc, char *argv[]){
     tensor_file.close();
     std::cout << "Load renv, lenv, and mpo tensors" << "\n";
 
-    IndexT2 index0 = InverseIndex( lenv.GetIndexes()[0] ) ;
-    IndexT2 index1 = InverseIndex( mpo.GetIndexes()[1] ) ;
-    IndexT2 index2 = InverseIndex( renv.GetIndexes()[0] ) ;
+    bool new_code;
+    if(lenv.GetIndexes()[0].GetDir() == GQTenIndexDirType::OUT ){
+      new_code = false;
+    } else{
+      new_code = true;
+    }
+    IndexT2 index0, index1, index2;
+    if(!new_code){
+      index0 = InverseIndex( lenv.GetIndexes()[0] ) ;
+      index1 = InverseIndex( mpo.GetIndexes()[1] ) ;
+      index2 = InverseIndex( renv.GetIndexes()[0] ) ;
+    } else{
+      index0 =  lenv.GetIndexes()[0] ;
+      index1 =  InverseIndex( mpo.GetIndexes()[1] ) ;
+      index2 =  renv.GetIndexes()[0] ;
+    }
+
     vector<IndexT2> indexes = {index0, index1, index2};
     Tensor* initial_state = new Tensor({index0, index1, index2});
     std::cout << "new the initial state as default tensor."<< std::endl;
