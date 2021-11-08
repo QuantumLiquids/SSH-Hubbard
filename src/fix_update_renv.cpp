@@ -52,9 +52,7 @@ int main(int argc, char *argv[]){
   gqten::hp_numeric::SetTensorTransposeNumThreads(thread);
   gqten::hp_numeric::SetTensorManipulationThreads(thread);
 
-  if(from==0){
-    cout << "Not support now sorry" << endl;
-  }
+
   const size_t N = GetNumofMps();
   using TenT = Tensor;
   const string temp_path = kRuntimeTempPath;
@@ -82,12 +80,28 @@ int main(int argc, char *argv[]){
   }
 
   cout << "MPO loaded." << endl;
+  std::string mps_path = kMpsPath;
+
+  if(from == 0){
+    mps.LoadTen(N-1, GenMPSTenName(mps_path, N-1));
+    auto mps_trivial_index = mps.back().GetIndexes()[2];
+    auto mpo_trivial_index_inv = InverseIndex(mpo.back().GetIndexes()[3]);
+    auto mps_trivial_index_inv = InverseIndex(mps_trivial_index);
+    TenT renv = TenT({mps_trivial_index, mpo_trivial_index_inv, mps_trivial_index_inv});
+    renv({0, 0, 0}) = 1;
+    mps.dealloc(N-1);
+    string file = GenEnvTenName("r", 0 , temp_path);
+    WriteGQTensorTOFile(renv, file);
+    from = 1;
+  }
+
+
 
   string file = GenEnvTenName("r", from - 1 , temp_path);
   TenT renv;
   ifstream renv_file(file);
   renv_file >> renv;
-  std::string mps_path = kMpsPath;
+
 
   mps.LoadTen(N - from, GenMPSTenName(mps_path, N - from));
   bool new_code;

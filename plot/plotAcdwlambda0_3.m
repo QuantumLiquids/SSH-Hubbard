@@ -1,8 +1,8 @@
-Lx = [24, 32, 40, 48];
-A_cdw = [0.020132,0.023635, 0.021030, 0.017995];
+Lx = [24, 32,  48];
+A_cdw = [0.019870,0.018420, 0.017799];
 loglog(Lx, A_cdw,'o');hold on;
 
-p = fit(log(Lx(2:4)'),log(A_cdw(2:4)'),'poly1');
+p = fit(log(Lx(1:end)'),log(A_cdw(1:end)'),'poly1');
 fprintf('Kc=%.5f\n',-p.p1*2);
 x = fit_x(1):0.5:fit_x(end);
 fl=loglog(Lx,exp(p.p2)*Lx.^p.p1,'-.');

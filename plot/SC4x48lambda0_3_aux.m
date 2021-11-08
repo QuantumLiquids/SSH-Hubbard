@@ -5,7 +5,7 @@ Np=3;
 
 U = 8; Numhole = Lx*Ly/8;
 
-Dset=[8000,10000,12000,14000];%bond dimension set
+Dset=[8000,10000,12000,14000,16000,18000];%bond dimension set
 
 
 
@@ -33,21 +33,34 @@ end
 
 scsyy_ex=zeros(size(distance));
 %fit_x=[1/8,1/10,1/12,1/14];%1/D
-fit_x=1e7*[5.90e-6,4.90e-6,4.19e-06,3.70e-06];%Site  657
+fit_x=1e7*[5.90e-6,4.90e-6,4.19e-06,3.70e-06, 3.35e-06, 3.02e-06];%Site  657
 plot_curve_x = 0.0:(max(fit_x)/1000):max(fit_x);
-for i=1:numel(distance)
-    if(distance(i) > 10)
+for i = 1:numel(distance)
+    if(distance(i) == 14)
 %         p = fit(fit_x',scsyy(:,i),'poly3');
 %         scsyy_ex(i)=p.p4;
 %         plot( [0.0, fit_x], [scsyy_ex(i), scsyy(:,i)'], 'o');hold on;
 %         plot_curve_y = p.p4 + p.p3 .* plot_curve_x + p.p2 .* plot_curve_x.^2 + p.p1 .* plot_curve_x.^3;
 %         plot( plot_curve_x, plot_curve_y,'-');
         
-%         p = fit(fit_x',scsyy(:,i),'poly2');
-%         scsyy_ex(i)=p.p3;
-%         plot( [0.0, fit_x], [scsyy_ex(i), scsyy(:,i)'], 'o');hold on;
-%         plot_curve_y =p.p3 + p.p2 .* plot_curve_x + p.p1 .* plot_curve_x.^2;
-%         plot( plot_curve_x, plot_curve_y,'-');
+        p = fit(fit_x',scsyy(:,i),'poly2');
+        scsyy_ex(i)=p.p3;
+        plot( [0.0, fit_x], [scsyy_ex(i), scsyy(:,i)'], 'o');hold on;
+        plot_curve_y =p.p3 + p.p2 .* plot_curve_x + p.p1 .* plot_curve_x.^2;
+        plot( plot_curve_x, plot_curve_y,'-'); hold on;
+        
+        p = fit(fit_x(3:5)',scsyy(3:5,i),'poly2');
+        scsyy_ex(i)=p.p3;
+        plot( [0.0, fit_x], [scsyy_ex(i), scsyy(:,i)'], 'o');hold on;
+        plot_curve_y =p.p3 + p.p2 .* plot_curve_x + p.p1 .* plot_curve_x.^2;
+        plot( plot_curve_x, plot_curve_y,'-');
+        
+        p = fit(fit_x(3:6)',scsyy(3:6,i),'poly2');
+        scsyy_ex(i)=p.p3;
+        plot( [0.0, fit_x], [scsyy_ex(i), scsyy(:,i)'], 'o');hold on;
+        plot_curve_y =p.p3 + p.p2 .* plot_curve_x + p.p1 .* plot_curve_x.^2;
+        plot( plot_curve_x, plot_curve_y,'-');
+        break;
     end
 end
 

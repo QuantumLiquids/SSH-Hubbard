@@ -1,9 +1,9 @@
 
-Lx=48; Ly=4;
+Lx=32; Ly=4;
 omega = 5; g = 2.4495; Np = 3; U = 8; Numhole = Lx*Ly/8;
 
 
-Dset=[8000,10000,12000,14000,16000, 18000, 20000];
+Dset=[8000,10000,14000];
 
 D=Dset(1);
 FileNamePostfix=['ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
@@ -23,26 +23,28 @@ for j = 1:numel(Dset)
 %     ChargeDensityData = ChargeDensityData(1:end,:);
 %   ChargeDensity = mean(reshape(ChargeDensityData(:,2),Ly,[]));
     ChargeDensity(j, :) = transpose(ChargeDensityData(:,2));
-%     disp(mean(ChargeDensityData(:,2)));
+     disp(mean(ChargeDensityData(:,2)));
 %     ChargeDensity = (ChargeDensity+ChargeDensity(end:-1:1))/2;
 
-    plot(distance+1, ChargeDensity(j,:),'x'); hold on;
+    
 end
 
+% ChargeDensity = (ChargeDensity + ChargeDensity(:,end:-1:1))/2;
+plot(distance + 1, ChargeDensity,'-x'); hold on;
 ChargeDensity_ex = zeros(1, numel(distance) );
 
-fit_x=1e7*[5.90e-6,4.90e-6,4.19e-06,3.70e-06, 3.35e-06, 3.02e-06, 2.62e-06];%Site  657
+fit_x=1e7*[ 6.73e-06, 5.44e-06, 4.18e-06];%Site  433
 for i=1:numel(distance)
     p = fit(fit_x(1:end)',ChargeDensity(1:end,i),'poly1');
     ChargeDensity_ex(i)=p.p2;
 end
 
 ChargeDensity_ex = (ChargeDensity_ex + ChargeDensity_ex(end:-1:1))/2;
-plot(distance+1, ChargeDensity_ex,'o'); hold on;
+plot(distance + 1, ChargeDensity_ex,'o'); hold on;
 
 
 
-cos_fix_x = 12:35;
+cos_fix_x = 6:17;
 ChargeDensityLymean = mean(reshape(ChargeDensity_ex,4,[]));
 cos_fix_y = ChargeDensityLymean(cos_fix_x + 1);
 modelfun = @(b,x)(b(2)+ b(3).*cos(b(4).*x+b(1)) );
@@ -51,7 +53,7 @@ b = mdl.Coefficients.Estimate;
 Acdw = b(3);
 fprintf("A_cdw = %.6f",Acdw);
 continous_cos_x = min(cos_fix_x):0.01:max(cos_fix_x);
-plot(continous_cos_x+1, modelfun(b,continous_cos_x),'-');
+plot(continous_cos_x + 1, modelfun(b,continous_cos_x),'-');
 
 
 set(gca,'fontsize',24);
