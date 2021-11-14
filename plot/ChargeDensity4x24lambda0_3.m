@@ -3,7 +3,7 @@ Lx=24; Ly=4;
 omega = 5; g = 2.4495; Np = 3; U = 8; Numhole = Lx*Ly/8;
 
 
-Dset=[8000,10000,12000];
+Dset=[8000,10000,12000, 14000];
 
 D=Dset(1);
 FileNamePostfix=['ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
@@ -33,7 +33,7 @@ end
 plot(distance + 1, ChargeDensity,'-x'); hold on;
 ChargeDensity_ex = zeros(1, numel(distance) );
 
-fit_x=1e7*[7.05e-06, 5.81e-06, 4.95e-06];%Site  340
+fit_x=1e7*[7.05e-06, 5.81e-06, 4.95e-06, 4.29e-06];%Site  340
 for i=1:numel(distance)
     p = fit(fit_x(1:end)',ChargeDensity(1:end,i),'poly1');
     ChargeDensity_ex(i)=p.p2;

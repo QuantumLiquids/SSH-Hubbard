@@ -123,6 +123,7 @@ GQTEN_Double MasterTwoSiteFiniteVMPS2(
     sweep_timer.PrintElapsed();
     std::cout << "\n";
   }
+  mps.LeftCanonicalizeTen(left_boundary);
   mps.DumpTen(left_boundary, GenMPSTenName(sweep_params.mps_path, left_boundary), true);
   mps.DumpTen(left_boundary+1, GenMPSTenName(sweep_params.mps_path, left_boundary+1), true);
   ofs.open(file, std::ios::in);

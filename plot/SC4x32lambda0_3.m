@@ -5,7 +5,7 @@ Np=3;
 
 U = 8; Numhole = Lx*Ly/8;
 
-Dset=[8000,10000, 14000];%bond dimension set
+Dset=[8000,10000,12000, 14000];%bond dimension set
 
 
 
@@ -36,7 +36,7 @@ h=loglog(distance,scsyy,'x');hold on;
 
 scsyy_ex=zeros(size(distance));
 %fit_x=[1/8,1/10,1/12,1/14];%1/D
-fit_x=1e7*[ 6.73e-06, 5.44e-06, 4.18e-06];%Site  433
+fit_x=1e7*[ 6.73e-06, 5.44e-06,4.59e-06, 4.16e-06];%Site  433
 
 for i=1:numel(distance)
     p = fit(fit_x(1:end)',scsyy(1:end,i),'poly2');
