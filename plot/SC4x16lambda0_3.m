@@ -1,11 +1,12 @@
-Lx=32; Ly=4;
+Lx=16; Ly=4;
 omega = 5; 
 g = 2.4495;
 Np=3;
 
 U = 8; Numhole = Lx*Ly/8;
 
-Dset=[8000,10000,12000, 14000];%bond dimension set
+
+Dset=[8000,10000, 12000];
 
 
 
@@ -30,23 +31,23 @@ for j = 1:numel(Dset)
     end
 end
 
-h=loglog(distance,scsyy,'x');hold on;
+h=semilogy(distance,abs(scsyy),'x');hold on;
 
 
 
 scsyy_ex=zeros(size(distance));
 %fit_x=[1/8,1/10,1/12,1/14];%1/D
-fit_x=1e7*[ 6.73e-06, 5.44e-06,4.59e-06, 4.13e-06];%Site  433
+fit_x=1e7*[7.11e-06,5.92e-06,5.21e-06];%Site  228
 
 for i=1:numel(distance)
-    p = fit(fit_x(1:end)',scsyy(1:end,i),'poly2');
-    scsyy_ex(i)=p.p3;
+    p = fit(fit_x(1:end)',scsyy(1:end,i),'poly1');
+    scsyy_ex(i)=p.p2;
 end
 
-loglog(distance, scsyy_ex,'o');hold on;
+semilogy(distance, abs(scsyy_ex),'o');hold on;
 
 
-fit_x=[6,7,10,11,14];
+fit_x=[6,7];
 fit_y=zeros(size(fit_x));
 for i=1:numel(fit_x)
     I = find(distance==fit_x(i));
@@ -57,7 +58,7 @@ end
 p = fit((fit_x'),log(abs(fit_y')),'poly1');
 fprintf('correlation length=%.5f\n',-1/p.p1);
 x = fit_x;
-loglog(x,exp(p.p2+p.p1*x),'-.');%fitted line
+semilogy(x,exp(p.p2+p.p1*x),'-.');%fitted line
 T=text(10.2,6e-3,['$\xi=',num2str(-1/p.p1),'$']);
 set(T,'Interpreter','latex');set(T,'Fontsize',24);
 
@@ -65,13 +66,13 @@ set(T,'Interpreter','latex');set(T,'Fontsize',24);
 p = fit(log(fit_x'),log(abs(fit_y')),'poly1');
 fprintf('Ksc=%.5f\n',-p.p1);
 x = fit_x(1):0.5:fit_x(end);
-fl=loglog(x,exp(p.p2)*x.^p.p1,'-.');
+fl=semilogy(x,exp(p.p2)*x.^p.p1,'-.');
 T=text(10,2.5e-3,['$K_{sc}=',num2str(-p.p1),'$']);
 set(T,'Interpreter','latex');set(T,'Fontsize',24);
 
 
 
-l=legend(h,'$D=8000$', '$10000$', '$12000$', '$14000$');
+l=legend(h,'$D=8000$', '$10000$','$12000$');
 set(l,'Box','off');set(l,'Interpreter','latex');
 set(l,'Fontsize',24);
 set(l,'Location','SouthWest');

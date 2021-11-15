@@ -33,9 +33,9 @@ end
 plot(distance + 1, ChargeDensity,'-x'); hold on;
 ChargeDensity_ex = zeros(1, numel(distance) );
 
-fit_x=1e7*[ 6.73e-06, 5.44e-06,4.59e-06, 4.16e-06];%Site  433
+fit_x=1e7*[ 6.73e-06, 5.44e-06,4.59e-06, 4.13e-06];%Site  433
 for i=1:numel(distance)
-    p = fit(fit_x(1:end)',ChargeDensity(1:end,i),'poly1');
+    p = fit(fit_x(1:4)',ChargeDensity(1:4,i),'poly1');
     ChargeDensity_ex(i)=p.p2;
 end
 
@@ -44,7 +44,7 @@ plot(distance + 1, ChargeDensity_ex,'o'); hold on;
 
 
 
-cos_fix_x = 6:17;
+cos_fix_x = Lx/4:3*Lx/4-1;
 ChargeDensityLymean = mean(reshape(ChargeDensity_ex,4,[]));
 cos_fix_y = ChargeDensityLymean(cos_fix_x + 1);
 modelfun = @(b,x)(b(2)+ b(3).*cos(b(4).*x+b(1)) );

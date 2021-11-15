@@ -38,7 +38,7 @@ scsyy_ex=zeros(size(distance));
 %fit_x=[1/8,1/10,1/12,1/14];%1/D
 fit_x=1e7*[5.90e-6,4.90e-6,4.19e-06,3.70e-06, 3.35e-06, 3.02e-06,2.62e-06];%Site  657
 for i=1:numel(distance)
-    p = fit(fit_x(3:5)',scsyy(3:5,i),'poly2');
+    p = fit(fit_x(3:7)',scsyy(3:7,i),'poly2');
     scsyy_ex(i)=p.p3;
 end
 
@@ -46,7 +46,7 @@ loglog(distance, abs(scsyy_ex),'o');hold on;
 
 
 % fit_x=[6,7,10,11,14,15,18,19];
- fit_x=[6,10,14,18];
+ fit_x=[6,10,14];
 fit_y=zeros(size(fit_x));
 for i=1:numel(fit_x)
     I = find(distance==fit_x(i));
