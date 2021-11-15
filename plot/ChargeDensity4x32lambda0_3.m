@@ -35,8 +35,8 @@ ChargeDensity_ex = zeros(1, numel(distance) );
 
 fit_x=1e7*[ 6.73e-06, 5.44e-06,4.59e-06, 4.13e-06];%Site  433
 for i=1:numel(distance)
-    p = fit(fit_x(1:4)',ChargeDensity(1:4,i),'poly1');
-    ChargeDensity_ex(i)=p.p2;
+    p = fit(fit_x(1:3)',ChargeDensity(1:3,i),'poly2');
+    ChargeDensity_ex(i)=p.p3;
 end
 
 ChargeDensity_ex = (ChargeDensity_ex + ChargeDensity_ex(end:-1:1))/2;
