@@ -4,6 +4,9 @@
     usage:
       mpirun -n 4 ./measure
     note: processor number must be 4.
+        Optional arguments:
+      --start=
+      --end=
 */
 #include "gqdouble.h"
 #include "operators.h"
@@ -36,6 +39,10 @@ int main(int argc, char *argv[]) {
   clock_t startTime, endTime;
   startTime = clock();
 
+  size_t beginx;
+  size_t endx;
+  bool start_argument_has = Parser(argc, argv, beginx, endx);
+
 
   CaseParams params(argv[1]);
 
@@ -44,6 +51,11 @@ int main(int argc, char *argv[]) {
   if(GetNumofMps()!=N){
     std::cout << "The number of mps files are inconsistent with mps size!" <<std::endl;
     exit(1);
+  }
+
+  if( !start_argument_has ) {
+    beginx = Lx/4;
+    endx = beginx+Lx/2;
   }
 
   OperatorInitial();
@@ -81,9 +93,6 @@ int main(int argc, char *argv[]) {
 
   vector<vector<size_t>> two_point_sites_setF;
 
-  size_t beginx = Lx/4;
-//    int beginx = 4; //for Lx=24
-  size_t endx = beginx+Lx/2;
   two_point_sites_setF.reserve(Ly*(endx-beginx));
   for (size_t y = 0; y < Ly; ++y) {
     size_t site1F = beginx*Ly+y;

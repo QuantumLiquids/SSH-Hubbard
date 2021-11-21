@@ -19,7 +19,7 @@ using namespace gqmps2;
 using namespace gqten;
 using namespace std;
 
-int Parser(const int argc, char *argv[],
+int ParserFixMpsArgs(const int argc, char *argv[],
             size_t& site,
             size_t& thread);
 
@@ -33,7 +33,7 @@ int main(int argc, char *argv[]){
     std::cout << "The output is the file mps_ten*.gqten" <<std::endl;
 
     size_t site(0),  thread(0);
-    Parser(argc, argv,site, thread);
+    ParserFixMpsArgs(argc, argv,site, thread);
 
     std::cout << "Argument read: "<< std::endl;
     std::cout << "site = " << site << std::endl;
@@ -42,7 +42,6 @@ int main(int argc, char *argv[]){
     gqten::hp_numeric::SetTensorTransposeNumThreads(thread);
     gqten::hp_numeric::SetTensorManipulationThreads(thread);
     const size_t N = GetNumofMps();
-    using TenT = Tensor;
     const string temp_path = kRuntimeTempPath;
 
     const size_t target_site = site; 
@@ -141,7 +140,7 @@ int main(int argc, char *argv[]){
 
 
 
-int Parser(const int argc, char *argv[],
+int ParserFixMpsArgs(const int argc, char *argv[],
             size_t& site,
             size_t& thread){
 int nOptionIndex = 1;

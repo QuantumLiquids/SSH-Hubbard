@@ -4,6 +4,9 @@
     usage:
         mpirun -n 4 ./measureSC
     note: processor number must be 4.
+    Optional arguments:
+      --start=
+      --end=
 */
 #include "gqdouble.h"
 #include "operators.h"
@@ -30,6 +33,7 @@ using gqmps2::MeasureOneSiteOp;
 using gqten::Timer;
 using gqmps2::MeasureElectronPhonon4PointFunction;
 
+
 int main(int argc, char *argv[]) {
   namespace mpi = boost::mpi;
   mpi::environment env;
@@ -37,6 +41,9 @@ int main(int argc, char *argv[]) {
   clock_t startTime, endTime;
   startTime = clock();
 
+  size_t beginx;
+  size_t endx;
+  bool start_argument_has = Parser(argc, argv, beginx, endx);
 
   CaseParams params(argv[1]);
 
@@ -45,6 +52,11 @@ int main(int argc, char *argv[]) {
   if(GetNumofMps()!=N){
     std::cout << "The number of mps files are inconsistent with mps size!" <<std::endl;
     exit(1);
+  }
+
+  if( !start_argument_has ) {
+    beginx = Lx/4;
+    endx = beginx+Lx/2;
   }
 
   OperatorInitial();
@@ -88,9 +100,7 @@ int main(int argc, char *argv[]) {
     Tx[i] = y +Ly*((x+1)%Lx);
     Ty[i] = (y+1)%Ly + Ly*x;
   }
-  size_t beginx = Lx/4;
-//    int beginx = 4; //for Lx=24
-  size_t endx = beginx+Lx/2;
+
   xx_fourpoint_sitessetF.reserve(Ly*(endx-beginx));
   yy_fourpoint_sitessetF.reserve(Ly*(endx-beginx));
   for (size_t y = 0; y < Ly; ++y){
@@ -132,4 +142,3 @@ int main(int argc, char *argv[]) {
   return 0;
 
 }
-

@@ -33,7 +33,8 @@ end
 plot(distance + 1, ChargeDensity,'-x'); hold on;
 ChargeDensity_ex = zeros(1, numel(distance) );
 
-fit_x=1e7*[7.05e-06, 5.81e-06, 4.95e-06, 4.29e-06];%Site  340
+% fit_x=1e7*[7.05e-06, 5.81e-06, 4.95e-06, 4.29e-06];%Site  340
+fit_x=1e7* [3.44e-06,2.79e-06, 2.41e-06, 2.14e-06];%middle bond
 for i=1:numel(distance)
     p = fit(fit_x(1:end)',ChargeDensity(1:end,i),'poly1');
     ChargeDensity_ex(i)=p.p2;

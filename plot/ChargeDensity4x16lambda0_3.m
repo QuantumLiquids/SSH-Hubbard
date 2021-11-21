@@ -3,7 +3,7 @@ Lx=16; Ly=4;
 omega = 5; g = 2.4495; Np = 3; U = 8; Numhole = Lx*Ly/8;
 
 
-Dset=[8000,10000];
+Dset=[8000,10000, 12000];
 
 D=Dset(1);
 FileNamePostfix=['ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
@@ -20,26 +20,23 @@ for j = 1:numel(Dset)
     D=Dset(j);
     FileNamePostfix=['ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
     ChargeDensityData = jsondecode(fileread(['../data/nf',FileNamePostfix]));
-%     ChargeDensityData = ChargeDensityData(1:end,:);
 %   ChargeDensity = mean(reshape(ChargeDensityData(:,2),Ly,[]));
     ChargeDensity(j, :) = transpose(ChargeDensityData(:,2));
-     disp(mean(ChargeDensityData(:,2)));
-%     ChargeDensity = (ChargeDensity+ChargeDensity(end:-1:1))/2;
-
-    
+    fprintf("Charge density per site = %.6f\n", mean(ChargeDensityData(:,2)));
 end
 
 % ChargeDensity = (ChargeDensity + ChargeDensity(:,end:-1:1))/2;
 plot(distance + 1, ChargeDensity,'-x'); hold on;
 ChargeDensity_ex = zeros(1, numel(distance) );
 
-fit_x=1e7*[7.11e-06,5.92e-06];%Site  228
+%fit_x=1e7*[7.11e-06,5.92e-06,5.21e-06];%Site  228
+fit_x = 1e7*[3.37e-06,2.82e-06,2.44e-06]; %middle bond
 for i=1:numel(distance)
     p = fit(fit_x(1:end)',ChargeDensity(1:end,i),'poly1');
     ChargeDensity_ex(i)=p.p2;
 end
 
-ChargeDensity_ex = (ChargeDensity_ex + ChargeDensity_ex(end:-1:1))/2;
+% ChargeDensity_ex = (ChargeDensity_ex + ChargeDensity_ex(end:-1:1))/2;
 plot(distance + 1, ChargeDensity_ex,'o'); hold on;
 
 
