@@ -122,15 +122,21 @@ int main(int argc, char *argv[]) {
   std::vector<Tensor> sc_phys_ops_c = { bupcF, Fbdnc, bdna, bupa };
   std::vector<Tensor> sc_phys_ops_d = { bdnc, bupc, bdna, bupa };
 
+  std::string file_name_postfix;
+  if (start_argument_has) {
+    file_name_postfix = "begin" + std::to_string(beginx) + "end" + std::to_string(endx);
+  } else {
+    file_name_postfix = "";
+  }
 
   if(world.rank()==0){
-    MeasureElectronPhonon4PointFunction(mps,sc_phys_ops_a,yy_fourpoint_sitessetF,Np,"scsyya");
+    MeasureElectronPhonon4PointFunction(mps,sc_phys_ops_a,yy_fourpoint_sitessetF,Np,"scsyya" + file_name_postfix);
   }else if(world.rank()==1){
-    MeasureElectronPhonon4PointFunction(mps,sc_phys_ops_b,yy_fourpoint_sitessetF,Np,"scsyyb");
+    MeasureElectronPhonon4PointFunction(mps,sc_phys_ops_b,yy_fourpoint_sitessetF,Np,"scsyyb" + file_name_postfix);
   }else if(world.rank()==2){
-    MeasureElectronPhonon4PointFunction(mps,sc_phys_ops_c,yy_fourpoint_sitessetF,Np,"scsyyc");
+    MeasureElectronPhonon4PointFunction(mps,sc_phys_ops_c,yy_fourpoint_sitessetF,Np,"scsyyc" + file_name_postfix);
   }else if(world.rank()==3){
-    MeasureElectronPhonon4PointFunction(mps,sc_phys_ops_d,yy_fourpoint_sitessetF,Np,"scsyyd");
+    MeasureElectronPhonon4PointFunction(mps,sc_phys_ops_d,yy_fourpoint_sitessetF,Np,"scsyyd" + file_name_postfix);
   }
 
   cout << "measured y--y four point function.<====" <<endl;

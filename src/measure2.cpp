@@ -102,11 +102,19 @@ int main(int argc, char *argv[]) {
     }
   }
 
+  std::string file_name_postfix;
+  if (start_argument_has) {
+    file_name_postfix = "begin" + std::to_string(beginx) + "end" + std::to_string(endx);
+  } else {
+    file_name_postfix = "";
+  }
+
+
   Timer twosite_timer("measure two site operators");
-//    MeasureTwoSiteOp(mps, sz,   sz,  two_point_sites_setF, "szsz");
-//    MeasureTwoSiteOp(mps, sx,   sx,  two_point_sites_setF, "sxsx");
-//    MeasureTwoSiteOp(mps, -isy, isy, two_point_sites_setF, "sysy");
-  MeasureTwoSiteOp(mps, nf,   nf,  two_point_sites_setF, "nfnf", world);
+  MeasureTwoSiteOp(mps, sz,   sz,  two_point_sites_setF, "szsz"+ file_name_postfix, world);
+  MeasureTwoSiteOp(mps, sp,   sm,  two_point_sites_setF, "spsm"+ file_name_postfix, world);
+  MeasureTwoSiteOp(mps, sm,   sp,  two_point_sites_setF, "smsp"+ file_name_postfix, world);
+  MeasureTwoSiteOp(mps, nf,   nf,  two_point_sites_setF, "nfnf"+ file_name_postfix, world);
 //    MeasureTwoSiteOp(mps, cupccdnc,cdnacupa,two_point_sites_setF, "onsitesc");
   cout << "measured two point function.<====" <<endl;
   twosite_timer.PrintElapsed();
