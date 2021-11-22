@@ -1,17 +1,21 @@
-Lx=16; Ly=4;
+Lx=24; Ly=4;
 omega = 5; 
 g = 2.4495;
 Np=3;
 
 U = 8; Numhole = Lx*Ly/8;
 
+begin=7;
+endx=22;
 
-Dset=[8000,10000, 12000];
+Dset=[8000,10000,12000];
 
 
 
 D=Dset(1);
-FileNamePostfix=['ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
+FileNamePostfix=['begin',num2str(begin),'end',num2str(endx),...
+    'ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),...
+    'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
 A = jsondecode(fileread(['../data/scsyya',FileNamePostfix]));
 distance=zeros(1,numel(A));
 for i=1:numel(A)
@@ -21,7 +25,10 @@ end
 scsyy=zeros(numel(Dset),numel(A));
 for j = 1:numel(Dset)
     D = Dset(j);
-    FileNamePostfix=['ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
+    FileNamePostfix=['begin',num2str(begin),'end',num2str(endx),...
+    'ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),...
+    'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
+
     A = jsondecode(fileread(['../data/scsyya',FileNamePostfix]));
     B = jsondecode(fileread(['../data/scsyyb',FileNamePostfix]));
     C = jsondecode(fileread(['../data/scsyyc',FileNamePostfix]));
@@ -31,29 +38,32 @@ for j = 1:numel(Dset)
     end
 end
 
-h=semilogy(distance,abs(scsyy),'x');hold on;
+h=semilogy(distance,scsyy,'x');hold on;
 
 
 
 scsyy_ex=zeros(size(distance));
 %fit_x=[1/8,1/10,1/12,1/14];%1/D
-%fit_x=1e7*[7.11e-06,5.92e-06,5.21e-06];%Site  228
-fit_x = 1e7*[3.37e-06,2.82e-06,2.44e-06]; %middle bond
-
+%fit_x=1e7*[7.05e-06, 5.81e-06, 4.95e-06, 4.29e-06];%Site  340
+fit_x=1e7* [3.44e-06,2.79e-06, 2.41e-06, 2.14e-06];%middle bond
 for i=1:numel(distance)
-    p = fit(fit_x(1:end)',scsyy(1:end,i),'poly1');
-    scsyy_ex(i)=p.p2;
+    p = fit(fit_x(1:3)',scsyy(1:3,i),'poly2');
+    scsyy_ex(i)=p.p3;
 end
 
-semilogy(distance, abs(scsyy_ex),'o');hold on;
+semilogy(distance, scsyy_ex,'o');hold on;
 
 
-fit_x=[6,7];
+fit_x=[6,7,10,11];
 fit_y=zeros(size(fit_x));
 for i=1:numel(fit_x)
-    I = find(distance==fit_x(i));
+    I = (distance==fit_x(i));
     fit_y(i)=mean(scsyy_ex(I));
 end
+
+I=find(distance==Lx/2);
+fprintf("<Delta_yy^dag Delta_yy>(Lx/2) = %.6f\n",mean(scsyy_ex(I)));
+
 
 
 p = fit((fit_x'),log(abs(fit_y')),'poly1');
