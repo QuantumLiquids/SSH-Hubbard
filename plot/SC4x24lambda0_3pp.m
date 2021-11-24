@@ -8,8 +8,8 @@ U = 8; Numhole = Lx*Ly/8;
 begin=7;
 endx=22;
 
-Dset=[8000,10000,12000];
-
+Dset=[8000,10000,12000,14000];
+trunc_err=1e7* [3.44e-06,2.79e-06, 2.41e-06, 2.17e-06];%middle bond
 
 
 D=Dset(1);
@@ -45,9 +45,9 @@ h=semilogy(distance,scsyy,'x');hold on;
 scsyy_ex=zeros(size(distance));
 %fit_x=[1/8,1/10,1/12,1/14];%1/D
 %fit_x=1e7*[7.05e-06, 5.81e-06, 4.95e-06, 4.29e-06];%Site  340
-fit_x=1e7* [3.44e-06,2.79e-06, 2.41e-06, 2.14e-06];%middle bond
+fit_x=trunc_err;
 for i=1:numel(distance)
-    p = fit(fit_x(1:3)',scsyy(1:3,i),'poly2');
+    p = fit(fit_x(1:4)',scsyy(1:4,i),'poly2');
     scsyy_ex(i)=p.p3;
 end
 
@@ -83,7 +83,7 @@ set(T,'Interpreter','latex');set(T,'Fontsize',24);
 
 
 
-l=legend(h,'$D=8000$', '$10000$','$12000$');
+l=legend(h,'$D=8000$', '$10000$','$12000$','$14000$');
 set(l,'Box','off');set(l,'Interpreter','latex');
 set(l,'Fontsize',24);
 set(l,'Location','SouthWest');

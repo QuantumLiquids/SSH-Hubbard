@@ -6,7 +6,7 @@ omega = 5; g = 2.4495; Np = 3; U = 8; Numhole = Lx*Ly/8;
 Dset=[8000,10000,12000, 14000];
 
 
-trunc_err=1e7* [3.44e-06,2.79e-06, 2.41e-06, 2.14e-06];%middle bond
+trunc_err=1e7* [3.44e-06,2.79e-06, 2.41e-06, 2.17e-06];%middle bond
 % trunc_err=1e7*[7.05e-06, 5.81e-06, 4.95e-06, 4.29e-06];%Site  340
 
 
@@ -26,6 +26,7 @@ for j = 1:numel(Dset)
     FileNamePostfix=['ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
     ChargeDensityData = jsondecode(fileread(['../data/nf',FileNamePostfix]));
     ChargeDensity(j, :) = transpose(ChargeDensityData(:,2));
+    charge_density_avg = mean(ChargeDensityData(:,2));
     if (charge_density_avg-0.875) > 1e-8
         error("charge density if not right");
     end
