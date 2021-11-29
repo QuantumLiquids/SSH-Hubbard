@@ -1,6 +1,6 @@
 Lx = [16,24, 32, 40, 48];
 distance = [7, 9,  15, 23];
-SC = [0.00145, 9.5e-4,6.1e-4,  1.08e-4];
+SC = [0.00145, 1.026e-3,6.1e-4,  1.08e-4];
 h1 = loglog(distance, SC,'o');hold on;
 
 p = fit(log(distance(1:3)'),log(SC(1:3)'),'poly1');
