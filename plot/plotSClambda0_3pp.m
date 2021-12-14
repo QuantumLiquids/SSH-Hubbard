@@ -1,9 +1,9 @@
 Lx = [16,24, 32, 40, 48];
-distance = [8,12,16,24];
-SC = [0.000764, 0.000398,0.000138,  0.000048];
+distance = [8,12,16,20, 24];
+SC = [0.000764, 0.000398,0.000218,0.000038,  0.000051];
 h1 = loglog(distance, SC,'o');hold on;
 
-p = fit(log(distance(1:2)'),log(SC(1:2)'),'poly1');
+p = fit(log(distance(1:3)'),log(SC(1:3)'),'poly1');
 fprintf('Ksc=%.5f\n',-p.p1);
 x = fit_x(1):0.5:fit_x(end);
 fl=loglog(distance,exp(p.p2)*distance.^p.p1,'-.');

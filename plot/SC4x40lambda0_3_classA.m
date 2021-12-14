@@ -1,23 +1,21 @@
-Lx=32; Ly=4;
+Lx=40; Ly=4;
 omega = 5; 
 g = 2.4495;
 Np=3;
 
-
-begin=7;
-endx=30;
-
 U = 8; Numhole = Lx*Ly/8;
 
-Dset=[8000,10000,12000, 14000, 16000];%bond dimension set
-trunc_err = 1e7*[3.70e-06,  2.96e-06, 2.61e-06,2.27e-06, 2.09e-06 ];
-%D14000 old version(come from 16000) 2.52e-06
+begin = 8;
+endx= 32;
 
+Dset=[8000,10000,12000];%bond dimension set
 
-D=Dset(1);
+trunc_err=1e7*[3.45e-6,2.79e-6,2.47e-06];
+
+Db=Dset(1);
 FileNamePostfix=['begin',num2str(begin),'end',num2str(endx),...
     'ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),...
-    'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
+    'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(Db),'.json'];
 A = jsondecode(fileread(['../data/scsyya',FileNamePostfix]));
 distance=zeros(1,numel(A));
 for i=1:numel(A)
@@ -26,11 +24,10 @@ end
 
 scsyy=zeros(numel(Dset),numel(A));
 for j = 1:numel(Dset)
-    D = Dset(j);
+    Db = Dset(j);
     FileNamePostfix=['begin',num2str(begin),'end',num2str(endx),...
     'ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),...
-    'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
-    
+    'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(Db),'.json'];
     A = jsondecode(fileread(['../data/scsyya',FileNamePostfix]));
     B = jsondecode(fileread(['../data/scsyyb',FileNamePostfix]));
     C = jsondecode(fileread(['../data/scsyyc',FileNamePostfix]));
@@ -46,25 +43,24 @@ h=loglog(distance,scsyy,'x');hold on;
 
 scsyy_ex=zeros(size(distance));
 %fit_x=[1/8,1/10,1/12,1/14];%1/D
-%fit_x=1e7*[ 6.73e-06, 5.44e-06,4.59e-06, 4.13e-06];%Site  433
-fit_x =trunc_err;
+% fit_x=1e7*[ 5.59e-06, 4.56e-06];%Site  560
+fit_x = trunc_err;
 for i=1:numel(distance)
-    p = fit(fit_x(2:5)',scsyy(2:5,i),'poly2');
+    p = fit(fit_x(1:end)',scsyy(1:end,i),'poly2');
     scsyy_ex(i)=p.p3;
 end
 
 loglog(distance, scsyy_ex,'o');hold on;
+I=find(distance==Lx/2-1);
+fprintf("<Delta_yy^dag Delta_yy>(Lx/2-1) = %.6f\n",mean(scsyy_ex(I)));
 
 
-fit_x=[6,7,10,11,14];
+fit_x=[6,7,10,11];
 fit_y=zeros(size(fit_x));
 for i=1:numel(fit_x)
-    I = distance==fit_x(i);
+    I = find(distance==fit_x(i));
     fit_y(i)=mean(scsyy_ex(I));
 end
-
-I=find(distance==Lx/2);
-fprintf("<Delta_yy^dag Delta_yy>(Lx/2) = %.6f\n",mean(scsyy_ex(I)));
 
 
 p = fit((fit_x'),log(abs(fit_y')),'poly1');
@@ -84,7 +80,7 @@ set(T,'Interpreter','latex');set(T,'Fontsize',24);
 
 
 
-l=legend(h,'$D=8000$', '$10000$', '$12000$', '$14000$','$16000$');
+l=legend(h,'$D=8000$', '$10000$','$12000$');
 set(l,'Box','off');set(l,'Interpreter','latex');
 set(l,'Fontsize',24);
 set(l,'Location','SouthWest');

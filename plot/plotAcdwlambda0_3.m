@@ -1,15 +1,15 @@
-Lx = [16,24, 32,  48];
-A_cdw = [0.022143, 0.019039,0.017955, 0.013755];
+Lx = [16,24, 32, 40, 48];
+A_cdw = [0.021680, 0.018568,0.016997, 0.019975, 0.013807];
 h1 = loglog(Lx, A_cdw,'o');hold on;
 
 
 
 fit_x = Lx;
-p = fit(log(Lx([1:2,4])'),log(A_cdw([1:2,4])'),'poly1');
+p = fit(log(Lx([1:2,3])'),log(A_cdw([1:2,3])'),'poly1');
 fprintf('Kc=%.5f\n',-p.p1*2);
 x = fit_x(1):0.5:fit_x(end);
 fl=loglog(Lx,exp(p.p2)*(Lx).^p.p1,'-.');
-T=text(30,0.02,['$K_{c}=',num2str(-p.p1*2),'$']);
+T=text(30,0.018,['$K_{c}=',num2str(-p.p1*2),'$']);
 set(T,'Interpreter','latex');
 set(T,'Fontsize',28);
 

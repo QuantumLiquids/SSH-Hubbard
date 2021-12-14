@@ -8,8 +8,8 @@ U = 8; Numhole = Lx*Ly/8;
 begin=7;
 endx=22;
 
-Dset=[8000,10000,12000,14000];
-trunc_err=1e7* [3.44e-06,2.79e-06, 2.41e-06, 2.17e-06];%middle bond
+Dset=[8000,10000,12000, 14000,16000];
+trunc_err=1e7* [3.44e-06,2.79e-06, 2.41e-06, 2.17e-06,1.93e-6];%middle bond
 
 
 D=Dset(1);
@@ -83,7 +83,7 @@ set(T,'Interpreter','latex');set(T,'Fontsize',24);
 
 
 
-l=legend(h,'$D=8000$', '$10000$','$12000$','$14000$');
+l=legend(h,'$D=8000$', '$10000$','$12000$','$14000$','$16000$');
 set(l,'Box','off');set(l,'Interpreter','latex');
 set(l,'Fontsize',24);
 set(l,'Location','SouthWest');

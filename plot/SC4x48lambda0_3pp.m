@@ -47,10 +47,9 @@ h=loglog(distance,scsyy,'x');hold on;
 
 scsyy_ex=zeros(size(distance));
 %fit_x=[1/8,1/10,1/12,1/14];%1/D
-%fit_x=1e7*[5.90e-6,4.90e-6,4.19e-06,3.70e-06, 3.35e-06, 3.02e-06,2.62e-06];%Site  657
 fit_x=trunc_err;
 for i=1:numel(distance)
-    p = fit(fit_x(2:5)',scsyy(2:5,i),'poly2');
+    p = fit(fit_x(2:4)',scsyy(2:4,i),'poly2');
     scsyy_ex(i)=p.p3;
 end
 

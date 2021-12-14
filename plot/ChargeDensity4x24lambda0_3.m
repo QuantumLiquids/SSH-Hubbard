@@ -3,10 +3,10 @@ Lx=24; Ly=4;
 omega = 5; g = 2.4495; Np = 3; U = 8; Numhole = Lx*Ly/8;
 
 
-Dset=[8000,10000,12000, 14000];
+Dset=[8000,10000,12000, 14000,16000];
 
 
-trunc_err=1e7* [3.44e-06,2.79e-06, 2.41e-06, 2.17e-06];%middle bond
+trunc_err=1e7* [3.44e-06,2.79e-06, 2.41e-06, 2.17e-06,1.93e-06];%middle bond
 % trunc_err=1e7*[7.05e-06, 5.81e-06, 4.95e-06, 4.29e-06];%Site  340
 
 
@@ -39,7 +39,7 @@ ChargeDensity_ex = zeros(1, numel(distance) );
 
 fit_x=trunc_err;
 for i=1:numel(distance)
-    p = fit(fit_x(1:4)',ChargeDensity(1:4,i),'poly1');
+    p = fit(fit_x(1:5)',ChargeDensity(1:5,i),'poly1');
     ChargeDensity_ex(i)=p.p2;
 end
 
