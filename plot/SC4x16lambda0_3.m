@@ -6,8 +6,8 @@ Np=3;
 U = 8; Numhole = Lx*Ly/8;
 
 
-Dset=[8000,10000, 12000,14000];
-trunc_err=  1e7*[3.37e-06,2.82e-06,2.45e-06, 2.18e-06]; %middle bond
+Dset=[8000,10000, 12000,14000,16000];
+trunc_err=  1e7*[3.37e-06,2.82e-06,2.45e-06, 2.18e-06,1.98e-06]; %middle bond
 
 
 D=Dset(1);
@@ -52,6 +52,10 @@ end
 
 semilogy(distance, abs(scsyy_ex),'o');hold on;
 
+loglog(distance, scsyy_ex,'o');hold on;
+I=find(distance==7);
+fprintf("<Delta_yy^dag Delta_yy>(Lx/2-1) = %.6f\n",mean(scsyy_ex(I)));
+
 
 fit_x=[6,7];
 fit_y=zeros(size(fit_x));
@@ -78,7 +82,7 @@ set(T,'Interpreter','latex');set(T,'Fontsize',24);
 
 
 
-l=legend(h,'$D=8000$', '$10000$','$12000$','$14000$');
+l=legend(h,'$D=8000$', '$10000$','$12000$','$14000$','$16000$');
 set(l,'Box','off');set(l,'Interpreter','latex');
 set(l,'Fontsize',24);
 set(l,'Location','SouthWest');

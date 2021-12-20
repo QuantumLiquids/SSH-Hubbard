@@ -7,8 +7,9 @@ U = 8; Numhole = Lx*Ly/8;
 
 begin=3;
 endx=14;
-Dset=[8000,10000,12000];
-trunc_err =  1e7*[3.37e-06,2.82e-06,2.45e-06]; %middle bond
+Dset=[8000,10000, 12000,14000,16000];
+trunc_err=  1e7*[3.37e-06,2.82e-06,2.45e-06, 2.18e-06,1.98e-06]; %middle bond
+
 
 
 D=Dset(1);
@@ -44,8 +45,13 @@ scsyy_ex=zeros(size(distance));
 fit_x = trunc_err;
 
 for i=1:numel(distance)
-    p = fit(fit_x(1:end)',scsyy(1:end,i),'poly1');
-    scsyy_ex(i)=p.p2;
+    p = fit(fit_x(1:end)',scsyy(1:end,i),'poly2');
+    scsyy_ex(i)=p.p3;
+    if(distance(i) == 8)
+        range=confint(p, 0.95);
+        error_bar = (range(2,2) - range(1,2))/2;
+        fprintf("error bar for scsyy_ex at %d = %.6f\n", distance(i), error_bar);
+    end
 end
 
 semilogy(distance, abs(scsyy_ex),'o');hold on;
@@ -59,7 +65,7 @@ for i=1:numel(fit_x)
 end
 
 I=find(distance==Lx/2);
-fprintf("<Delta_yy^dag Delta_yy>(Lx/2) = %.6f\n",mean(scsyy_ex(I)));
+fprintf("<Delta_yy^dag Delta_yy>(%d) = %.6f\n",Lx/2,mean(scsyy_ex(I)));
 
 
 p = fit((fit_x'),log(abs(fit_y')),'poly1');
@@ -79,7 +85,7 @@ set(T,'Interpreter','latex');set(T,'Fontsize',24);
 
 
 
-l=legend(h,'$D=8000$', '$10000$','$12000$');
+l=legend(h,'$D=8000$', '$10000$','$12000$','$14000$','$16000$');
 set(l,'Box','off');set(l,'Interpreter','latex');
 set(l,'Fontsize',24);
 set(l,'Location','SouthWest');

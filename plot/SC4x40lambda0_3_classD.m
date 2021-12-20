@@ -11,9 +11,9 @@ U = 8; Numhole = Lx*Ly/8;
  begin = 11;
  endx= 34;
 
-Dset=[8000,10000,12000];%bond dimension set
+Dset=[8000,10000,12000, 14000];%bond dimension set
 
-trunc_err=1e7*[3.45e-6,2.79e-6,2.47e-06];
+trunc_err=1e7*[3.46e-6,2.79e-6,2.47e-06,2.15e-06];
 
 Db=Dset(1);
 FileNamePostfix=['begin',num2str(begin),'end',num2str(endx),...
@@ -83,7 +83,7 @@ set(T,'Interpreter','latex');set(T,'Fontsize',24);
 
 
 
-l=legend(h,'$D=8000$', '$10000$','$12000$');
+l=legend(h,'$D=8000$', '$10000$','$12000$','$14000$');
 set(l,'Box','off');set(l,'Interpreter','latex');
 set(l,'Fontsize',24);
 set(l,'Location','SouthWest');

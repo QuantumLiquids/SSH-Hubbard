@@ -8,9 +8,9 @@ U = 8; Numhole = Lx*Ly/8;
 begin = 8;
 endx= 32;
 
-Dset=[8000,10000,12000];%bond dimension set
+Dset=[8000,10000,12000, 14000];%bond dimension set
 
-trunc_err=1e7*[3.45e-6,2.79e-6,2.47e-06];
+trunc_err=1e7*[3.46e-6,2.79e-6,2.47e-06,2.15e-06];
 
 Db=Dset(1);
 FileNamePostfix=['begin',num2str(begin),'end',num2str(endx),...
@@ -46,7 +46,7 @@ scsyy_ex=zeros(size(distance));
 % fit_x=1e7*[ 5.59e-06, 4.56e-06];%Site  560
 fit_x = trunc_err;
 for i=1:numel(distance)
-    p = fit(fit_x(1:end)',scsyy(1:end,i),'poly2');
+    p = fit(fit_x(1:4 )',scsyy(1:4,i),'poly2');
     scsyy_ex(i)=p.p3;
 end
 
@@ -80,7 +80,7 @@ set(T,'Interpreter','latex');set(T,'Fontsize',24);
 
 
 
-l=legend(h,'$D=8000$', '$10000$','$12000$');
+l=legend(h,'$D=8000$', '$10000$','$12000$','$14000$');
 set(l,'Box','off');set(l,'Interpreter','latex');
 set(l,'Fontsize',24);
 set(l,'Location','SouthWest');
