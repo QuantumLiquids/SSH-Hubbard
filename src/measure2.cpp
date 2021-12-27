@@ -115,7 +115,7 @@ int main(int argc, char *argv[]) {
   MeasureTwoSiteOp(mps, sp,   sm,  two_point_sites_setF, "spsm"+ file_name_postfix, world);
   MeasureTwoSiteOp(mps, sm,   sp,  two_point_sites_setF, "smsp"+ file_name_postfix, world);
   MeasureTwoSiteOp(mps, nf,   nf,  two_point_sites_setF, "nfnf"+ file_name_postfix, world);
-//    MeasureTwoSiteOp(mps, cupccdnc,cdnacupa,two_point_sites_setF, "onsitesc");
+  MeasureTwoSiteOp(mps, cupccdnc,cdnacupa,two_point_sites_setF, "onsitesc"+ file_name_postfix, world);
   cout << "measured two point function.<====" <<endl;
   twosite_timer.PrintElapsed();
 

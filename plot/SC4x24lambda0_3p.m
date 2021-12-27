@@ -9,7 +9,7 @@ begin=4;
 endx=20;
 
 Dset=[8000,10000,12000, 14000,16000];
-trunc_err=1e7* [3.44e-06,2.79e-06, 2.41e-06, 2.17e-06,1.93e-6];%middle bond
+trunc_err=1e7* [3.44e-06,2.79e-06, 2.41e-06, 2.17e-06,2.00e-6];%middle bond
 
 
 D=Dset(1);

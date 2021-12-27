@@ -38,53 +38,39 @@ for j = 1:numel(Dset)
     end
 end
 
-h=loglog(distance,scsyy,'x');hold on;
-
 
 
 scsyy_ex=zeros(size(distance));
 %fit_x=[1/8,1/10,1/12,1/14];%1/D
 % fit_x=1e7*[ 5.59e-06, 4.56e-06];%Site  560
 fit_x = trunc_err;
+plot_curve_x = 0.0:(max(fit_x)/1000):max(fit_x);
 for i=1:numel(distance)
-    p = fit(fit_x(1:5 )',scsyy(1:5,i),'poly2');
-    scsyy_ex(i)=p.p3;
+    if(distance(i)==Lx/2-1)
+        p = fit(fit_x(2:4 )',scsyy(2:4,i),'poly2');
+        scsyy_ex(i)=p.p3;
+%         range=confint(p, 0.95);
+%         error_bar = (range(2,3) - range(1,3))/2;
+%         fprintf("error bar for scsyy_ex at %d = %.6f\n", distance(i), error_bar);
+        plot( [0.0, fit_x], [scsyy_ex(i), scsyy(:,i)'], 'o');hold on;
+        plot_curve_y =p.p3 + p.p2 .* plot_curve_x + p.p1 .* plot_curve_x.^2;
+        plot( plot_curve_x, plot_curve_y,'-'); hold on;
+    end
 end
 
-loglog(distance, scsyy_ex,'o');hold on;
 I=find(distance==Lx/2-1);
 fprintf("<Delta_yy^dag Delta_yy>(Lx/2-1) = %.6f\n",mean(scsyy_ex(I)));
 
 
-fit_x=[6,7,10,11];
-fit_y=zeros(size(fit_x));
-for i=1:numel(fit_x)
-    I = find(distance==fit_x(i));
-    fit_y(i)=mean(scsyy_ex(I));
-end
-
-
-p = fit((fit_x'),log(abs(fit_y')),'poly1');
-fprintf('correlation length=%.5f\n',-1/p.p1);
-x = fit_x;
-loglog(x,exp(p.p2+p.p1*x),'-.');%fitted line
-T=text(10.2,6e-3,['$\xi=',num2str(-1/p.p1),'$']);
-set(T,'Interpreter','latex');set(T,'Fontsize',24);
-
-
-p = fit(log(fit_x'),log(abs(fit_y')),'poly1');
-fprintf('Ksc=%.5f\n',-p.p1);
-x = fit_x(1):0.5:fit_x(end);
-fl=loglog(x,exp(p.p2)*x.^p.p1,'-.');
-T=text(10,2.5e-3,['$K_{sc}=',num2str(-p.p1),'$']);
-set(T,'Interpreter','latex');set(T,'Fontsize',24);
 
 
 
-l=legend(h,'$D=8000$', '$10000$','$12000$','$14000$','$15000$');
-set(l,'Box','off');set(l,'Interpreter','latex');
-set(l,'Fontsize',24);
-set(l,'Location','SouthWest');
+
+
+% l=legend(h,'$D=8000$', '$10000$','$12000$','$14000$','$15000$');
+% set(l,'Box','off');set(l,'Interpreter','latex');
+% set(l,'Fontsize',24);
+% set(l,'Location','SouthWest');
 
 
 

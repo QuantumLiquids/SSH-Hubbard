@@ -1,0 +1,284 @@
+/**
+ * Fix two site update
+ *
+ */
+
+#include "gqdouble.h"
+#include "gqmps2/gqmps2.h"
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include "myutil.h"
+using std::ifstream;
+using std::ofstream;
+using std::string;
+using std::vector;
+using namespace gqmps2;
+using namespace gqten;
+using namespace std;
+
+int ParserFixMpsArgs(const int argc, char *argv[],
+                     size_t& lsite,
+                     size_t& thread,
+                     bool& load_mps);
+
+/**
+ * @example ./fix_mps --thread=24, --site=10
+ *
+ */
+int main(int argc, char *argv[]){
+  std::cout << "This program used to patch two mps tensor by two site Lanczos" <<std::endl;
+  std::cout << "The input must include the relevant files: renv*.gqten, lenv*.gqten, mpo_ten*.gqten" <<std::endl;
+  std::cout << "The output is the file mps_ten*.gqten" <<std::endl;
+  std::cout << "Mps canonical central will be put on left mps tensor" << std::endl;
+  size_t lsite(0),  thread(0);
+  bool load_mps;
+  ParserFixMpsArgs(argc, argv,lsite, thread, load_mps);
+
+  std::cout << "Argument read: "<< std::endl;
+  std::cout << "left site = " << lsite << std::endl;
+  std::cout << "thread = " << thread << std::endl;
+  std::cout << "load old mps = " << load_mps <<std::endl;
+
+  gqten::hp_numeric::SetTensorTransposeNumThreads(thread);
+  gqten::hp_numeric::SetTensorManipulationThreads(thread);
+  const size_t N = GetNumofMps();
+  const string temp_path = kRuntimeTempPath;
+
+  const size_t target_site = lsite;
+
+  Tensor  renv, lenv, lmpo, rmpo, lmps, rmps;
+  //mps1 is the target tensor
+  string  file = GenEnvTenName("r", (N-1) - target_site - 1, temp_path);
+  if( access( file.c_str(), 4) != 0){
+    std::cout << "The progress doesn't access to read the file " << file << "!" << std::endl;
+    exit(1);
+  }
+  ifstream tensor_file(file, ifstream::binary);
+  tensor_file >> renv;
+  tensor_file.close();
+
+  file = GenEnvTenName("l", target_site, temp_path);
+  if( access( file.c_str(), 4) != 0){
+    std::cout << "The progress doesn't access to read the file " << file << "!" << std::endl;
+    exit(1);
+  }
+  tensor_file.open(file, ifstream::binary);
+  tensor_file >> lenv;
+  tensor_file.close();
+
+  file = "mpo/mpo_ten"+std::to_string( target_site ) +".gqten";
+  if( access( file.c_str(), 4) != 0){
+    std::cout << "The progress doesn't access to read the file " << file << "!" << std::endl;
+    exit(1);
+  }
+  tensor_file.open(file, ifstream::binary);
+  tensor_file >> lmpo;
+  tensor_file.close();
+
+  file = "mpo/mpo_ten"+std::to_string( target_site +1 ) +".gqten";
+  if( access( file.c_str(), 4) != 0){
+    std::cout << "The progress doesn't access to read the file " << file << "!" << std::endl;
+    exit(1);
+  }
+  tensor_file.open(file, ifstream::binary);
+  tensor_file >> rmpo;
+  tensor_file.close();
+
+  std::cout << "Load renv, lenv, and mpo tensors" << "\n";
+
+  bool new_code;
+  if(lenv.GetIndexes()[0].GetDir() == GQTenIndexDirType::OUT ){
+    new_code = false;
+  } else{
+    new_code = true;
+  }
+
+  IndexT2 index0, index1, index2,index3;
+  if(!new_code){
+    index0 = InverseIndex( lenv.GetIndexes()[0] ) ;
+    index1 = InverseIndex( lmpo.GetIndexes()[1] ) ;
+    index2 = InverseIndex( rmpo.GetIndexes()[1]);
+    index3 = InverseIndex( renv.GetIndexes()[0] ) ;
+  } else {
+    index0 =  lenv.GetIndexes()[0] ;
+    index1 =  InverseIndex( lmpo.GetIndexes()[1] ) ;
+    index2 =  InverseIndex( rmpo.GetIndexes()[1] ) ;
+    index3 =  renv.GetIndexes()[0] ;
+  }
+
+  vector<IndexT2> indexes = {index0, index1, index2, index3};
+
+  Tensor *initial_state;
+  if(!load_mps) {
+    initial_state = new Tensor({index0, index1, index2, index3});
+//    std::cout << "new the initial state as default tensor." << std::endl;
+    gqten::ShapeT blk_shape = {index0.GetQNSctNum(),
+                               index1.GetQNSctNum(),
+                               index2.GetQNSctNum(),
+                               index3.GetQNSctNum()};
+    gqten::CoorsT blk_coors;
+    bool flag(false);
+    for (size_t i = 0; i < blk_shape[0]; i++) {
+      for (size_t j = 0; j < blk_shape[1]; j++) {
+        for (size_t k = 0; k < blk_shape[2]; k++) {
+          for (size_t l = 0; l < blk_shape[3]; l++){
+            if (CalcDiv(indexes, {i, j, k, l}) == qn0) {
+              blk_coors = {i, j, k, l};
+              flag = true;
+              std::cout << "find the proper block. " << std::endl;
+              break;
+            }
+          }
+        }
+        if (flag) {
+          break;
+        }
+      }
+      if (flag) {
+        break;
+      }
+    }
+    if (!flag) {
+      std::cout << "can not find a proper block. " << std::endl;
+      exit(0);
+    }
+    gqten::CoorsT zeros_coor = {0, 0, 0, 0};
+    gqten::BlockSparseDataTensor<gqten::GQTEN_Double, U1U1QN> &bstd = initial_state->GetBlkSparDataTen();
+    bstd.ElemSet(std::make_pair(blk_coors, zeros_coor), 1.0);
+    std::cout << "Generate the intial tensor" << std::endl;
+  } else {
+
+    file = "mps/mps_ten"+std::to_string( target_site ) +".gqten";
+    if( access( file.c_str(), 4) != 0){
+      std::cout << "The progress doesn't access to read the file " << file << "!" << std::endl;
+      exit(1);
+    }
+    tensor_file.open(file, ifstream::binary);
+    tensor_file >>  lmps;
+    tensor_file.close();
+
+    file = "mps/mps_ten"+std::to_string( target_site +1 ) +".gqten";
+    if( access( file.c_str(), 4) != 0){
+      std::cout << "The progress doesn't access to read the file " << file << "!" << std::endl;
+      exit(1);
+    }
+    tensor_file.open(file, ifstream::binary);
+    tensor_file >>  rmps;
+    tensor_file.close();
+    std::cout << "load two mps tensors." << std::endl;
+
+    initial_state = new Tensor();
+    Contract(&lmps, &rmps, {{2}, {0}}, initial_state);
+
+    if(initial_state->GetIndexes() != indexes  ){
+      std::cout << "the index of loaded mps is not consistent" << std::endl;
+      for(size_t i = 0; i < 4; i++){
+        if(initial_state->GetIndexes()[i] != indexes[i] ){
+          std::cout << "dismatch i =" << i << std::endl;
+        }
+      }
+      exit(2);
+    }
+  }
+
+
+  gqmps2::LanczosParams params(1e-9, 200);
+
+  std::vector<Tensor *> eff_ham(4);
+  eff_ham[0] = const_cast<Tensor *>(&lenv);
+  eff_ham[1] = const_cast<Tensor *>(&lmpo);
+  eff_ham[2] = const_cast<Tensor *>(&rmpo);
+  eff_ham[3] = const_cast<Tensor *>(&renv);
+
+//  size_t Dmax = lmps.GetShape()[2];
+  size_t Dmax = lenv.GetShape()[0];
+  LanczosRes<Tensor> lancz_res = LanczosSolver<Tensor>(
+      eff_ham,
+      initial_state,
+      &eff_ham_mul_two_site_state,
+      params);
+  Tensor u, vt;
+  using DTenT = GQTensor<GQTEN_Double, U1U1QN>;
+  DTenT s;
+  GQTEN_Double actual_trunc_err;
+  size_t D;
+  size_t svd_ldims = 2;
+  SVD(
+      lancz_res.gs_vec,
+      svd_ldims, Div(lenv) - Div(lenv),
+      1e-12, Dmax, Dmax,
+      &u, &s, &vt, &actual_trunc_err, &D
+  );
+
+  std::cout << "ground state energy = " << lancz_res.gs_eng <<std::endl;
+  std::cout << "svd D = " << D << ", TruncErr = " << actual_trunc_err << std::endl;
+  delete lancz_res.gs_vec;
+  lmps = Tensor();
+  rmps = std::move(vt);
+  Contract(&u, &s, {{2}, {0}}, &lmps);
+
+  file = "mps/mps_ten"+ std::to_string(target_site) +".gqten";
+  ofstream dump_file(file, ofstream::binary);
+  dump_file << lmps;
+  dump_file.close();
+
+  file = "mps/mps_ten"+ std::to_string(target_site + 1) +".gqten";
+  dump_file.open(file, ofstream::binary);
+  dump_file << rmps;
+  dump_file.close();
+  return 0;
+
+
+}
+
+
+
+int ParserFixMpsArgs(const int argc, char *argv[],
+                     size_t& lsite,
+                     size_t& thread,
+                     bool& load_mps){
+  int nOptionIndex = 1;
+
+  string arguement1 = "--lsite=";
+  string arguement2 = "--thread=";
+  string arguement3 = "--load_mps=";
+  bool site_argument_has(false), thread_argument_has(false), load_mps_argument_has(false);
+  while (nOptionIndex < argc){
+    if (strncmp(argv[nOptionIndex], arguement1.c_str() , arguement1.size()) == 0){
+      std::string para_string = &argv[nOptionIndex][arguement1.size()];
+      lsite = atoi(para_string.c_str());
+      site_argument_has = true;
+    }else if (strncmp(argv[nOptionIndex], arguement2.c_str(), arguement2.size()) == 0){
+      std::string para_string = &argv[nOptionIndex][arguement2.size()];
+      thread = atoi(para_string.c_str());
+      thread_argument_has = true;
+    }else if (strncmp(argv[nOptionIndex], arguement3.c_str(), arguement3.size()) == 0 ){
+      std::string para_string = &argv[nOptionIndex][arguement3.size()];
+      load_mps = (bool) atoi(para_string.c_str());
+      load_mps_argument_has = true;
+    }else{
+      cout << "Options '" << argv[nOptionIndex] << "' not valid. Run '" << argv[0] << "' for details." << endl;
+      //   return -1;
+    }
+    nOptionIndex++;
+  }
+
+  if(!site_argument_has){
+    lsite = 0;
+    std::cout << "Note: no site argument, set it as 0 by default."  << std::endl;
+  }
+
+  if(!thread_argument_has){
+    thread = 24;
+    std::cout << "Note: no thread argument, set it as 24 by default." << std::endl;
+  }
+
+  if(!load_mps_argument_has){
+    load_mps = false;
+    std::cout << "Note: no load_mps argument, set it as false by default." << std::endl;
+  }
+
+  return 0;
+
+}

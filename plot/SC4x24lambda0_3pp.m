@@ -8,8 +8,9 @@ U = 8; Numhole = Lx*Ly/8;
 begin=7;
 endx=22;
 
+
 Dset=[8000,10000,12000, 14000,16000];
-trunc_err=1e7* [3.44e-06,2.79e-06, 2.41e-06, 2.17e-06,1.93e-6];%middle bond
+trunc_err=1e7* [3.44e-06,2.79e-06, 2.41e-06, 2.17e-06,2.00e-6];%middle bond
 
 
 D=Dset(1);
@@ -47,7 +48,7 @@ scsyy_ex=zeros(size(distance));
 %fit_x=1e7*[7.05e-06, 5.81e-06, 4.95e-06, 4.29e-06];%Site  340
 fit_x=trunc_err;
 for i=1:numel(distance)
-    p = fit(fit_x(1:4)',scsyy(1:4,i),'poly2');
+    p = fit(fit_x(1:5)',scsyy(1:5,i),'poly2');
     scsyy_ex(i)=p.p3;
 end
 
