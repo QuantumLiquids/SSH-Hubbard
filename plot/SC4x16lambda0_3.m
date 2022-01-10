@@ -53,8 +53,8 @@ end
 semilogy(distance, abs(scsyy_ex),'o');hold on;
 
 loglog(distance, scsyy_ex,'o');hold on;
-I=find(distance==7);
-fprintf("<Delta_yy^dag Delta_yy>(Lx/2-1) = %.6f\n",mean(scsyy_ex(I)));
+I=find(distance==Lx/2-1);
+fprintf("<Delta_yy^dag Delta_yy>(%d) = %.6f\n",Lx/2 -1, mean(scsyy_ex(I)));
 
 
 fit_x=[6,7];

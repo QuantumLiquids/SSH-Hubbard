@@ -1,16 +1,15 @@
+clear;
+figure
 Lx=32; Ly=4;
 omega = 5; 
-g = 2.4495;
+g = 2;
 Np=3;
 
-U = 8; Numhole = Lx*Ly/8;
+U = 3; Numhole = Lx*Ly/8;
 
-Dset=[8000,9000, 10001,12000, 14000, 16000, 17000];%bond dimension set
-trunc_err = 1e7*[3.70e-06, 3.28e-06, 3.05e-06, 2.61e-06, 2.32e-06, 2.09e-06, 1.99e-06];
-%D14000 old version(come from 16000) 2.52e-06
+Dset=[8000];%bond dimension set
 
-%D10000: 2.96e-06 -> 3.05e-06
-
+% ****** yy bond pair ********** %
 D=Dset(1);
 FileNamePostfix=['ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
 A = jsondecode(fileread(['../data/scsyya',FileNamePostfix]));
@@ -32,40 +31,44 @@ for j = 1:numel(Dset)
     end
 end
 
+h=loglog(distance,scsyy,'o');hold on;
 
 
-scsyy_ex=zeros(size(distance));
-fit_x = trunc_err;%middle bond
-plot_curve_x = 0.0:(max(fit_x)/1000):max(fit_x);
-for i=1:numel(distance)
-    if(distance(i) == Lx/2-1)
-        p = fit(fit_x([1:6])',scsyy([1:6],i),'poly3');
-        scsyy_ex(i)=p.p4;
-        range=confint(p, 0.95);
-        error_bar = (range(2,4) - range(1,4))/2;
-        fprintf("error bar for scsyy_ex at %d = %.6f\n", distance(i), error_bar);
-        plot( [0.0, fit_x], [scsyy_ex(i), scsyy(:,i)'], 'o');hold on;
-%          plot_curve_y =p.p3 + p.p2 .* plot_curve_x + p.p1 .* plot_curve_x.^2;
-          plot_curve_y =p.p4 + plot_curve_x.*(p.p3 + p.p2 .* plot_curve_x + p.p1 .* plot_curve_x.^2);
-%     plot_curve_y =p.p5 + plot_curve_x.*(p.p4 + plot_curve_x.*(p.p3 + p.p2 .* plot_curve_x + p.p1 .* plot_curve_x.^2));
-        plot( plot_curve_x, plot_curve_y,'-'); hold on;
+% ******* On site pair
+D=Dset(1);
+FileNamePostfix=['ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
+OnSitePairData = jsondecode(fileread(['../data/onsitesc',FileNamePostfix]));
+distance=zeros(1,numel(OnSitePairData));
+for i=1:numel(OnSitePairData)
+    distance(i) = (OnSitePairData{i}{1}(2)-OnSitePairData{i}{1}(1))/(2*Np+1)/Ly;
+end
+
+scs_onsite=zeros(numel(Dset),numel(OnSitePairData));
+for j = 1:numel(Dset)
+    D = Dset(j);
+    FileNamePostfix=['ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
+    OnSitePairData = jsondecode(fileread(['../data/onsitesc',FileNamePostfix]));
+    for i=1:numel(OnSitePairData)
+        scs_onsite(j,i) = OnSitePairData{i}{2};
     end
 end
 
-I=find(distance==Lx/2-1);
-fprintf("<Delta_yy^dag Delta_yy>(Lx/2-1) = %.6f\n",mean(scsyy_ex(I)));
+h2=loglog(distance,scs_onsite,'x');hold on;
 
+
+l=legend([h, h2],'yy bond singlet pair',  'on-site pair');
+set(l,'Box','off');set(l,'Interpreter','latex');
+set(l,'Fontsize',24);
+set(l,'Location','SouthWest');
 
 
 set(gca,'fontsize',24);
 set(gca,'linewidth',1.5);
 set(get(gca,'Children'),'linewidth',2); % Set line width 1.5 pounds
-xlabel('truncation error','Interpreter','latex');
+xlabel('$x$','Interpreter','latex');
 ylabel('$|\langle\Delta_s^\dagger(x)\Delta_s(0)\rangle|$','Interpreter','latex');
 set(get(gca,'XLabel'),'FontSize',24); 
 set(get(gca,'YLabel'),'FontSize',24); 
-
-
 
 
 

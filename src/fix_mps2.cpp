@@ -183,7 +183,7 @@ int main(int argc, char *argv[]){
   }
 
 
-  gqmps2::LanczosParams params(1e-9, 200);
+  gqmps2::LanczosParams params(1e-9, 30);
 
   std::vector<Tensor *> eff_ham(4);
   eff_ham[0] = const_cast<Tensor *>(&lenv);

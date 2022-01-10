@@ -9,9 +9,9 @@ U = 8; Numhole = Lx*Ly/8;
 begin = 8;
 endx= 32;
 
-Dset=[8000,10000,12000, 14000,15000];%bond dimension set
+Dset=[8000,10000,12000,14000,15000];%bond dimension set
 
-trunc_err=1e7*[3.46e-6,2.86e-6,2.47e-06,2.19e-06,2.03e-6];
+trunc_err=1e7*[3.46e-6,2.88e-6,2.47e-06,2.19e-06,2.04e-6];
 
 Db=Dset(1);
 FileNamePostfix=['begin',num2str(begin),'end',num2str(endx),...

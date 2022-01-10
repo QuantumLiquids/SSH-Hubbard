@@ -1,5 +1,5 @@
 clear;
-Lx=24; Ly=4;
+Lx=16; Ly=4;
 omega = 5; 
 g = 2.4495;
 Np=3;
@@ -7,8 +7,8 @@ Np=3;
 U = 8; Numhole = Lx*Ly/8;
 
 
-Dset=[8000,10000,12000, 14000,16000];
-trunc_err=1e7* [3.44e-06,2.79e-06, 2.41e-06, 2.17e-06,2.01e-6];%middle bond
+Dset=[8000,10000, 12000,14000,16000];
+trunc_err=  1e7*[3.37e-06,2.82e-06,2.45e-06, 2.18e-06,1.98e-06]; %middle bond
 
 
 D=Dset(1);
@@ -32,67 +32,32 @@ for j = 1:numel(Dset)
     end
 end
 
-h=semilogy(distance,scsyy,'x');hold on;
-
-
 
 scsyy_ex=zeros(size(distance));
-%fit_x=1e7*[7.05e-06, 5.81e-06, 4.95e-06, 4.29e-06];%Site  340
-fit_x=trunc_err;
+fit_x = trunc_err;%middle bond
+plot_curve_x = 0.0:(max(fit_x)/1000):max(fit_x);
 for i=1:numel(distance)
-    p = fit(fit_x(1:end)',scsyy(1:end,i),'poly2');
-    scsyy_ex(i)=p.p3;
     if(distance(i) == Lx/2-1)
+        p = fit(fit_x([1:5])',scsyy([1:5],i),'poly2');
+        scsyy_ex(i)=p.p3;
         range=confint(p, 0.95);
         error_bar = (range(2,3) - range(1,3))/2;
         fprintf("error bar for scsyy_ex at %d = %.6f\n", distance(i), error_bar);
+        plot( [0.0, fit_x], [scsyy_ex(i), scsyy(:,i)'], 'o');hold on;
+        plot_curve_y =p.p3 + p.p2 .* plot_curve_x + p.p1 .* plot_curve_x.^2;
+%         plot_curve_y =p.p4 + plot_curve_x.*(p.p3 + p.p2 .* plot_curve_x + p.p1 .* plot_curve_x.^2);
+        plot( plot_curve_x, plot_curve_y,'-'); hold on;
     end
 end
 
-semilogy(distance, scsyy_ex,'o');hold on;
-
-I=find(distance==Lx/2 -1);
-fprintf("<Delta_yy^dag Delta_yy>(%d) = %.6f\n",Lx/2 -1, mean(scsyy_ex(I)));
-
-
-
-
-fit_x=[6,7,10,11];
-fit_y=zeros(size(fit_x));
-for i=1:numel(fit_x)
-    I = find(distance==fit_x(i));
-    fit_y(i)=mean(scsyy_ex(I));
-end
-
-
-p = fit((fit_x'),log(abs(fit_y')),'poly1');
-fprintf('correlation length=%.5f\n',-1/p.p1);
-x = fit_x;
-semilogy(x,exp(p.p2+p.p1*x),'-.');%fitted line
-T=text(10.2,6e-3,['$\xi=',num2str(-1/p.p1),'$']);
-set(T,'Interpreter','latex');set(T,'Fontsize',24);
-
-
-p = fit(log(fit_x'),log(abs(fit_y')),'poly1');
-fprintf('Ksc=%.5f\n',-p.p1);
-x = fit_x(1):0.5:fit_x(end);
-fl=semilogy(x,exp(p.p2)*x.^p.p1,'-.');
-T=text(10,2.5e-3,['$K_{sc}=',num2str(-p.p1),'$']);
-set(T,'Interpreter','latex');set(T,'Fontsize',24);
-
-
-
-l=legend(h,'$D=8000$', '$10000$','$12000$','$14000$','$16000$');
-set(l,'Box','off');set(l,'Interpreter','latex');
-set(l,'Fontsize',24);
-set(l,'Location','SouthWest');
-
+I=find(distance==Lx/2-1);
+fprintf("<Delta_yy^dag Delta_yy>(Lx/2-1) = %.6f\n",mean(scsyy_ex(I)));
 
 
 set(gca,'fontsize',24);
 set(gca,'linewidth',1.5);
 set(get(gca,'Children'),'linewidth',2); % Set line width 1.5 pounds
-xlabel('$x$','Interpreter','latex');
+xlabel('truncation error','Interpreter','latex');
 ylabel('$|\langle\Delta_s^\dagger(x)\Delta_s(0)\rangle|$','Interpreter','latex');
 set(get(gca,'XLabel'),'FontSize',24); 
 set(get(gca,'YLabel'),'FontSize',24); 

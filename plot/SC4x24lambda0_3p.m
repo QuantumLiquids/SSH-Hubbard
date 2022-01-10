@@ -9,7 +9,7 @@ begin=4;
 endx=20;
 
 Dset=[8000,10000,12000, 14000,16000];
-trunc_err=1e7* [3.44e-06,2.79e-06, 2.41e-06, 2.17e-06,2.00e-6];%middle bond
+trunc_err=1e7* [3.44e-06,2.79e-06, 2.41e-06, 2.17e-06,2.01e-6];%middle bond
 
 
 D=Dset(1);
@@ -49,7 +49,7 @@ fit_x=trunc_err;
 for i=1:numel(distance)
     p = fit(fit_x(1:5)',scsyy(1:5,i),'poly2');
     scsyy_ex(i)=p.p3;
-    if(distance(i) == 11)
+    if(distance(i) == Lx/2 - 1)
         range=confint(p, 0.95);
         error_bar = (range(2,3) - range(1,3))/2;
         fprintf("error bar for scsyy_ex at %d = %.6f\n", distance(i), error_bar);
@@ -67,7 +67,7 @@ for i=1:numel(fit_x)
 end
 
 I=find(distance==Lx/2-1);
-fprintf("<Delta_yy^dag Delta_yy>(Lx/2-1) = %.6f\n",mean(scsyy_ex(I)));
+fprintf("<Delta_yy^dag Delta_yy>(%d) = %.6f\n",Lx/2-1,mean(scsyy_ex(I)));
 
 
 
