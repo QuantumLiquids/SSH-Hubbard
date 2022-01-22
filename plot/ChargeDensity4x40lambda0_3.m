@@ -3,9 +3,9 @@ Lx=40; Ly=4;
 omega = 5; g = 2.4495; Np = 3; U = 8; Numhole = Lx*Ly/8;
 
 
-Dset=[8000,10000,12000, 14000,15000];%bond dimension set
+Dset=[8000,9000,10000,12000, 14000,16000];%bond dimension set
 
-trunc_err=1e7*[3.46e-6,2.86e-6,2.47e-06,2.19e-06,2.03e-6];
+trunc_err=1e7*[3.46e-6,3.09e-6,2.88e-6,2.47e-06,2.20e-06,1.96e-6];
 D=Dset(1);
 FileNamePostfix=['ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
 ChargeDensityData = jsondecode(fileread(['../data/nf',FileNamePostfix]));
@@ -37,7 +37,7 @@ ChargeDensity_ex = zeros(1, numel(distance) );
 % fit_x=1e7*[ 5.59e-06, 4.59e-06];%Site  560
 fit_x = trunc_err;
 for i=1:numel(distance)
-    p = fit(fit_x(2:end)',ChargeDensity(2:end,i),'poly1');
+    p = fit(fit_x(4:5)',ChargeDensity(4:5,i),'poly1');
     ChargeDensity_ex(i)=p.p2;
 end
 

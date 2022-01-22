@@ -11,7 +11,10 @@ endx= 32;
 
 Dset=[8000,9000,10000,12000, 14000,15000,16000];%bond dimension set
 
-trunc_err=1e7*[3.46e-6,3.09e-6,2.88e-6,2.47e-06,2.20e-06,2.05e-6,1.94e-6];
+trunc_err=1e7*[3.46e-6,3.09e-6,2.88e-6,2.47e-06,2.20e-06,2.05e-6,1.96e-6];
+
+extrapolation_poly_degree = 3;
+
 
 Db=Dset(1);
 FileNamePostfix=['begin',num2str(begin),'end',num2str(endx),...
@@ -45,14 +48,19 @@ fit_x = trunc_err;
 plot_curve_x = 0.0:(max(fit_x)/1000):max(fit_x);
 for i=1:numel(distance)
     if(distance(i)==Lx/2-1)
-        p = fit(fit_x(2:5 )',scsyy(2:5,i),'poly2');
-        scsyy_ex(i)=p.p3;
-%        range=confint(p, 0.95);
-%        error_bar = (range(2,3) - range(1,3))/2;
-%        fprintf("error bar for scsyy_ex at %d = %.6f\n", distance(i), error_bar);
-%        plot( [0.0, fit_x], [scsyy_ex(i), scsyy(:,i)'], 'o');hold on;
-        plot_curve_y =p.p3 + p.p2 .* plot_curve_x + p.p1 .* plot_curve_x.^2;
-%        plot_curve_y =p.p4 + plot_curve_x.*(p.p3 + p.p2 .* plot_curve_x + p.p1 .* plot_curve_x.^2);
+        if(extrapolation_poly_degree == 2)
+            p = fit(fit_x(2:7)',scsyy(2:7,i),'poly2');
+            scsyy_ex(i)=p.p3;
+            plot_curve_y =p.p3 + p.p2 .* plot_curve_x + p.p1 .* plot_curve_x.^2;
+        elseif(extrapolation_poly_degree == 3)
+            p = fit(fit_x(2:7 )',scsyy(2:7,i),'poly3');
+            scsyy_ex(i)=p.p4;
+            plot_curve_y =p.p4 + plot_curve_x.*(p.p3 + p.p2 .* plot_curve_x + p.p1 .* plot_curve_x.^2);
+        end
+        range=confint(p, 0.95);
+        error_bar = (range(2,extrapolation_poly_degree) - range(1,extrapolation_poly_degree))/2;
+        fprintf("error bar for scsyy_ex at %d = %.6f\n", distance(i), error_bar);
+        plot( [0.0, fit_x], [scsyy_ex(i), scsyy(:,i)'], 'o');hold on;
         plot( plot_curve_x, plot_curve_y,'-'); hold on;
     end
 end
