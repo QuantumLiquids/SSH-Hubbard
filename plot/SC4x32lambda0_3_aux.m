@@ -6,8 +6,11 @@ Np=3;
 U = 8; Numhole = Lx*Ly/8;
 
 Dset=[8000,9000, 10001,12000, 14000, 16000, 17000,18000];%bond dimension set
-trunc_err = 1e7*[3.70e-06, 3.28e-06, 3.05e-06, 2.61e-06, 2.32e-06, 2.09e-06, 1.99e-06,1.85e-06];
+trunc_err = 1e7*[3.70e-06, 3.28e-06, 3.05e-06, 2.61e-06, 2.32e-06, 2.09e-06, 1.99e-06,1.88e-06];
 %D14000 old version(come from 16000) 2.52e-06
+
+extrapolation_poly_degree = 3;
+selected_fit_data=2:7;
 
 %D10000: 2.96e-06 -> 3.05e-06
 
@@ -39,15 +42,23 @@ fit_x = trunc_err;%middle bond
 plot_curve_x = 0.0:(max(fit_x)/1000):max(fit_x);
 for i=1:numel(distance)
     if(distance(i) == Lx/2-1)
-        p = fit(fit_x([1:6])',scsyy([1:6],i),'poly3');
-        scsyy_ex(i)=p.p4;
+        if(extrapolation_poly_degree == 2)
+            p = fit(fit_x(selected_fit_data)',scsyy(selected_fit_data,i),'poly2');
+            scsyy_ex(i)=p.p3;
+            plot_curve_y =p.p3 + p.p2 .* plot_curve_x + p.p1 .* plot_curve_x.^2;
+        elseif(extrapolation_poly_degree == 3)
+            p = fit(fit_x(selected_fit_data)',scsyy(selected_fit_data,i),'poly3');
+            scsyy_ex(i)=p.p4;
+            plot_curve_y =p.p4 + plot_curve_x.*(p.p3 + p.p2 .* plot_curve_x + p.p1 .* plot_curve_x.^2);
+        elseif(extrapolation_poly_degree == 4)
+            p = fit(fit_x(selected_fit_data)',scsyy(selected_fit_data,i),'poly4');
+            scsyy_ex(i)=p.p5;
+            plot_curve_y =p.p5 + plot_curve_x.*(p.p4 + plot_curve_x.*(p.p3 + p.p2 .* plot_curve_x + p.p1 .* plot_curve_x.^2));
+        end
         range=confint(p, 0.95);
-        error_bar = (range(2,4) - range(1,4))/2;
+        error_bar = (range(2,extrapolation_poly_degree) - range(1,extrapolation_poly_degree))/2;
         fprintf("error bar for scsyy_ex at %d = %.6f\n", distance(i), error_bar);
         plot( [0.0, fit_x], [scsyy_ex(i), scsyy(:,i)'], 'o');hold on;
-%          plot_curve_y =p.p3 + p.p2 .* plot_curve_x + p.p1 .* plot_curve_x.^2;
-          plot_curve_y =p.p4 + plot_curve_x.*(p.p3 + p.p2 .* plot_curve_x + p.p1 .* plot_curve_x.^2);
-%     plot_curve_y =p.p5 + plot_curve_x.*(p.p4 + plot_curve_x.*(p.p3 + p.p2 .* plot_curve_x + p.p1 .* plot_curve_x.^2));
         plot( plot_curve_x, plot_curve_y,'-'); hold on;
     end
 end
