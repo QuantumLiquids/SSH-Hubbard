@@ -20,25 +20,35 @@ for j = 1:numel(Dset)
     D=Dset(j);
     FileNamePostfix=['ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
     ChargeDensityData = jsondecode(fileread(['../data/nf',FileNamePostfix]));
-%     ChargeDensityData = ChargeDensityData(1:end,:);
-%   ChargeDensity = mean(reshape(ChargeDensityData(:,2),Ly,[]));
+    
     ChargeDensity(j, :) = transpose(ChargeDensityData(:,2));
-%     disp(mean(ChargeDensityData(:,2)));
-%     ChargeDensity = (ChargeDensity+ChargeDensity(end:-1:1))/2;
+    
+    charge_density_avg = mean(ChargeDensityData(:,2));
+    if (charge_density_avg-0.875) > 1e-8
+        error("charge density is not right");
+    end
+   
 
-    plot(distance, ChargeDensity(j,:),'-x'); hold on;
+    
 end
+ChargeDensity = (ChargeDensity+ChargeDensity(:, end:-1:1))/2;
+h = plot(distance, ChargeDensity,'x'); hold on;
 
 ChargeDensity_ex = zeros(1, numel(distance) );
 
 fit_x=1e7*[1.15e-6,9.74e-07, 8.89e-07, 8.26e-07, 7.69e-07];%Site278
 for i=1:numel(distance)
-    p = fit(fit_x(1:3)',ChargeDensity(1:3,i),'poly2');
+    p = fit(fit_x(1:5)',ChargeDensity(1:5,i),'poly2');
     ChargeDensity_ex(i)=p.p3;
 end
 
-plot(distance, ChargeDensity_ex,'-o'); hold on;
+hex = plot(distance, ChargeDensity_ex,'-o'); hold on;
 
+
+l=legend([h; hex],'$D=10000$', '$12000$','$14000$','$16000$', '$180000$', '$\infty$');
+set(l,'Box','off');set(l,'Interpreter','latex');
+set(l,'Fontsize',24);
+set(l,'Location','SouthWest');
 
 
 

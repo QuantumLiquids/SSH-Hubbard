@@ -7,8 +7,6 @@ U = 8; Numhole = Lx*Ly/8;
 
 Dset=[10000,12000,14000,16000,18000];%bond dimension set
 
-
-
 D=Dset(1);
 FileNamePostfix=['ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
 A = jsondecode(fileread(['../data/scsyya',FileNamePostfix]));
@@ -38,8 +36,8 @@ scsyy_ex=zeros(size(distance));
 %fit_x=[1/10,1/12,1/14,1/16,1/18];%1/D
 fit_x=1e7*[1.15e-6,9.74e-07, 8.89e-07, 8.26e-07, 7.69e-07];%Site278
 for i=1:numel(distance)
-    p = fit(fit_x(1:end)',scsyy(1:end,i),'poly1');
-    scsyy_ex(i)=p.p2;
+    p = fit(fit_x(1:end)',scsyy(1:end,i),'poly2');
+    scsyy_ex(i)=p.p3;
 end
 
 semilogy(distance, scsyy_ex,'o');hold on;
@@ -63,10 +61,10 @@ set(T,'Interpreter','latex');set(T,'Fontsize',24);
 
 p = fit(log(fit_x'),log(abs(fit_y')),'poly1');
 fprintf('Ksc=%.5f\n',-p.p1);
-x = [fit_x(1):0.5:23];
-fl=semilogy(x,exp(p.p2)*x.^p.p1,'-.');
-T=text(15,5.0e-4,['$K_{sc}=',num2str(-p.p1),'$']);
-set(T,'Interpreter','latex');set(T,'Fontsize',24);
+% x = [fit_x(1):0.5:23];
+% fl=semilogy(x,exp(p.p2)*x.^p.p1,'-.');
+% T=text(15,5.0e-4,['$K_{sc}=',num2str(-p.p1),'$']);
+% set(T,'Interpreter','latex');set(T,'Fontsize',24);
 
 
 

@@ -5,7 +5,7 @@ Np=3;
 
 U = 0; Numhole = Lx*Ly/8;
 
-Dset=[10000,11000];%bond dimension set
+Dset=[10000,11000,12000,13000];%bond dimension set
 
 % ****** yy bond pair ********** %
 D=Dset(1);

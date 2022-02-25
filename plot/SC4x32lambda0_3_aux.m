@@ -10,7 +10,7 @@ trunc_err = 1e7*[3.70e-06, 3.28e-06, 3.05e-06, 2.61e-06, 2.32e-06, 2.09e-06, 1.9
 %D14000 old version(come from 16000) 2.52e-06
 
 extrapolation_poly_degree = 3;
-selected_fit_data=2:7;
+selected_fit_data=[1,2,4:7];
 
 %D10000: 2.96e-06 -> 3.05e-06
 

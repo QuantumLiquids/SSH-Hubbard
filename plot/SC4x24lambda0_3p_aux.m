@@ -9,9 +9,10 @@ begin=4;
 endx=20;
 
 Dset=[8000,10000,12000, 14000,16000];
-trunc_err=1e7* [3.44e-06,2.79e-06,2.50e-06, 2.23e-06,2.01e-6];%middle bond
+trunc_err=1e7* [3.44e-06,2.86e-06,2.50e-06, 2.23e-06,2.01e-6];%middle bond
 
 extrapolation_poly_degree = 2;
+selected_fit_data=1:5;
 
 D=Dset(1);
 FileNamePostfix=['begin',num2str(begin),'end',num2str(endx),...
@@ -45,15 +46,15 @@ plot_curve_x = 0.0:(max(fit_x)/1000):max(fit_x);
 for i=1:numel(distance)
     if(distance(i) == Lx/2-1)
          if(extrapolation_poly_degree == 2)
-            p = fit(fit_x([1,3:5])',scsyy([1,3:5],i),'poly2');
+            p = fit(fit_x(selected_fit_data)',scsyy([selected_fit_data],i),'poly2');
             scsyy_ex(i)=p.p3;
             plot_curve_y =p.p3 + p.p2 .* plot_curve_x + p.p1 .* plot_curve_x.^2;
         elseif(extrapolation_poly_degree == 3)
-            p = fit(fit_x(1:5)',scsyy(1:5,i),'poly3');
+            p = fit(fit_x(selected_fit_data)',scsyy(selected_fit_data,i),'poly3');
             scsyy_ex(i)=p.p4;
             plot_curve_y =p.p4 + plot_curve_x.*(p.p3 + p.p2 .* plot_curve_x + p.p1 .* plot_curve_x.^2);
         elseif(extrapolation_poly_degree == 4)
-            p = fit(fit_x(1:5 )',scsyy(1:5,i),'poly4');
+            p = fit(fit_x(selected_fit_data )',scsyy(selected_fit_data,i),'poly4');
             scsyy_ex(i)=p.p5;
             plot_curve_y =p.p5 + plot_curve_x.*(p.p4 + plot_curve_x.*(p.p3 + p.p2 .* plot_curve_x + p.p1 .* plot_curve_x.^2));
         end

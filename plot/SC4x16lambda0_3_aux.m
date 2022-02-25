@@ -10,6 +10,8 @@ U = 8; Numhole = Lx*Ly/8;
 Dset=[8000,10000, 12000,14000,16000];
 trunc_err=  1e7*[3.37e-06,2.82e-06,2.45e-06, 2.18e-06,1.98e-06]; %middle bond
 
+extrapolation_poly_degree = 3;
+selected_fit_data=1:5;
 
 D=Dset(1);
 FileNamePostfix=['ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
@@ -38,18 +40,26 @@ fit_x = trunc_err;%middle bond
 plot_curve_x = 0.0:(max(fit_x)/1000):max(fit_x);
 for i=1:numel(distance)
     if(distance(i) == Lx/2-1)
-        p = fit(fit_x([1:5])',scsyy([1:5],i),'poly2');
-        scsyy_ex(i)=p.p3;
+        if(extrapolation_poly_degree == 2)
+            p = fit(fit_x(selected_fit_data)',scsyy(selected_fit_data,i),'poly2');
+            scsyy_ex(i)=p.p3;
+            plot_curve_y =p.p3 + p.p2 .* plot_curve_x + p.p1 .* plot_curve_x.^2;
+        elseif(extrapolation_poly_degree == 3)
+            p = fit(fit_x(selected_fit_data)',scsyy(selected_fit_data,i),'poly3');
+            scsyy_ex(i)=p.p4;
+            plot_curve_y =p.p4 + plot_curve_x.*(p.p3 + p.p2 .* plot_curve_x + p.p1 .* plot_curve_x.^2);
+        elseif(extrapolation_poly_degree == 4)
+            p = fit(fit_x(selected_fit_data)',scsyy(selected_fit_data,i),'poly4');
+            scsyy_ex(i)=p.p5;
+            plot_curve_y =p.p5 + plot_curve_x.*(p.p4 + plot_curve_x.*(p.p3 + p.p2 .* plot_curve_x + p.p1 .* plot_curve_x.^2));
+        end
         range=confint(p, 0.95);
-        error_bar = (range(2,3) - range(1,3))/2;
+        error_bar = (range(2,extrapolation_poly_degree) - range(1,extrapolation_poly_degree))/2;
         fprintf("error bar for scsyy_ex at %d = %.6f\n", distance(i), error_bar);
         plot( [0.0, fit_x], [scsyy_ex(i), scsyy(:,i)'], 'o');hold on;
-        plot_curve_y =p.p3 + p.p2 .* plot_curve_x + p.p1 .* plot_curve_x.^2;
-%         plot_curve_y =p.p4 + plot_curve_x.*(p.p3 + p.p2 .* plot_curve_x + p.p1 .* plot_curve_x.^2);
         plot( plot_curve_x, plot_curve_y,'-'); hold on;
     end
 end
-
 I=find(distance==Lx/2-1);
 fprintf("<Delta_yy^dag Delta_yy>(Lx/2-1) = %.6f\n",mean(scsyy_ex(I)));
 

@@ -10,8 +10,10 @@ clear;
 Lx=16; Ly=4;
 omega = 5; g = 2.4495; Np = 3; U = 8; Numhole = Lx*Ly/8;
 
-Dset=[8000, 10000, 12000, 14000,16000];
+Dset=[8000,10000, 12000,14000,16000];
 trunc_err=  1e7*[3.37e-06,2.82e-06,2.45e-06, 2.18e-06,1.98e-06]; %middle bond
+
+extrapolation_poly_degree = 2;
 
 D=Dset(1);
 FileNamePostfix=['ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
@@ -55,7 +57,10 @@ end
 fit_x=trunc_err;
 p = fit(fit_x(1:5)', Acdw_set(1:5)', 'poly2');
 Acdw = p.p3;
-fprintf("A_cdw = %.6f",Acdw);
+fprintf("A_cdw = %.6f\n",Acdw);
+range=confint(p, 0.95);
+error_bar = (range(2,extrapolation_poly_degree) - range(1,extrapolation_poly_degree))/2;
+fprintf("error bar for A_cdw at %d = %.6f\n", distance(i), error_bar);
 
 
 plot(trunc_err/1e7, Acdw_set,'o');hold on;
