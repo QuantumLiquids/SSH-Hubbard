@@ -11,7 +11,7 @@ Lx=16; Ly=4;
 omega = 5; g = 2.4495; Np = 3; U = 8; Numhole = Lx*Ly/8;
 
 Dset=[8000,10000, 12000,14000,16000];
-trunc_err=  1e7*[3.37e-06,2.82e-06,2.45e-06, 2.18e-06,1.98e-06]; %middle bond
+trunc_err=  1e7*[3.37e-06,2.82e-06,2.45e-06, 2.19e-06,1.98e-06]; %middle bond
 
 extrapolation_poly_degree = 2;
 
@@ -67,6 +67,7 @@ plot(trunc_err/1e7, Acdw_set,'o');hold on;
 continue_trunc_err = 0:max(trunc_err)/10:max(trunc_err);
 % plot(continue_trunc_err/1e7, p.p2 + continue_trunc_err * p.p1,'.-');hold on;
 plot(continue_trunc_err/1e7,p.p3 +  p.p2 *continue_trunc_err  + continue_trunc_err.^2 * p.p1,'.-');hold on;
+% plot(continue_trunc_err/1e7,p.p4 + continue_trunc_err.* (p.p3 +  p.p2 *continue_trunc_err  + continue_trunc_err.^2 * p.p1),'.-');hold on;
 set(gca,'fontsize',24);
 set(gca,'linewidth',1.5);
 set(get(gca,'Children'),'linewidth',2); % Set line width 1.5 pounds

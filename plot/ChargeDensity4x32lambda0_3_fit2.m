@@ -4,10 +4,10 @@ omega = 5; g = 2.4495; Np = 3; U = 8; Numhole = Lx*Ly/8;
 
 
 Dset=[8000,9000, 10001,12000, 14000, 16000, 17000,18000];%bond dimension set
-trunc_err = 1e7*[3.70e-06, 3.28e-06, 3.05e-06, 2.61e-06, 2.32e-06, 2.09e-06, 1.99e-06,1.88e-06];
+trunc_err = 1e7*[3.70e-06, 3.28e-06, 3.05e-06, 2.66e-06, 2.32e-06, 2.09e-06, 2.00e-06,1.87e-06];
 % trunc_err =1e7*[ 6.73e-06, 5.44e-06,4.59e-06, 4.15e-06];%Site  433
-selected_fit_data=[1,2,4:6];
-extrapolation_poly_degree = 2;
+selected_fit_data=[1,3,4,5,6];
+extrapolation_poly_degree = 3;
 D=Dset(1);
 FileNamePostfix=['ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
 ChargeDensityData = jsondecode(fileread(['../data/nf',FileNamePostfix]));
@@ -49,8 +49,8 @@ end
 
 
 fit_x=trunc_err;
-p = fit(fit_x(selected_fit_data)', Acdw_set(selected_fit_data)', 'poly2');
-Acdw = p.p3;
+p = fit(fit_x(selected_fit_data)', Acdw_set(selected_fit_data)', 'poly3');
+Acdw = p.p4;
 fprintf("A_cdw = %.6f\n",Acdw);
 range=confint(p, 0.95);
 error_bar = (range(2,extrapolation_poly_degree) - range(1,extrapolation_poly_degree))/2;
@@ -61,7 +61,9 @@ fprintf("error bar for A_cdw at %d = %.6f\n", distance(i), error_bar);
 plot(trunc_err/1e7, Acdw_set,'o');hold on;
 continue_trunc_err = 0:max(trunc_err)/10:max(trunc_err);
 % plot(continue_trunc_err/1e7, p.p2 + continue_trunc_err * p.p1,'.-');hold on;
-plot(continue_trunc_err/1e7,p.p3 +  p.p2 *continue_trunc_err  + continue_trunc_err.^2 * p.p1,'.-');hold on;
+%plot(continue_trunc_err/1e7,p.p3 +  p.p2 *continue_trunc_err  + continue_trunc_err.^2 * p.p1,'.-');hold on;
+plot(continue_trunc_err/1e7,p.p4 + continue_trunc_err.* (p.p3 +  p.p2 *continue_trunc_err  + continue_trunc_err.^2 * p.p1),'.-');hold on;
+
 set(gca,'fontsize',24);
 set(gca,'linewidth',1.5);
 set(get(gca,'Children'),'linewidth',2); % Set line width 1.5 pounds
@@ -69,5 +71,4 @@ xlabel('$x$','Interpreter','latex');
 ylabel('Charge Density','Interpreter','latex');
 set(get(gca,'XLabel'),'FontSize',24);
 set(get(gca,'YLabel'),'FontSize',24);
-
 

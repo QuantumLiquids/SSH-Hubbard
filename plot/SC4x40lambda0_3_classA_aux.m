@@ -11,10 +11,11 @@ endx= 32;
 
 Dset=[8000,9000,10000,12000,13000, 14000,15000,16000,17000,18000];%bond dimension set
 
-trunc_err=1e7*[3.47e-6,3.12e-6,2.88e-6,2.49e-06, 2.33e-06,2.20e-06,2.09e-6,1.98e-6, 1.89e-06,1.71e-06];
+
+trunc_err=1e7*[3.47e-6,3.12e-6,2.88e-6,2.50e-06, 2.33e-06,2.21e-06,2.0994e-06,1.99e-6, 1.89e-06,1.74e-06];
 %  wait D=16000, truncation error increase from 1.98e-6 to 2.00e-6
-extrapolation_poly_degree = 3;
-selected_fit_data=[3:7];
+extrapolation_poly_degree = 2;
+selected_fit_data=[4:7];
 
 Db=Dset(1);
 FileNamePostfix=['begin',num2str(begin),'end',num2str(endx),...
@@ -64,11 +65,11 @@ for i=1:numel(distance)
             scsyy_ex(i)=p.p5;
             plot_curve_y =p.p5 + plot_curve_x.*(p.p4 + plot_curve_x.*(p.p3 + p.p2 .* plot_curve_x + p.p1 .* plot_curve_x.^2));
         end
-        range=confint(p, 0.95);
-        error_bar = (range(2,extrapolation_poly_degree) - range(1,extrapolation_poly_degree))/2;
-        fprintf("error bar for scsyy_ex at %d = %.6f\n", distance(i), error_bar);
-        plot( [0.0, fit_x], [scsyy_ex(i), scsyy(:,i)'], 'o');hold on;
-        plot( plot_curve_x, plot_curve_y,'-'); hold on;
+%         range=confint(p, 0.95);
+%         error_bar = (range(2,extrapolation_poly_degree) - range(1,extrapolation_poly_degree))/2;
+%         fprintf("error bar for scsyy_ex at %d = %.6f\n", distance(i), error_bar);
+        plot( [0.0, fit_x]/1e7, [scsyy_ex(i), scsyy(:,i)'], 'o');hold on;
+        plot( plot_curve_x/1e7, plot_curve_y,'-'); hold on;
     end
 end
 
@@ -79,19 +80,10 @@ fprintf("<Delta_yy^dag Delta_yy>(Lx/2-1) = %.6f\n",mean(scsyy_ex(I)));
 
 
 
-
-
-% l=legend(h,'$D=8000$', '$10000$','$12000$','$14000$','$15000$');
-% set(l,'Box','off');set(l,'Interpreter','latex');
-% set(l,'Fontsize',24);
-% set(l,'Location','SouthWest');
-
-
-
 set(gca,'fontsize',24);
 set(gca,'linewidth',1.5);
 set(get(gca,'Children'),'linewidth',2); % Set line width 1.5 pounds
-xlabel('$x$','Interpreter','latex');
+xlabel('truncation error','Interpreter','latex');
 ylabel('$|\langle\Delta_s^\dagger(x)\Delta_s(0)\rangle|$','Interpreter','latex');
 set(get(gca,'XLabel'),'FontSize',24); 
 set(get(gca,'YLabel'),'FontSize',24); 

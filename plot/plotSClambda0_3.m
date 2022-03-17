@@ -1,13 +1,14 @@
 clear;
-Lx = [16,24, 32, 40, 48];
-distance = [7, 11,  15, 19, 23];
-SC = [0.002207, 0.000886,0.000648, 0.000375, 1.1e-4];
-err = [0.000053, 0.000005, 0.000035,0.000112, 0];
+Lx = [16,24, 32, 40];
+distance = [7, 11,  15, 19];
+SC = [0.001764, 0.000886, 0.000608, 0.000200];
+% SC = [0.002034, 0.000886,0.000626,  0.000504];
+err = [0.000200, 0.000005, 0.000035,0.000053];
 %15: 6.1e-4
 % 9: 1.026e-3
-h1 = errorbar(distance, SC, err,'o');hold on;
+h1 = errorbar(distance(1:4), SC(1:4), err(1:4),'o');hold on;
 set(gca, 'XScale','log', 'YScale','log')
-p = fit(log(distance(1:4)'),log(SC(1:4)'),'poly1');
+p = fit(log(distance(1:3)'),log(SC(1:3)'),'poly1');
 fprintf('Ksc=%.5f\n',-p.p1);
 x = distance(1):0.5:distance(end);
 fl=loglog(distance,exp(p.p2)*distance.^p.p1,'-.');

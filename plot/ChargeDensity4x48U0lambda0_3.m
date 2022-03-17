@@ -6,8 +6,8 @@ Np=3;
 
 U = 0; Numhole = Lx*Ly/8;
 
-Dset=[10000,11000,12000];%bond dimension set
-trunc_err=1e7*[3.64e-06,3.32e-06,3.02e-06];
+Dset=[10000,11000,12000,13000];%bond dimension set
+trunc_err=1e7*[3.64e-06,3.32e-06,3.02e-06,2.79e-06];
 
 
 D=Dset(1);
@@ -40,7 +40,7 @@ ChargeDensity_ex = zeros(1, numel(distance) );
 fit_x = trunc_err;
 error_bar_set = zeros(1, numel(distance));
 for i=1:numel(distance)
-    p = fit(fit_x(1:3)',ChargeDensity(1:3,i),'poly1');
+    p = fit(fit_x(1:4)',ChargeDensity(1:4,i),'poly1');
     range=confint(p, 0.95);
     error_bar = (range(2,2) - range(1,2))/2;
     error_bar_set(i) = error_bar;
@@ -51,8 +51,6 @@ fprintf("mean error bar = %.6f\n", mean(error_bar));
 
 ChargeDensity_ex = (ChargeDensity_ex + ChargeDensity_ex(end:-1:1))/2;
 plot(distance + 1, ChargeDensity_ex,'o'); hold on;
-
-
 
 
 cos_fix_x = Lx/4:3*Lx/4-1;
@@ -103,7 +101,7 @@ deltan = mdl.Coefficients.Estimate(3);
 b = mdl.Coefficients.Estimate;
 sites = sites(1):0.01:sites(end);
 plot(sites, modelfun(b,sites),'-');
-l=legend('DMRG data', ['fitting, $K_c= ',num2str(Kc),'$']);
+l=legend('Charge density', ['fitting, $K_c= ',num2str(Kc),'$']);
 set(l,'Box','off');set(l,'Interpreter','latex');
 set(l,'Fontsize',18);
 

@@ -61,8 +61,8 @@ for i=1:numel(distance)
         range=confint(p, 0.95);
         error_bar = (range(2,extrapolation_poly_degree) - range(1,extrapolation_poly_degree))/2;
         fprintf("error bar for scsyy_ex at %d = %.6f\n", distance(i), error_bar);
-        plot( [0.0, fit_x], [scsyy_ex(i), scsyy(:,i)'], 'o');hold on;
-        plot( plot_curve_x, plot_curve_y,'-'); hold on;
+        plot( [0.0, fit_x]/1e7, [scsyy_ex(i), scsyy(:,i)'], 'o');hold on;
+        plot( plot_curve_x/1e7, plot_curve_y,'-'); hold on;
     end
 end
 

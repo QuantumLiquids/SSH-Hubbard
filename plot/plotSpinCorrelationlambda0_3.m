@@ -14,8 +14,8 @@ fprintf('correlation length=%.5f\n',-1/p.p1);
 x = distance(1):0.5:distance(end);
 fl=semilogy(distance,exp(p.p2+p.p1*distance),'-.');
 
-T=text(8,2.5e-3,['$\xi=',num2str(-1/p.p1),'$']);
-set(T,'Interpreter','latex');set(T,'Fontsize',28);
+% T=text(8,2.5e-3,['$\xi=',num2str(-1/p.p1),'$']);
+% set(T,'Interpreter','latex');set(T,'Fontsize',28);
 
 
 

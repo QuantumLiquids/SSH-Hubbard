@@ -8,9 +8,9 @@ U = 8; Numhole = Lx*Ly/8;
 
 
 Dset=[8000,10000, 12000,14000,16000];
-trunc_err=  1e7*[3.37e-06,2.82e-06,2.45e-06, 2.18e-06,1.98e-06]; %middle bond
+trunc_err=  1e7*[3.37e-06,2.82e-06,2.45e-06, 2.19e-06,1.98e-06]; %middle bond
 
-extrapolation_poly_degree = 3;
+extrapolation_poly_degree = 2;
 selected_fit_data=1:5;
 
 D=Dset(1);
@@ -56,8 +56,8 @@ for i=1:numel(distance)
         range=confint(p, 0.95);
         error_bar = (range(2,extrapolation_poly_degree) - range(1,extrapolation_poly_degree))/2;
         fprintf("error bar for scsyy_ex at %d = %.6f\n", distance(i), error_bar);
-        plot( [0.0, fit_x], [scsyy_ex(i), scsyy(:,i)'], 'o');hold on;
-        plot( plot_curve_x, plot_curve_y,'-'); hold on;
+        plot( [0.0, fit_x]/1e7, [scsyy_ex(i), scsyy(:,i)'], 'o');hold on;
+        plot( plot_curve_x/1e7, plot_curve_y,'-'); hold on;
     end
 end
 I=find(distance==Lx/2-1);
