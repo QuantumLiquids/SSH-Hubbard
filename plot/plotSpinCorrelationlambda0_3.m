@@ -1,9 +1,9 @@
 clear;
 Lx = [16,24, 32, 40];
 distance = [7, 11,  15, 19];
-SpinCorrelation = [-0.002814, 0.000886,-0.000282, 0.000074];
+SpinCorrelation = [-0.002814, 0.000886,-0.000282, 0.000083];
 SpinCorrelation = abs(SpinCorrelation);
-err = [0.000026, 0.000001, 0.000011,0.000003];
+err = [0.000026, 0.000001, 0.000011,0.000012];
 %15: 6.1e-4
 % 9: 1.026e-3
 h1 = errorbar(distance, SpinCorrelation, err,'o');hold on;
@@ -24,6 +24,7 @@ set(gca,'linewidth',1.5);
 set(h1,'markersize',10);
 set(get(gca,'Children'),'linewidth',3); % Set line width 1.5 pounds
 xlabel('$x$','Interpreter','latex');
-ylabel('$|\langle S(0) \cdot S(x)\rangle |$','Interpreter','latex');
+% ylabel('$|\langle S(0) \cdot S(x)\rangle |$','Interpreter','latex');
+ylabel('$F(x)$','Interpreter','latex');
 set(get(gca,'XLabel'),'FontSize',24); 
 set(get(gca,'YLabel'),'FontSize',24); 

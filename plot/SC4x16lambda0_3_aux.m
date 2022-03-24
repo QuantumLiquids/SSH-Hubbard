@@ -8,7 +8,7 @@ U = 8; Numhole = Lx*Ly/8;
 
 
 Dset=[8000,10000, 12000,14000,16000];
-trunc_err=  1e7*[3.37e-06,2.82e-06,2.45e-06, 2.19e-06,1.98e-06]; %middle bond
+trunc_err=  1e7*[3.37e-06,2.82e-06,2.49e-06, 2.21e-06,1.98e-06]; %middle bond
 
 extrapolation_poly_degree = 2;
 selected_fit_data=1:5;

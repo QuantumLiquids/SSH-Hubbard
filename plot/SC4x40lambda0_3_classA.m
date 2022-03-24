@@ -9,13 +9,13 @@ U = 8; Numhole = Lx*Ly/8;
 begin = 8;
 endx= 32;
 
-Dset=[8000,9000,10000,12000,13000, 14000,15000,16000,17000];%bond dimension set
-trunc_err=1e7*[3.47e-6,3.12e-6,2.88e-6,2.47e-06, 2.33e-06,2.21e-06,2.09e-6,2.00e-6, 1.89e-06];
+Dset=[8000,9000,10000,12000,13000, 14000,15000,16000,17000,18000,16001];%bond dimension set
+trunc_err=1e7*[3.47e-6,3.12e-6,2.88e-6,2.50e-06, 2.33e-06,2.20e-06,2.0994e-06,1.99e-6, 1.89e-06,1.74e-06,2.12e-06];
 % wait D=16000, truncation error increase from 1.98e-6 to 2.00e-6
-extrapolation_poly_degree = 3;
+extrapolation_poly_degree = 2;
 
 
-selected_fit_data=[4:8];
+selected_fit_data=[4:6,11];
 Db=Dset(1);
 FileNamePostfix=['begin',num2str(begin),'end',num2str(endx),...
     'ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),...
@@ -43,15 +43,13 @@ end
 
 h=loglog(distance,scsyy,'x');hold on;
 
-
-
 scsyy_ex=zeros(size(distance));
 %fit_x=[1/8,1/10,1/12,1/14];%1/D
 % fit_x=1e7*[ 5.59e-06, 4.56e-06];%Site  560
 fit_x = trunc_err;
 for i=1:numel(distance)
-    p = fit(fit_x(4:8)',scsyy(4:8,i),'poly3');
-    scsyy_ex(i)=p.p4;
+    p = fit(fit_x(selected_fit_data)',scsyy(selected_fit_data,i),'poly2');
+    scsyy_ex(i)=p.p3;
 end
 
 loglog(distance, scsyy_ex,'o');hold on;
@@ -84,7 +82,7 @@ set(T,'Interpreter','latex');set(T,'Fontsize',24);
 
 
 
-l=legend(h,'$D=8000$','$9000$', '$10000$','$12000$','$13000$','$14000$','$15000$','$16000$', '$17000$');
+l=legend(h,'$D=8000$','$9000$', '$10000$','$12000$','$13000$','$14000$','$15000$','$16000$', '$17000$', '$18000$', '$16001$');
 set(l,'Box','off');set(l,'Interpreter','latex');
 set(l,'Fontsize',24);
 set(l,'Location','SouthWest');

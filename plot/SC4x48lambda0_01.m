@@ -28,12 +28,11 @@ for j = 1:numel(Dset)
     end
 end
 
-h=semilogy(distance,scsyy,'x');hold on;
+% h=semilogy(distance,scsyy,'x');hold on;
 
 
 
 scsyy_ex=zeros(size(distance));
-%fit_x=[1/10,1/12,1/14,1/16,1/18];%1/D
 fit_x=1e7*[1.15e-6,9.74e-07, 8.89e-07, 8.26e-07, 7.69e-07];%Site278
 for i=1:numel(distance)
     p = fit(fit_x(1:end)',scsyy(1:end,i),'poly2');
@@ -43,7 +42,7 @@ end
 semilogy(distance, scsyy_ex,'o');hold on;
 
 
-fit_x=[9,10,11,17,18,19];
+fit_x=[10,18];
 fit_y=zeros(size(fit_x));
 for i=1:numel(fit_x)
     I = find(distance==fit_x(i));
@@ -53,10 +52,10 @@ end
 
 p = fit((fit_x'),log(abs(fit_y')),'poly1');
 fprintf('correlation length=%.5f\n',-1/p.p1);
-x = [fit_x,23];
+x = [2,23];
 semilogy(x,exp(p.p2+p.p1*x),'-.');%fitted line
-T=text(15.2,1.2e-3,['$\xi=',num2str(-1/p.p1),'$']);
-set(T,'Interpreter','latex');set(T,'Fontsize',24);
+% T=text(15.2,1.2e-3,['$\xi=',num2str(-1/p.p1),'$']);
+% set(T,'Interpreter','latex');set(T,'Fontsize',24);
 
 
 p = fit(log(fit_x'),log(abs(fit_y')),'poly1');
@@ -68,10 +67,10 @@ fprintf('Ksc=%.5f\n',-p.p1);
 
 
 
-l=legend(h,'$D=10000$', '$12000$','$14000$','$16000$','$18000$');
-set(l,'Box','off');set(l,'Interpreter','latex');
-set(l,'Fontsize',24);
-set(l,'Location','SouthWest');
+% l=legend(h,'$D=10000$', '$12000$','$14000$','$16000$','$18000$');
+% set(l,'Box','off');set(l,'Interpreter','latex');
+% set(l,'Fontsize',24);
+% set(l,'Location','SouthWest');
 
 
 
@@ -79,9 +78,8 @@ set(gca,'fontsize',24);
 set(gca,'linewidth',1.5);
 set(get(gca,'Children'),'linewidth',2); % Set line width 1.5 pounds
 xlabel('$x$','Interpreter','latex');
-ylabel('$|\langle\Delta_s^\dagger(x)\Delta_s(0)\rangle|$','Interpreter','latex');
+ylabel('$\Phi_{yy}(x)$','Interpreter','latex');
 set(get(gca,'XLabel'),'FontSize',24); 
 set(get(gca,'YLabel'),'FontSize',24); 
 
-
-
+set(gcf,'position',[1000,1000,400,350]);

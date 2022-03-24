@@ -7,7 +7,7 @@ Np=3;
 U = 0; Numhole = Lx*Ly/8;
 
 Dset=[10000,11000,12000,13000];%bond dimension set
-trunc_err=1e7*[3.64e-06,3.32e-06,3.02e-06,2.79e-06];
+trunc_err=1e7*[3.64e-06,3.32e-06,3.04e-06,2.80e-06];
 
 
 D=Dset(1);
@@ -33,7 +33,7 @@ for j = 1:numel(Dset)
 end
 
 ChargeDensity = (ChargeDensity + ChargeDensity(:,end:-1:1))/2;
-% plot(distance + 1, ChargeDensity,'x'); hold on;
+plot(distance + 1, ChargeDensity,'x'); hold on;
 ChargeDensity_ex = zeros(1, numel(distance) );
 
 
@@ -50,11 +50,13 @@ end
 fprintf("mean error bar = %.6f\n", mean(error_bar));
 
 ChargeDensity_ex = (ChargeDensity_ex + ChargeDensity_ex(end:-1:1))/2;
-plot(distance + 1, ChargeDensity_ex,'o'); hold on;
+distancemean=mean(reshape(distance,Ly,[]));
+ChargeDensityLymean = mean(reshape(ChargeDensity_ex,4,[]));
+plot(distancemean + 1, ChargeDensityLymean,'o'); hold on;
 
 
 cos_fix_x = Lx/4:3*Lx/4-1;
-ChargeDensityLymean = mean(reshape(ChargeDensity_ex,4,[]));
+
 cos_fix_y = ChargeDensityLymean(cos_fix_x + 1);
 modelfun = @(b,x)(b(2)+ b(3).*cos(b(4).*x+b(1)) );
 mdl = fitnlm(cos_fix_x',cos_fix_y',modelfun,[0.1,1-1/8,0.02,pi/2]);
@@ -65,11 +67,12 @@ continous_cos_x = min(cos_fix_x):0.01:max(cos_fix_x);
 plot(continous_cos_x + 1, modelfun(b,continous_cos_x),'-');
 
 
+set(gca, 'Xlim',[Lx/4,3*Lx/4-1]+1);
 set(gca,'fontsize',24);
 set(gca,'linewidth',1.5);
 set(get(gca,'Children'),'linewidth',2); % Set line width 1.5 pounds
 xlabel('$x$','Interpreter','latex');
-ylabel('Charge Density','Interpreter','latex');
+ylabel('$n(x)$','Interpreter','latex');
 set(get(gca,'XLabel'),'FontSize',24);
 set(get(gca,'YLabel'),'FontSize',24);
 

@@ -27,7 +27,6 @@ for j = 1:numel(Dset)
     ChargeDensityData = jsondecode(fileread(['../data/nf',FileNamePostfix]));
 %     ChargeDensityData = ChargeDensityData(1:end,:);
     ChargeDensity(j, :) = transpose(ChargeDensityData(:,2));
-%     ChargeDensity = (ChargeDensity+ChargeDensity(end:-1:1))/2;
 end
 % ChargeDensity = (ChargeDensity + ChargeDensity(:,end:-1:1))/2;
 % plot(distance, ChargeDensity,'-x'); hold on;
@@ -47,7 +46,8 @@ plot(distance, ChargeDensityLymean,'o'); hold on;
 
 
 
-cos_fix_x = 10:29;
+% cos_fix_x = Lx/4:1:3*Lx/4-1;
+cos_fix_x = Lx/4+1:1:3*Lx/4-2;
 
 cos_fix_y = ChargeDensityLymean(cos_fix_x + 1);
 modelfun = @(b,x)(b(2)+ b(3).*cos(b(4).*x+b(1)) );
@@ -63,7 +63,7 @@ set(gca,'fontsize',24);
 set(gca,'linewidth',1.5);
 set(get(gca,'Children'),'linewidth',2); % Set line width 1.5 pounds
 xlabel('$x$','Interpreter','latex');
-ylabel('Charge Density','Interpreter','latex');
+ylabel('$n(x)$','Interpreter','latex');
 set(get(gca,'XLabel'),'FontSize',24); 
 set(get(gca,'YLabel'),'FontSize',24); 
 
@@ -86,7 +86,7 @@ set(gca, 'Xlim',[1,Lx/2]);
 
 
 modelfun = @(b,x)(b(5)+ b(3).*cos(2*b(4).*x+b(1)).*x.^(-b(2)/2) );
-mdl = fitnlm(distance',ChargeDensity_ex',modelfun,[1,0.2,1,pi/8,0.91])
+mdl = fitnlm(distance',ChargeDensity_ex',modelfun,[1,0.2,1,pi/8,0.91]);
 
 sites = distance;
 phi = mdl.Coefficients.Estimate(1);
@@ -103,6 +103,6 @@ set(gca,'fontsize',24);
 set(gca,'linewidth',1.5);
 set(get(gca,'Children'),'linewidth',2); % Set line width 1.5 pounds
 xlabel('$x$','Interpreter','latex');
-ylabel('Charge Density','Interpreter','latex');
+ylabel('$n(x)$','Interpreter','latex');
 set(get(gca,'XLabel'),'FontSize',24); 
 set(get(gca,'YLabel'),'FontSize',24); 

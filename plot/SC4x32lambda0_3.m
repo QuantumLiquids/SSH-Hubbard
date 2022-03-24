@@ -5,10 +5,12 @@ Np=3;
 
 U = 8; Numhole = Lx*Ly/8;
 
-Dset=[8000,9000, 10000,12000, 14000, 16000, 17000];%bond dimension set
-trunc_err = 1e7*[3.70e-06, 3.28e-06, 2.96e-06, 2.61e-06, 2.29e-06, 2.09e-06, 1.97e-06];
+Dset=[8000,9000, 10001,12000, 14000, 16000, 17000,18000];%bond dimension set
+trunc_err = 1e7*[3.70e-06, 3.28e-06, 3.06e-06, 2.65e-06, 2.32e-06, 2.09e-06, 2.01e-06,1.92e-06];
 %D14000 old version(come from 16000) 2.52e-06
 
+extrapolation_poly_degree = 2;
+selected_fit_data=[2,5,6:7,8];
 D=Dset(1);
 FileNamePostfix=['ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
 A = jsondecode(fileread(['../data/scsyya',FileNamePostfix]));
@@ -37,13 +39,13 @@ scsyy_ex=zeros(size(distance));
 
 fit_x = trunc_err;%middle bond
 for i=1:numel(distance)
-    p = fit(fit_x(2:6)',scsyy(2:6,i),'poly2');
+    p = fit(fit_x(selected_fit_data)',scsyy(selected_fit_data,i),'poly2');
     scsyy_ex(i)=p.p3;
-    if(distance(i) == 15)
-        range=confint(p, 0.95);
-        error_bar = (range(2,3) - range(1,3))/2;
-        fprintf("error bar for scsyy_ex at %d = %.6f\n", distance(i), error_bar);
-    end
+%     if(distance(i) == 15)
+%         range=confint(p, 0.95);
+%         error_bar = (range(2,3) - range(1,3))/2;
+%         fprintf("error bar for scsyy_ex at %d = %.6f\n", distance(i), error_bar);
+%     end
 end
 
 loglog(distance, scsyy_ex,'o');hold on;

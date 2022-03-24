@@ -34,7 +34,7 @@ for j = 1:numel(Dset)
 end
 
 
-h2=loglog(distance,scs_onsite,'x');hold on;
+% h2=loglog(distance,scs_onsite,'x');hold on;
 
 
 scs_ex=zeros(size(distance));
@@ -47,7 +47,7 @@ end
 h=loglog(distance, scs_ex,'o');hold on;
 
 
-fit_x=2:10;
+fit_x=3:10;
 fit_y=zeros(size(fit_x));
 for i=1:numel(fit_x)
     I = find(distance==fit_x(i));
@@ -58,26 +58,69 @@ end
 
 p = fit(log(fit_x'),log(abs(fit_y')),'poly1');
 fprintf('Ksc=%.5f\n',-p.p1);
-x = fit_x(1):0.5:fit_x(end)+4;
+x = fit_x(1)-1:0.5:fit_x(end)+6;
 fl=loglog(x,exp(p.p2)*x.^p.p1,'-.');
-T=text(6,3e-2,['$K_{sc}=',num2str(-p.p1),'$']);
-set(T,'Interpreter','latex');set(T,'Fontsize',24);
+% T=text(6,3e-2,['$K_{sc}=',num2str(-p.p1),'$']);
+% set(T,'Interpreter','latex');set(T,'Fontsize',24);
 
-l=legend('$D=10000$', '$11000$','$12000$','$13000$', '$\infty$');
+% l=legend('$D=10000$', '$11000$','$12000$','$13000$', '$\infty$');
+% set(l,'Box','off');set(l,'Interpreter','latex');
+% set(l,'Fontsize',24);
+% set(l,'Location','SouthWest');
+
+
+
+
+
+
+D=Dset(1);
+FileNamePostfix=['ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
+A = jsondecode(fileread(['../data/scsyya',FileNamePostfix]));
+distance=zeros(1,numel(A));
+for i=1:numel(A)
+    distance(i) = (A{i}{1}(3)-A{i}{1}(1))/(2*Np+1)/Ly;
+end
+
+scsyy=zeros(numel(Dset),numel(A));
+for j = 1:numel(Dset)
+    D = Dset(j);
+    FileNamePostfix=['ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
+    A = jsondecode(fileread(['../data/scsyya',FileNamePostfix]));
+    B = jsondecode(fileread(['../data/scsyyb',FileNamePostfix]));
+    C = jsondecode(fileread(['../data/scsyyc',FileNamePostfix]));
+    D = jsondecode(fileread(['../data/scsyyd',FileNamePostfix]));
+    for i=1:numel(A)
+        scsyy(j,i) = A{i}{2}+B{i}{2}+C{i}{2}+D{i}{2};
+    end
+end
+
+scsyy_ex=zeros(size(distance));
+fit_x = trunc_err;%middle bond
+for i=1:numel(distance)
+    p = fit(fit_x(selected_fit_data)',scsyy(selected_fit_data,i),'poly2');
+    scsyy_ex(i)=p.p3;
+end
+h2 = loglog(distance, scsyy_ex,'x');hold on;
+
+
+set(gca, 'Xlim', [2,16]);
+% set(gca, 'Ylim', [2*scs_ex(end),scs_ex(2)]);
+set(gca, 'Ylim', [1e-4,scs_ex(2)]);
+
+
+l=legend([h,h2],'$\Phi_s(x)$', '$\Phi_{yy}(x)$');
 set(l,'Box','off');set(l,'Interpreter','latex');
 set(l,'Fontsize',24);
 set(l,'Location','SouthWest');
-
-
-set(gca, 'Xlim', [0,16]);
 
 set(gca,'fontsize',24);
 set(gca,'linewidth',1.5);
 set(get(gca,'Children'),'linewidth',2); % Set line width 1.5 pounds
 xlabel('$x$','Interpreter','latex');
-ylabel('$|\langle\Delta_s^\dagger(x)\Delta_s(0)\rangle|$','Interpreter','latex');
+%ylabel('$|\langle\Delta_s^\dagger(x)\Delta_s(0)\rangle|$','Interpreter','latex');
+ylabel('$\Phi(x)$','Interpreter','latex');
 set(get(gca,'XLabel'),'FontSize',24); 
 set(get(gca,'YLabel'),'FontSize',24); 
 
     
-
+set(gcf,'position',[1000,1000,400,350]);

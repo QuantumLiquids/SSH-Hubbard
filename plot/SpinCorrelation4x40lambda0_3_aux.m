@@ -14,7 +14,7 @@ Dset=[8000,9000,10000,12000,13000, 14000,15000,16000,17000,18000];%bond dimensio
 trunc_err=1e7*[3.47e-6,3.12e-6,2.88e-6,2.49e-06, 2.33e-06,2.20e-06,2.09e-6,1.98e-6, 1.89e-06,1.71e-06];
 %  wait D=16000, truncation error increase from 1.98e-6 to 2.00e-6
 extrapolation_poly_degree = 2;
-selected_fit_data=[3:7];
+selected_fit_data=[3,5:7];
 
 
 D=Dset(1);

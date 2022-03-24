@@ -1,5 +1,5 @@
 clear;
-Lx=32; Ly=4;
+Lx=48; Ly=4;
 omega = 5; 
 % g = 0.4472;
 g=1;
@@ -16,13 +16,13 @@ g=1;
 % else
 %     Np=4;
 % end
-Np=3;
+Np=2;
 U = 1; Numhole = Lx*Ly/8;
 
 
 D = 8000;
-FileNamePostfix=['ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
-% FileNamePostfix=['.json'];
+% FileNamePostfix=['ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
+FileNamePostfix=['.json'];
 ChargeDensityData = jsondecode(fileread(['../data/nf',FileNamePostfix]));
 ChargeDensityData = ChargeDensityData(1:end,:);
 % ChargeDensity = (reshape(ChargeDensityData(:,2),Ly,[]));

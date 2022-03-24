@@ -13,6 +13,7 @@ elseif g<0.5
 else
     Np=3;
 end
+Np=2;
 U = 8; Numhole = Lx*Ly/8;
 
 

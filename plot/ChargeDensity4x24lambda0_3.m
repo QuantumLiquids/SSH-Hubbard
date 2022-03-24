@@ -28,8 +28,8 @@ for j = 1:numel(Dset)
     if (charge_density_avg-0.875) > 1e-8
         error("charge density if not right");
     end
-    % ChargeDensity = (ChargeDensity+ChargeDensity(end:-1:1))/2;
 end
+
 
 % ChargeDensity = (ChargeDensity + ChargeDensity(:,end:-1:1))/2;
 plot(distance + 1, ChargeDensity,'-x'); hold on;
@@ -84,7 +84,7 @@ set(gca, 'Xlim',[1,Lx/2]);
 
 
 modelfun = @(b,x)(b(5)+ b(3).*cos(2*b(4).*x+b(1)).*x.^(-b(2)/2) );
-mdl = fitnlm(distance',ChargeDensity_ex',modelfun,[1,0.2,1,pi/8,0.91])
+mdl = fitnlm(distance',ChargeDensity_ex',modelfun,[1,0.2,1,pi/8,0.91]);
 
 sites = distance;
 phi = mdl.Coefficients.Estimate(1);

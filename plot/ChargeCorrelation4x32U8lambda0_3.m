@@ -1,17 +1,18 @@
-Lx=48; Ly=4;
+Lx=32; Ly=4;
 omega = 5; 
 g = 2.4495;
 Np=3;
 
-U = 0; Numhole = Lx*Ly/8;
+U = 8; Numhole = Lx*Ly/8;
 
-Dset=[10000,11000,12000,13000];%bond dimension set
-trunc_err=1e7*[3.64e-06,3.32e-06,3.04e-06,2.80e-06];
-
-D = Dset(1);
+Dset=[8000,9000, 10001,12000, 14000, 16000, 17000,18000];%bond dimension set
+trunc_err = 1e7*[3.70e-06, 3.28e-06, 3.06e-06, 2.65e-06, 2.32e-06, 2.09e-06, 2.01e-06,1.88e-06];
+%D14000 old version(come from 16000) 2.52e-06
 
 extrapolation_poly_degree = 2;
-selected_fit_data=2:4;
+selected_fit_data=[2,5,6:7];
+
+D = Dset(1);
 
 FileNamePostfix=['ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
 ChargeCorrelation = jsondecode(fileread(['../data/nfnf',FileNamePostfix]));
@@ -38,7 +39,7 @@ for j = 1:numel(Dset)
 end
 
 [distance, I]=sort(distance); ReducedChargeCorrelation=ReducedChargeCorrelation(:, I);
-% h = loglog(distance,abs(ReducedChargeCorrelation),'x');hold on;
+h = loglog(distance,abs(ReducedChargeCorrelation),'x');hold on;
 
 
 
@@ -49,15 +50,13 @@ for i=1:numel(distance)
     ReducedChargeCorrelation_ex(i)=p.p3;
 end
 
-distance = mean(reshape(distance,4,[]));
-ReducedChargeCorrelation_ex = mean(reshape(ReducedChargeCorrelation_ex,4,[]));
-hex = loglog(distance, abs(ReducedChargeCorrelation_ex),'o');hold on;
+loglog(distance, abs(ReducedChargeCorrelation_ex),'o');hold on;
 
 
 
 
 
-fit_x=[1,4,6,11];%,14,18];
+fit_x=[7,11,15];
 %  fit_x=[6,7,10,11,14];
 fit_y=zeros(size(fit_x));
 for i=1:numel(fit_x)
@@ -76,18 +75,19 @@ end
 
 p = fit(log(fit_x'),log(abs(fit_y')),'poly1');
 fprintf('Kc=%.5f\n',-p.p1);
-x = fit_x(1):0.5:fit_x(end)+8;
+x = fit_x(1):0.5:fit_x(end);
 fl=loglog(x,exp(p.p2)*x.^p.p1,'-.');
-% T=text(8,4.5e-3,['$K_{c}=',num2str(-p.p1),'$']);
-% set(T,'Interpreter','latex');set(T,'Fontsize',24);
-
-set(gca, 'Xlim', [0,16]);
+T=text(5,2e-2,['$K_{c}=',num2str(-p.p1),'$']);
+set(T,'Interpreter','latex');set(T,'Fontsize',24);
 
 
-% l=legend([h; hex],'$D=10000$', '$11000$','$12000$','$13000$','$\infty$');
+
+
+% l=legend(h,'$D=8000$', '$10000$','$12000$','$14000$','$16000$');
 % set(l,'Box','off');set(l,'Interpreter','latex');
 % set(l,'Fontsize',24);
 % set(l,'Location','SouthWest');
+
 
 
 
@@ -95,10 +95,7 @@ set(gca,'fontsize',24);
 set(gca,'linewidth',1.5);
 set(get(gca,'Children'),'linewidth',2); % Set line width 1.5 pounds
 xlabel('$x$','Interpreter','latex');
-% ylabel('$|\langle n(x)n(0)\rangle -\langle n(x)\rangle \langle n(0)\rangle|$','Interpreter','latex');
-ylabel('$D(x)$','Interpreter','latex');
+ylabel('$|\langle n(x)n(0)\rangle -\langle n(x)\rangle \langle n(0)\rangle|$','Interpreter','latex');
 set(get(gca,'XLabel'),'FontSize',24); 
 set(get(gca,'YLabel'),'FontSize',24); 
-
-set(gcf,'position',[1000,1000,400,350]);
 
