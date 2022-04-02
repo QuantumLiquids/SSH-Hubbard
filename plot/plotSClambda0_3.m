@@ -1,9 +1,9 @@
 clear;
 Lx = [16,24, 32, 40];
 distance = [7, 11,  15, 19];
-SC = [0.001696, 0.000886, 0.000404, 0.000344];
+SC = [0.001696, 0.000886, 0.000600, 0.000345];
 % SC = [0.002034, 0.000886,0.000626,  0.000504];
-err = [0.000022, 0.000005, 0.00006,0.000031];
+err = [0.000022, 0.000005, 0.000050,0.000031];
 %15: 6.1e-4
 % 9: 1.026e-3
 h1 = errorbar(distance(1:4), SC(1:4), err(1:4),'o');hold on;
@@ -17,7 +17,7 @@ fl=loglog(distance,exp(p.p2)*distance.^p.p1,'-.');
 
 set(gca, 'XTick', [7,11,15,19]);
 set(gca,'XTickLabel',{'7','11','15','19'});
-set(gca, 'YLim', [1e-4, 2e-3]);
+% set(gca, 'YLim', [1e-4, 2e-3]);
 set(gca,'fontsize',24);
 set(gca,'linewidth',1.5);
 set(h1,'markersize',10);
@@ -26,3 +26,7 @@ xlabel('$x$','Interpreter','latex');
 ylabel('$\Phi_{yy}(x)$','Interpreter','latex');
 set(get(gca,'XLabel'),'FontSize',24); 
 set(get(gca,'YLabel'),'FontSize',24); 
+
+
+set(gcf,'position',[1000,1000,400,350]);
+

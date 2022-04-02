@@ -53,7 +53,9 @@ end
 fprintf("mean error bar = %.6f\n", mean(error_bar));
 
 ChargeDensity_ex = (ChargeDensity_ex + ChargeDensity_ex(end:-1:1))/2;
-plot(distance + 1, ChargeDensity_ex,'o'); hold on;
+distanceMean=mean(reshape(distance,4,[]));
+ChargeDensity_exMean=mean(reshape(ChargeDensity_ex,4,[]));
+plot(distanceMean + 1, ChargeDensity_exMean,'o'); hold on;
 
 cos_fix_x = Lx/4:3*Lx/4-1;
 % cos_fix_x = Lx/4+1:3*Lx/4-2;

@@ -10,7 +10,7 @@ trunc_err = 1e7*[3.70e-06, 3.28e-06, 3.06e-06, 2.65e-06, 2.32e-06, 2.09e-06, 2.0
 %D14000 old version(come from 16000) 2.52e-06
 
 extrapolation_poly_degree = 2;
-selected_fit_data=[2,5,6:7,8];
+selected_fit_data=[3,5,6:7];
 D=Dset(1);
 FileNamePostfix=['ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
 A = jsondecode(fileread(['../data/scsyya',FileNamePostfix]));

@@ -5,11 +5,12 @@ Np=3;
 
 U = 8; Numhole = Lx*Ly/8;
 
-Dset=[9000, 10001,12000, 14000, 16000];%bond dimension set
-trunc_err = 1e7*[ 3.28e-06, 3.06e-06, 2.65e-06, 2.32e-06, 2.09e-06];
+Dset=[9000, 10001,12000, 14000, 16000, 17000,18000];%bond dimension set
+trunc_err = 1e7*[3.28e-06, 3.06e-06, 2.65e-06, 2.32e-06, 2.09e-06, 2.00e-06,1.92e-06];
+%D14000 old version(come from 16000) 2.52e-06
 
 extrapolation_poly_degree = 2;
-selected_fit_data=[1,4,5];
+selected_fit_data=[4,5,6,7]-1;
 %change to [2,5,6:8] when data become enough
 
 %%===== P_yy =======%%
@@ -42,7 +43,8 @@ distance = mean(transpose(reshape(distance,[],4)));
 scsyy_ex = mean(transpose(reshape(scsyy_ex,[],4)));
 h0=loglog(distance, scsyy_ex,'-o');hold on;
 
-fit_x=[6,7,10,11];
+% fit_x=[6,7,10,11];
+fit_x = 2:11;
 fit_y=zeros(size(fit_x));
 for i=1:numel(fit_x)
     I = find(distance==fit_x(i));
@@ -112,19 +114,9 @@ for i=1:numel(distance)
 end
 h3=plot(distance, scsyypp_ex,'-s');hold on;
 
-%%======Pyy'''======%%
-scsyyppp = scsPS(:, 3*Pyx_data_size+1:4*Pyx_data_size);
-scsyyppp_ex = zeros(1, Pyx_data_size);
-fit_x = trunc_err;
-for i=1:numel(distance)
-    p = fit(fit_x(selected_fit_data)',scsyyppp(selected_fit_data,i),'poly2');
-    scsyyppp_ex(i)=p.p3;
-end
-h4=plot(distance,  -scsyypp_ex,'->');hold on;
 
 
-
-l=legend([h0,h2,h3,h4,h1],'$\Phi_{yy}(x)$',  '$-\Phi_{yy}^{\prime}(x)$', '$\Phi_{yy}^{\prime\prime}(x)$', '$-\Phi_{yy}^{\prime\prime\prime}(x)$','$\Phi_{yx}(x)$');
+l=legend([h0,h2,h3,h1],'$\Phi_{yy}(x)$',  '$-\Phi_{yy}^{\prime}(x)$', '$\Phi_{yy}^{\prime\prime}(x)$', '$\Phi_{yx}(x)$');
 set(l,'Box','off');set(l,'Interpreter','latex');
 set(l,'Fontsize',18);
 set(l,'Location','SouthWest');

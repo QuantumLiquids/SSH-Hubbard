@@ -1,12 +1,13 @@
+clear;
 figure;
 Lx=40; Ly=4;
 omega = 5; g = 2.4495; Np = 3; U = 8; Numhole = Lx*Ly/8;
 
-Dset=[8000,9000,10000,12000,13000, 14000,15000,16000,17000];%bond dimension set
-trunc_err=1e7*[3.47e-6,3.12e-6,2.88e-6,2.50e-06, 2.33e-06,2.20e-06,2.099e-6,1.99e-06, 1.92e-06];
-
+Dset=[8000,9000,10000,12000,13000, 14000,15000,16000,17001,16001];%bond dimension set
+trunc_err=1e7*[3.47e-6,3.12e-6,2.88e-6,2.50e-06, 2.33e-06,2.20e-06,2.0994e-06,1.99e-6, 2.00e-06,2.12e-06];
+% grow D17000 trun error = 1.89e-06
 extrapolation_poly_degree = 2;
-selected_fit_data=[3,5:7];
+selected_fit_data=[1,2,3,4,5,6,7,9];%,1,3,10
 
 
 

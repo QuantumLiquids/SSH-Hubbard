@@ -14,7 +14,7 @@ Dset=[8000,10000, 12000,14001,16000];
 trunc_err=  1e7*[3.37e-06,2.82e-06,2.49e-06, 2.21e-06,1.98e-06]; %middle bond
 
 extrapolation_poly_degree = 2;
-selected_fit_data=1:5;
+selected_fit_data=1:4;
 D=Dset(1);
 FileNamePostfix=['ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
 ChargeDensityData = jsondecode(fileread(['../data/nf',FileNamePostfix]));

@@ -33,27 +33,7 @@ h=loglog(distance,scsyy,'o');hold on;
 
 
 % ******* On site pair
-D=Dset(1);
-FileNamePostfix=['ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
-OnSitePairData = jsondecode(fileread(['../data/onsitesc',FileNamePostfix]));
-distance=zeros(1,numel(OnSitePairData));
-for i=1:numel(OnSitePairData)
-    distance(i) = (OnSitePairData{i}{1}(2)-OnSitePairData{i}{1}(1))/(2*Np+1)/Ly;
-end
-
-scs_onsite=zeros(numel(Dset),numel(OnSitePairData));
-for j = 1:numel(Dset)
-    D = Dset(j);
-    FileNamePostfix=['ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
-    OnSitePairData = jsondecode(fileread(['../data/onsitesc',FileNamePostfix]));
-    for i=1:numel(OnSitePairData)
-        scs_onsite(j,i) = OnSitePairData{i}{2};
-    end
-end
-
-h2=loglog(distance,scs_onsite,'x');hold on;
-
-
+w
 
 set(gca,'fontsize',24);
 set(gca,'linewidth',1.5);

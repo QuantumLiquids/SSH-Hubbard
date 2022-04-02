@@ -28,3 +28,8 @@ xlabel('$x$','Interpreter','latex');
 ylabel('$F(x)$','Interpreter','latex');
 set(get(gca,'XLabel'),'FontSize',24); 
 set(get(gca,'YLabel'),'FontSize',24); 
+
+
+set(gcf,'position',[1000,1000,400,350]);
+
+

@@ -73,43 +73,47 @@ set(get(gca,'XLabel'),'FontSize',24);
 set(get(gca,'YLabel'),'FontSize',24); 
 
 set(gca,'XLim',[9,24]);
-% % 
-% figure;
-% ChargeDensity_ex = (ChargeDensity_ex+ChargeDensity_ex(end:-1:1))/2;
 % 
-% plot(distance(1:end/2), ChargeDensity_ex(1:end/2),'o'); hold on;
-% 
-% distance = distance(1:end/2);
-% ChargeDensity_ex = ChargeDensity_ex(1:end/2);
-% 
-% ChargeDensity_ex = ChargeDensity_ex( distance > 2 );
-% distance = distance( distance > 2 );
-% 
-% 
-% 
-% set(gca, 'Xlim',[1,Lx/2]);
-% 
-% 
-% modelfun = @(b,x)(b(5)+ b(3).*cos(2*b(4).*x+b(1)).*x.^(-b(2)/2) );
-% mdl = fitnlm(distance',ChargeDensity_ex',modelfun,[1,0.2,1,pi/8,0.91]);
-% 
-% sites = distance;
-% phi = mdl.Coefficients.Estimate(1);
-% Kc = mdl.Coefficients.Estimate(2);
-% deltan = mdl.Coefficients.Estimate(3);
-% b = mdl.Coefficients.Estimate;
-% sites = sites(1):0.01:sites(end);
-% plot(sites, modelfun(b,sites),'-');
+figure;
+ChargeDensity_ex = (ChargeDensity_ex+ChargeDensity_ex(end:-1:1))/2;
+
+plot(distance(1:end/2), ChargeDensity_ex(1:end/2),'o'); hold on;
+
+distance = distance(1:end/2-4);
+ChargeDensity_ex = ChargeDensity_ex(1:end/2-4);
+
+ChargeDensity_ex = ChargeDensity_ex( distance > 2 );
+distance = distance( distance > 2 );
+
+
+
+set(gca, 'Xlim',[1,Lx/2]);
+
+
+modelfun = @(b,x)(b(5)+ b(3).*cos(2*b(4).*x+b(1)).*x.^(-b(2)/2) );
+mdl = fitnlm(distance',ChargeDensity_ex',modelfun,[ -2.1135
+    0.8895
+   -0.0357
+    0.7866
+    0.8757]);
+
+sites = distance;
+phi = mdl.Coefficients.Estimate(1);
+Kc = mdl.Coefficients.Estimate(2);
+deltan = mdl.Coefficients.Estimate(3);
+b = mdl.Coefficients.Estimate;
+sites = sites(1):0.01:sites(end)+1;
+plot(sites, modelfun(b,sites),'-');
 % l=legend('DMRG data', ['fitting, $K_c= ',num2str(Kc),'$']);
 % set(l,'Box','off');set(l,'Interpreter','latex');
 % set(l,'Fontsize',18);
-% 
-% set(gca,'fontsize',24);
-% set(gca,'linewidth',1.5);
-% set(get(gca,'Children'),'linewidth',2); % Set line width 1.5 pounds
-% xlabel('$x$','Interpreter','latex');
-% ylabel('Charge Density','Interpreter','latex');
-% set(get(gca,'XLabel'),'FontSize',24); 
-% set(get(gca,'YLabel'),'FontSize',24); 
-% 
-% 
+
+set(gca,'fontsize',24);
+set(gca,'linewidth',1.5);
+set(get(gca,'Children'),'linewidth',2); % Set line width 1.5 pounds
+xlabel('$x$','Interpreter','latex');
+ylabel('Charge Density','Interpreter','latex');
+set(get(gca,'XLabel'),'FontSize',24); 
+set(get(gca,'YLabel'),'FontSize',24); 
+
+

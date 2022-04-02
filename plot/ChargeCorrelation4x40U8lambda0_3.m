@@ -3,15 +3,20 @@ omega = 5;
 g = 2.4495;
 Np=3;
 
+
+begin = 8;
+endx= 32;
+
 U = 8; Numhole = Lx*Ly/8;
 
-Dset=[8000,9000,10000,12000,13000, 14000,15000,16000,17000,18000,16001];%bond dimension set
-trunc_err=1e7*[3.47e-6,3.12e-6,2.88e-6,2.50e-06, 2.33e-06,2.20e-06,2.0994e-06,1.99e-6, 1.89e-06,1.74e-06,2.12e-06];
-%  wait D=16000, truncation error increase from 1.98e-6 to 2.00e-6
-extrapolation_poly_degree = 2;
-selected_fit_data=[4:6,11];
 
-D = Dset(1);
+Dset=[8000,9000,10000,12000,13000, 14000,15000,16000,17000,18000,16001];%bond dimension set
+trunc_err=1e7*[3.47e-6,3.12e-6, 2.88e-6,2.50e-06, 2.33e-06,2.20e-06,2.0994e-06,1.99e-6, 2.00e-06,1.74e-06,2.12e-06];
+% grow D17000 trun error = 1.89e-06
+extrapolation_poly_degree = 2;
+selected_fit_data=[5,6,7,8,10]-1;
+
+Db = Dset(1);
 
 FileNamePostfix=['begin',num2str(begin),'end',num2str(endx),...
     'ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),...
@@ -29,11 +34,11 @@ end
 ReducedChargeCorrelation = zeros(numel(Dset), numel(ChargeCorrelation));
 for j = 1:numel(Dset)
     D = Dset(j);
+    FileNamePostfix=['ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(Db),'.json'];
+    ChargeDensity = jsondecode(fileread(['../data/nf',FileNamePostfix]));
     FileNamePostfix=['begin',num2str(begin),'end',num2str(endx),...
     'ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),...
     'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(Db),'.json'];
-
-    ChargeDensity = jsondecode(fileread(['../data/nf',FileNamePostfix]));
     ChargeCorrelation = jsondecode(fileread(['../data/nfnf',FileNamePostfix]));
     for i=1:numel(ChargeCorrelation)
         I1=find(ChargeDensity(:,1)==ChargeCorrelation{i}{1}(1));
@@ -61,7 +66,7 @@ loglog(distance, abs(ReducedChargeCorrelation_ex),'o');hold on;
 
 
 
-fit_x=[6,7,10,11,14,15];
+fit_x=5:15;
 %  fit_x=[6,7,10,11,14];
 fit_y=zeros(size(fit_x));
 for i=1:numel(fit_x)
@@ -80,7 +85,7 @@ end
 
 p = fit(log(fit_x'),log(abs(fit_y')),'poly1');
 fprintf('Kc=%.5f\n',-p.p1);
-x = fit_x(1):0.5:fit_x(end);
+x = fit_x(1):0.5:fit_x(end)+10;
 fl=loglog(x,exp(p.p2)*x.^p.p1,'-.');
 T=text(8,4.5e-3,['$K_{c}=',num2str(-p.p1),'$']);
 set(T,'Interpreter','latex');set(T,'Fontsize',24);

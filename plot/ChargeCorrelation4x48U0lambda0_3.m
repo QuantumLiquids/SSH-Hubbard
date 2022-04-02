@@ -5,8 +5,8 @@ Np=3;
 
 U = 0; Numhole = Lx*Ly/8;
 
-Dset=[10000,11000,12000,13000];%bond dimension set
-trunc_err=1e7*[3.64e-06,3.32e-06,3.04e-06,2.80e-06];
+Dset=[10000,11000,12000,13000,14000];%bond dimension set
+trunc_err=1e7*[3.64e-06,3.32e-06,3.04e-06,2.80e-06,2.53e-06];
 
 D = Dset(1);
 

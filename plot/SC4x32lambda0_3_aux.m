@@ -6,11 +6,11 @@ Np=3;
 U = 8; Numhole = Lx*Ly/8;
 
 Dset=[8000,9000, 10001,12000, 14000, 16000, 17000,18000];%bond dimension set
-trunc_err = 1e7*[3.70e-06, 3.28e-06, 3.06e-06, 2.65e-06, 2.32e-06, 2.09e-06, 2.01e-06,1.92e-06];
+trunc_err = 1e7*[3.70e-06, 3.28e-06, 3.06e-06, 2.65e-06, 2.32e-06, 2.09e-06, 2.00e-06,1.92e-06];
 %D14000 old version(come from 16000) 2.52e-06
 
 extrapolation_poly_degree = 2;
-selected_fit_data=[2,5,6:7,8];
+selected_fit_data=[4,5,6:7];
 
 %D10000: 2.96e-06 -> 3.05e-06
 

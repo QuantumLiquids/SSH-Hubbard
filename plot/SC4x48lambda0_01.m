@@ -38,8 +38,10 @@ for i=1:numel(distance)
     p = fit(fit_x(1:end)',scsyy(1:end,i),'poly2');
     scsyy_ex(i)=p.p3;
 end
+distanceMean=mean(transpose(reshape(distance,[],4)));
+scsyy_exMean=mean(transpose(reshape(scsyy_ex,[],4)));
 
-semilogy(distance, scsyy_ex,'o');hold on;
+semilogy(distanceMean, scsyy_exMean,'o');hold on;
 
 
 fit_x=[10,18];
