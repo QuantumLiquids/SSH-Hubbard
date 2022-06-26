@@ -9,12 +9,12 @@ U = 8; Numhole = Lx*Ly/8;
 begin = 8; 
 endx= 32;
 
-Dset=[8000,9000,10000,12000,13000, 14000,15000,16000,17000,18000];%bond dimension set
-
-trunc_err=1e7*[3.47e-6,3.12e-6,2.88e-6,2.49e-06, 2.33e-06,2.20e-06,2.09e-6,1.98e-6, 1.89e-06,1.71e-06];
-%  wait D=16000, truncation error increase from 1.98e-6 to 2.00e-6
+Dset=[8000,9000,10000,12000,13000, 14000,15000,17000,16001];%bond dimension set
+trunc_err=1e7*[3.47e-6,3.12e-6,2.88e-6,2.50e-06, 2.33e-06,2.20e-06,2.0994e-06, 1.99e-06,2.12e-06];
+% grow D17000 trun error = 1.89e-06
 extrapolation_poly_degree = 2;
-selected_fit_data=[3,5:7];
+selected_fit_data=[1,4,5,6,7,8];%,1,3,10
+
 
 
 D=Dset(1);

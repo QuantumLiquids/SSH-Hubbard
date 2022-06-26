@@ -1,15 +1,15 @@
+figure;
 Lx=48; Ly=4;
-omega = 5; 
-g = 0.4472;
-Np=1;
+omega = 5; g =   1.414; Np = 2; U = 8; Numhole = Lx*Ly/8;
+addpath('../');
 
-U = 8; Numhole = Lx*Ly/8;
+Dset=[6000, 8000, 10000,12000,16000];
+trunc_err=[6.4665e-07, 4.9815e-07, 4.7861e-07, 4.7547e-07,3.7811e-07];
 
-Dset=[10000,12000,14000,16000,18000];%bond dimension set
-
+selected_fit_data=[1,2,3,4];
 D=Dset(1);
 FileNamePostfix=['ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
-A = jsondecode(fileread(['../data/scsyya',FileNamePostfix]));
+A = jsondecode(fileread(['../../data/scsyya',FileNamePostfix]));
 distance=zeros(1,numel(A));
 for i=1:numel(A)
     distance(i) = (A{i}{1}(3)-A{i}{1}(1))/(2*Np+1)/Ly;
@@ -19,10 +19,10 @@ scsyy=zeros(numel(Dset),numel(A));
 for j = 1:numel(Dset)
     D = Dset(j);
     FileNamePostfix=['ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
-    A = jsondecode(fileread(['../data/scsyya',FileNamePostfix]));
-    B = jsondecode(fileread(['../data/scsyyb',FileNamePostfix]));
-    C = jsondecode(fileread(['../data/scsyyc',FileNamePostfix]));
-    D = jsondecode(fileread(['../data/scsyyd',FileNamePostfix]));
+    A = jsondecode(fileread(['../../data/scsyya',FileNamePostfix]));
+    B = jsondecode(fileread(['../../data/scsyyb',FileNamePostfix]));
+    C = jsondecode(fileread(['../../data/scsyyc',FileNamePostfix]));
+    D = jsondecode(fileread(['../../data/scsyyd',FileNamePostfix]));
     for i=1:numel(A)
         scsyy(j,i) = A{i}{2}+B{i}{2}+C{i}{2}+D{i}{2};
     end
@@ -35,7 +35,7 @@ end
 scsyy_ex=zeros(size(distance));
 fit_x=1e7*[1.15e-6,9.74e-07, 8.89e-07, 8.26e-07, 7.69e-07];%Site278
 for i=1:numel(distance)
-    p = fit(fit_x(1:end)',scsyy(1:end,i),'poly2');
+    p = fit(fit_x(selected_fit_data)',scsyy(selected_fit_data,i),'poly2');
     scsyy_ex(i)=p.p3;
 end
 distanceMean=mean(transpose(reshape(distance,[],4)));
@@ -79,9 +79,13 @@ fprintf('Ksc=%.5f\n',-p.p1);
 set(gca,'fontsize',24);
 set(gca,'linewidth',1.5);
 set(get(gca,'Children'),'linewidth',2); % Set line width 1.5 pounds
-xlabel('$x$','Interpreter','latex');
-ylabel('$\Phi_{yy}(x)$','Interpreter','latex');
+xlabel('$r$','Interpreter','latex');
+ylabel('$\Phi_{yy}(r)$','Interpreter','latex');
 set(get(gca,'XLabel'),'FontSize',24); 
 set(get(gca,'YLabel'),'FontSize',24); 
 
 set(gcf,'position',[1000,1000,400,350]);
+set(gca,'Xlim',[1,24]);
+
+set(gca, 'YTick', [1e-5, 1e-4,1e-3,1e-2]);
+% set(gca,'XTickLabel',{'16','24','32','40'});

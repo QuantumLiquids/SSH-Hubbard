@@ -9,12 +9,13 @@ spin_mode='szsz'; %'szsz', 'spsm','smsp'
 begin=3;
 endx=14;
 
-Dset=[8000,10000,14000,16000];
-trunc_err=  1e7*[3.37e-06,2.82e-06,2.18e-06,1.98e-06]; %middle bond
+Dset=[8000,10000, 12000,14000,16000,16001];
+trunc_err=  1e7*[3.37e-06,2.82e-06,2.49e-06, 2.21e-06,1.98e-06,2.01e-6]; %middle bond
+
 % 缺D=12000, correlation, truncation error = 2.45e-06,
 
 D = Dset(1);
-selected_fit_data = 1:4;
+selected_fit_data = [1:4,6];
 extrapolation_poly_degree = 2;
 
 

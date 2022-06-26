@@ -2,10 +2,10 @@ clear;
 Lx=48; Ly=4;
 omega = 5; 
 % g = 0.4472;
-g=1;
-% g = 1.414;
-% g = 2;
-% g = 2.4495;
+% g=1; %lambda=0.05
+%  g = 1.414; %lambda=0.1
+% g = 2; %lambda=0.2
+g = 2.4495; %lambda=0.3
 % g = 2.8284;
 % if g<0.0001
 %     Np=1;
@@ -17,22 +17,25 @@ g=1;
 %     Np=4;
 % end
 Np=2;
-U = 1; Numhole = Lx*Ly/8;
+U = 6; Numhole = Lx*Ly/8;
 
 
 D = 8000;
-% FileNamePostfix=['ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
+%   FileNamePostfix=['ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
 FileNamePostfix=['.json'];
 ChargeDensityData = jsondecode(fileread(['../data/nf',FileNamePostfix]));
-ChargeDensityData = ChargeDensityData(3*end/4:end,:);
+ChargeDensityData = ChargeDensityData(end-end/8:end,:);
 % ChargeDensity = (reshape(ChargeDensityData(:,2),Ly,[]));
 disp(mean(ChargeDensityData(:,2)));
 % ChargeDensity = (ChargeDensity+ChargeDensity(end:-1:1))/2;
 % plot(1:numel(ChargeDensity)/4,ChargeDensity,'-o'); hold on;
+total_Ly = (2*Np+1)*Ly ;
 distance = zeros(size(ChargeDensityData,1),1);
 for i=1:numel(distance)
-    FermionSite = Site2FermionSite(ChargeDensityData(i, 1),Ly,Np);
-    distance(i) = fix((FermionSite)/Ly);
+%     FermionSite = Site2FermionSite(ChargeDensityData(i, 1),Ly,Np);
+%     distance(i) = fix((FermionSite)/Ly);
+        global_site_num = ChargeDensityData(i, 1);
+    distance(i) = fix(global_site_num/total_Ly);
 end
 plot(distance, ChargeDensityData(:,2),'-o'); hold on;
 
@@ -112,6 +115,4 @@ set(get(gca,'YLabel'),'FontSize',24);
 % ylabel('$Pair Density$','Interpreter','latex');
 % set(get(gca,'XLabel'),'FontSize',24); 
 % set(get(gca,'YLabel'),'FontSize',24); 
-% 
-% 
 % 

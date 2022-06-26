@@ -1,3 +1,4 @@
+figure;
 clear;
 Lx=48; Ly=4;
 omega = 5; 

@@ -296,12 +296,12 @@ double MasterTwoSiteFiniteVMPSUpdate2(
 #endif
 
   bool need_expand(true);
-  if (fabs(noise) < 1e-10) {
+  const size_t physical_dim_l = mps[lsite_idx].GetShape()[1];
+  const size_t physical_dim_r = mps[rsite_idx].GetShape()[1];
+  if (fabs(noise) < 1e-10 || ( physical_dim_l==4 && physical_dim_r==4 ) ) {
     noise = 0.0;    //just for output
     need_expand = false;
   }else{
-    const size_t physical_dim_l = mps[lsite_idx].GetShape()[1];
-    const size_t physical_dim_r = mps[rsite_idx].GetShape()[1];
     const QNSectorVec<QNT>* qnscts_right;
     const QNSectorVec<QNT>* qnscts_left;
     Index<QNT> fused_index1, fused_index2;
@@ -424,7 +424,7 @@ double MasterTwoSiteFiniteVMPSUpdate2(
 
   static TenT nf = TenT();
   static bool is_nf_initialized = false;
-  if(!is_nf_initialized){
+  if(!is_nf_initialized) {
     mps.LoadTen(0, GenMPSTenName(sweep_params.mps_path, 0));
     Index<QNT> index_out_fermion = mps[0].GetIndexes()[1];
     Index<QNT> index_in_fermion = InverseIndex(index_out_fermion);
@@ -477,7 +477,7 @@ double MasterTwoSiteFiniteVMPSUpdate2(
   auto update_elapsed_time = update_timer.Elapsed();
   std::cout << "Site " << std::setw(4) << target_site
             << " E0 = " << std::setw(20) << std::setprecision(kLanczEnergyOutputPrecision) << std::fixed << lancz_res.gs_eng
-            << " TruncErr = " << std::setprecision(2) << std::scientific << actual_trunc_err << std::fixed
+            << " TruncErr = " << std::setprecision(4) << std::scientific << actual_trunc_err << std::fixed
             << " D = " << std::setw(5) << D
             << " Iter = " << std::setw(3) << lancz_res.iters
             << " LanczT = " << std::setw(8) << lancz_elapsed_time

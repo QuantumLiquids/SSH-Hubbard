@@ -9,11 +9,11 @@ Dset=[8000,9000, 10001,12000, 14000, 16000, 17000,18000];%bond dimension set
 trunc_err = 1e7*[3.70e-06, 3.28e-06, 3.05e-06, 2.61e-06, 2.32e-06, 2.09e-06, 1.99e-06,1.88e-06];
 %D14000 old version(come from 16000) 2.52e-06
 
-Dset = Dset([2,3,5, 6,7]);
-trunc_err = trunc_err([2,3,5, 6,7]);
+Dset = Dset([4:7]);
+trunc_err = trunc_err([4:7]);
 
 extrapolation_poly_degree = 2;
-selected_fit_data=1:5;
+selected_fit_data=1:4;
 
 %D10000: 2.96e-06 -> 3.05e-06
 

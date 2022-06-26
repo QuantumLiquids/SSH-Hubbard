@@ -1,3 +1,4 @@
+% figure;
 Lx=32; Ly=4;
 omega = 5; 
 g = 2.4495;
@@ -104,21 +105,21 @@ end
 h2=plot(distance, -scsyyp_ex,'-x');hold on;
 
 
-%%======Pyy''======%%
-scsyypp = scsPS(:, 2*Pyx_data_size+1:3*Pyx_data_size);
-scsyypp_ex = zeros(1, Pyx_data_size);
-fit_x = trunc_err;
-for i=1:numel(distance)
-    p = fit(fit_x(selected_fit_data)',scsyypp(selected_fit_data,i),'poly2');
-    scsyypp_ex(i)=p.p3;
-end
-h3=plot(distance, scsyypp_ex,'-s');hold on;
+% %%======Pyy''======%%
+% scsyypp = scsPS(:, 2*Pyx_data_size+1:3*Pyx_data_size);
+% scsyypp_ex = zeros(1, Pyx_data_size);
+% fit_x = trunc_err;
+% for i=1:numel(distance)
+%     p = fit(fit_x(selected_fit_data)',scsyypp(selected_fit_data,i),'poly2');
+%     scsyypp_ex(i)=p.p3;
+% end
+% h3=plot(distance, scsyypp_ex,'-s');hold on;
 
+% l=legend([h0,h2,h3,h1],'$\Phi_{yy}(r)$, cylinder',  '$-\Phi_{yy}^{\prime}(r)$', '$\Phi_{yy}^{\prime\prime}(r)$', '$|\Phi_{yx}(r)|$');
+l=legend([h0,h2,h1],'$\Phi_{yy}(r)$, cylinder',  '$-\Phi_{yy}^{\prime}(r)$', '$|\Phi_{yx}(r)|$');
 
-
-l=legend([h0,h2,h3,h1],'$\Phi_{yy}(x)$',  '$-\Phi_{yy}^{\prime}(x)$', '$\Phi_{yy}^{\prime\prime}(x)$', '$\Phi_{yx}(x)$');
 set(l,'Box','off');set(l,'Interpreter','latex');
-set(l,'Fontsize',18);
+set(l,'Fontsize',28);
 set(l,'Location','SouthWest');
 
 
@@ -126,14 +127,22 @@ set(gca, 'Xlim', [2,15]);
 
 set(gca,'fontsize',24);
 set(gca,'linewidth',1.5);
-set(get(gca,'Children'),'linewidth',2); % Set line width 1.5 pounds
-xlabel('$x$','Interpreter','latex');
-ylabel('SC correlations','Interpreter','latex');
+set(get(gca,'Children'),'linewidth',3); % Set line width 1.5 pounds
+xlabel('$r$','Interpreter','latex');
+ylabel('$\Phi(r)$','Interpreter','latex');
 set(get(gca,'XLabel'),'FontSize',24); 
 set(get(gca,'YLabel'),'FontSize',24); 
 
+set(gca, 'Xlim',[1,16]);
 
-set(gcf,'position',[1000,1000,400,350]);
+set(gca, 'XTick', [1,2,5,10,15]);
+set(gca,'XTickLabel',{'1','2','5','10','15'});
+
+set(gca, 'YTick', [1e-7,1e-5,1e-3]);
+% set(gca,'XTickLabel',{'1','2','5','10','15'});
+
+
+set(gcf,'position',[1000,1000,450,350]);
 
 
 

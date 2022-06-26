@@ -31,8 +31,8 @@ for j = 1:numel(Dset)
 end
 
 
-% ChargeDensity = (ChargeDensity + ChargeDensity(:,end:-1:1))/2;
-plot(distance + 1, ChargeDensity,'-x'); hold on;
+ChargeDensity = (ChargeDensity + ChargeDensity(:,end:-1:1))/2;
+plot(distance + 1, ChargeDensity,'x'); hold on;
 ChargeDensity_ex = zeros(1, numel(distance) );
 
 fit_x=trunc_err;
@@ -59,6 +59,7 @@ plot(continous_cos_x + 1, modelfun(b,continous_cos_x),'-');
 set(gca,'fontsize',24);
 set(gca,'linewidth',1.5);
 set(get(gca,'Children'),'linewidth',2); % Set line width 1.5 pounds
+set(get(gca,'Children'),'markersize',7); % Set line width 1.5 pound
 xlabel('$x$','Interpreter','latex');
 ylabel('Charge Density','Interpreter','latex');
 set(get(gca,'XLabel'),'FontSize',24);
@@ -66,7 +67,7 @@ set(get(gca,'YLabel'),'FontSize',24);
 
 
 
-
+%{
 figure;
 ChargeDensity_ex = (ChargeDensity_ex+ChargeDensity_ex(end:-1:1))/2;
 
@@ -104,3 +105,4 @@ xlabel('$x$','Interpreter','latex');
 ylabel('Charge Density','Interpreter','latex');
 set(get(gca,'XLabel'),'FontSize',24); 
 set(get(gca,'YLabel'),'FontSize',24); 
+%}

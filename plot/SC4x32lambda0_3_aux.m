@@ -12,6 +12,12 @@ trunc_err = 1e7*[3.70e-06, 3.28e-06, 3.06e-06, 2.65e-06, 2.32e-06, 2.09e-06, 2.0
 extrapolation_poly_degree = 2;
 selected_fit_data=[4,5,6:7];
 
+
+Dset = Dset(selected_fit_data);
+trunc_err = trunc_err(selected_fit_data);
+selected_fit_data = 1:numel(selected_fit_data);
+
+
 %D10000: 2.96e-06 -> 3.05e-06
 
 D=Dset(1);

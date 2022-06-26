@@ -4,11 +4,11 @@ omega = 5; g = 2.4495; Np = 3; U = 8; Numhole = Lx*Ly/8;
 
 
 
-Dset=[8000,9000,10000,12000,13000, 14000,15000,16000,17001,16001];%bond dimension set
-trunc_err=1e7*[3.47e-6,3.12e-6,2.88e-6,2.50e-06, 2.33e-06,2.20e-06,2.0994e-06,1.99e-6, 2.00e-06,2.12e-06];
+Dset=[8000,9000,10000,12000,13000, 14000,15000,17000,16001];%bond dimension set
+trunc_err=1e7*[3.47e-6,3.12e-6,2.88e-6,2.50e-06, 2.33e-06,2.20e-06,2.0994e-06, 1.99e-06,2.12e-06];
 % grow D17000 trun error = 1.89e-06
 extrapolation_poly_degree = 2;
-selected_fit_data=[1,2,3,4,5,6,7,9];%,1,3,10
+selected_fit_data=[1,4,5,6,7,8];%,1,3,10
 % selected_fit_data=[5:6,7,8,12]-1;
 D=Dset(1);
 FileNamePostfix=['ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];

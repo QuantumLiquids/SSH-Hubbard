@@ -434,10 +434,10 @@ inline MeasuRes<TenElemT> MeasureElectronPhonon4PointFunction(
   }
   const size_t Ly = 4; //change here when Ly of system changes
   std::cout <<  "note: Ly = " << Ly <<std::endl;
-  assert(phys_ops.size() == 4);
+  assert(phys_ops.size() == 4); // 4-point function
   assert(sites_set.size()%Ly == 0);
   for(size_t i = 0; i < sites_set.size();i++){
-    assert(sites_set[i].size() == 4);
+    assert(sites_set[i].size() == 4); // 4-point function
   }
   const size_t measure_event_num = sites_set.size();
   const size_t measure_event_per_group_num = sites_set.size()/Ly;

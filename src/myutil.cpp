@@ -22,7 +22,7 @@ size_t GetNumofMps(){
 
 //If site `i` is electron site, for SSH-Hubbard model
 bool IsElectron(size_t i, size_t Ly, size_t Np){
-    int residue=i%((2*Np+1)*Ly );
+    size_t residue=i%((2*Np+1)*Ly );
     if(residue<(Np+1)*Ly && residue%(Np+1)==0){
         return true;
     }

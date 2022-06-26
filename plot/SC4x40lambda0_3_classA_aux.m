@@ -9,11 +9,17 @@ U = 8; Numhole = Lx*Ly/8;
 begin = 8; 
 endx= 32;
 
-Dset=[8000,9000,10000,11000,12000,13000, 14000,15000,16000,17000,18000,16001];%bond dimension set
-trunc_err=1e7*[3.47e-6,3.12e-6, 2.88e-6,2.66e-6,2.50e-06, 2.33e-06,2.20e-06,2.0994e-06,1.99e-6, 2.00e-06,1.74e-06,2.12e-06];
+Dset=[8000,9000,10000,11000,12000,13000, 14000,15000,16000,17000,18000,16001,14001];%bond dimension set
+trunc_err=1e7*[3.47e-6,3.12e-6, 2.88e-6,2.67e-6,2.50e-06, 2.33e-06,2.20e-06,2.0994e-06,1.99e-6, 1.99e-06,1.74e-06,2.12e-06,2.37e-06];
 % grow D17000 trun error = 1.89e-06
 extrapolation_poly_degree = 2;
-selected_fit_data=[5,6,7,8,10];
+selected_fit_data=[6,7,8,10];
+
+
+Dset = Dset(selected_fit_data);
+trunc_err = trunc_err(selected_fit_data);
+selected_fit_data = 1:numel(selected_fit_data);
+
 
 Db=Dset(1);
 FileNamePostfix=['begin',num2str(begin),'end',num2str(endx),...
