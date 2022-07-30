@@ -7,9 +7,9 @@ omega = 5;
 g = 1.414;
 Np = 2;
 
-U = 0; Numhole = Lx*Ly/8;
+U = 2; Numhole = Lx*Ly/8;
 
-Dset=[12000];%bond dimension set
+Dset=[16000];%bond dimension set
 
 extrapolation_poly_degree = 2;
 selected_fit_data=[1];

@@ -1,5 +1,5 @@
 /**
- * Fix single site update, svdinfo==0 collepse
+ * Fix left enviroment tensors
  *
  */
 

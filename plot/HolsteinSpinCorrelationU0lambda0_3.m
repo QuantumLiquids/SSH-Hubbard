@@ -1,13 +1,15 @@
 clear;
 figure
 Lx=32; Ly=4;
-omega = 5; 
+omega = 5;
 g = 2.4495;
 Np=3;
+% g = 1.414;
+% Np = 2;
 
-U = 0; Numhole = Lx*Ly/8;
+U = 1; Numhole = Lx*Ly/8;
 
-Dset=[12000];%bond dimension set
+Dset=[14000];%bond dimension set
 
 extrapolation_poly_degree = 2;
 selected_fit_data=[1];
@@ -37,9 +39,9 @@ for j = 1:numel(Dset)
     SpinCorrelationDatapm = jsondecode(fileread(['../data/spsm',FileNamePostfix]));
     SpinCorrelationDatamp = jsondecode(fileread(['../data/smsp',FileNamePostfix]));
     for i=1:numel(SpinCorrelationDataz)
-        SpinCorrelation(j, i) =  1/2*(SpinCorrelationDatapm{i}{2} + SpinCorrelationDatamp{i}{2});
+%         SpinCorrelation(j, i) =  1/2*(SpinCorrelationDatapm{i}{2} + SpinCorrelationDatamp{i}{2});
 
-%         SpinCorrelation(j, i) = SpinCorrelationDataz{i}{2} + 1/2*(SpinCorrelationDatapm{i}{2} + SpinCorrelationDatamp{i}{2});
+         SpinCorrelation(j, i) = SpinCorrelationDataz{i}{2} + 1/2*(SpinCorrelationDatapm{i}{2} + SpinCorrelationDatamp{i}{2});
     end
 end
 
@@ -56,7 +58,7 @@ h_ex = semilogy(distance2, abs(ReducedChargeCorrelation_ex2),'o');hold on;
 
 
 
-fit_x=[4,8,12,15];
+fit_x=[4,10,15];
 %  fit_x=[6,7,10,11,14];
 fit_y=zeros(size(fit_x));
 for i=1:numel(fit_x)

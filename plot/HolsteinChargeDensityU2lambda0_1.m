@@ -8,7 +8,7 @@ omega = 5;
 
 U = 2; Numhole = Lx*Ly/8;
 
-Dset=[12000];%bond dimension set
+Dset=[16000];%bond dimension set
 
 D=Dset(1);
 FileNamePostfix=['holstein',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];

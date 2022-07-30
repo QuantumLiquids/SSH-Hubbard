@@ -1,5 +1,5 @@
-clear;
-figure
+% clear;
+% figure
 Lx=32; Ly=4;
 omega = 5; 
 % g = 2.4495;
@@ -10,7 +10,7 @@ Np = 2;
 
 U = 2; Numhole = Lx*Ly/8;
 
-Dset=[12000];%bond dimension set
+Dset=[16000];%bond dimension set
 
 extrapolation_poly_degree = 2;
 selected_fit_data=[1];

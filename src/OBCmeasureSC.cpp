@@ -148,21 +148,21 @@ int main(int argc, char *argv[]) {
 
   if(world.rank()==0){
     //yx, yy,yy',yy'
-    MeasureElectronPhonon4PointFunction(mps,sc_phys_ops_a, fourpoint_sitessetF,Np,"scsa" + file_name_postfix);
+    MeasureElectronPhonon4PointFunction(mps,sc_phys_ops_a, fourpoint_sitessetF,"scsa" + file_name_postfix);
   }else if(world.rank()==1){
-    MeasureElectronPhonon4PointFunction(mps,sc_phys_ops_b, fourpoint_sitessetF,Np,"scsb" + file_name_postfix);
+    MeasureElectronPhonon4PointFunction(mps,sc_phys_ops_b, fourpoint_sitessetF,"scsb" + file_name_postfix);
   }else if(world.rank()==2){
-    MeasureElectronPhonon4PointFunction(mps,sc_phys_ops_c, fourpoint_sitessetF,Np,"scsc" + file_name_postfix);
+    MeasureElectronPhonon4PointFunction(mps,sc_phys_ops_c, fourpoint_sitessetF,"scsc" + file_name_postfix);
   }else if(world.rank()==3){
-    MeasureElectronPhonon4PointFunction(mps,sc_phys_ops_d, fourpoint_sitessetF,Np,"scsd" + file_name_postfix);
+    MeasureElectronPhonon4PointFunction(mps,sc_phys_ops_d, fourpoint_sitessetF,"scsd" + file_name_postfix);
   }else if(world.rank()==4){
-    MeasureElectronPhonon4PointFunction(mps,sc_phys_ops_b, xx_fourpoint_sitessetF,Np,"scsxxa" + file_name_postfix);
+    MeasureElectronPhonon4PointFunction(mps,sc_phys_ops_b, xx_fourpoint_sitessetF,"scsxxa" + file_name_postfix);
   }else if(world.rank()==5){
-    MeasureElectronPhonon4PointFunction(mps,sc_phys_ops_c, xx_fourpoint_sitessetF,Np,"scsxxb" + file_name_postfix);
+    MeasureElectronPhonon4PointFunction(mps,sc_phys_ops_c, xx_fourpoint_sitessetF,"scsxxb" + file_name_postfix);
   }else if(world.rank()==6){
-    MeasureElectronPhonon4PointFunction(mps,sc_phys_ops_d, xx_fourpoint_sitessetF,Np,"scsxxc" + file_name_postfix);
+    MeasureElectronPhonon4PointFunction(mps,sc_phys_ops_d, xx_fourpoint_sitessetF,"scsxxc" + file_name_postfix);
   }else if(world.rank()==7){
-    MeasureElectronPhonon4PointFunction(mps,sc_phys_ops_d, xx_fourpoint_sitessetF,Np,"scsxxd" + file_name_postfix);
+    MeasureElectronPhonon4PointFunction(mps,sc_phys_ops_d, xx_fourpoint_sitessetF,"scsxxd" + file_name_postfix);
   }
 
   cout << "measured y--y four point function.<====" <<endl;

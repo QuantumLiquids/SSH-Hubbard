@@ -8,7 +8,7 @@ Np = 2;
 
 U = 2; Numhole = Lx*Ly/8;
 
-Dset=[12000];%bond dimension set
+Dset=[18000];%bond dimension set
 
 D=Dset(1);
 FileNamePostfix=['holstein',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
@@ -29,7 +29,7 @@ for j = 1:numel(Dset)
     C = jsondecode(fileread(['../data/scsyyc',FileNamePostfix]));
     D = jsondecode(fileread(['../data/scsyyd',FileNamePostfix]));
     for i=1:numel(A)
-        scsyy(j,i) = A{i}{2}+B{i}{2}+C{i}{2}+D{i}{2};
+        scsyy(j,i) = (A{i}{2}+B{i}{2}+C{i}{2}+D{i}{2})/2;
     end
 end
 [order_distance, I] = sort(distance);
@@ -87,7 +87,7 @@ hs=loglog(distance,abs(scs_onsite),'x');hold on;
 
 l=legend([hs,h0],'$\Phi_{s}(x)$','$\Phi_{yy}(x)$');
 set(l,'Box','off');set(l,'Interpreter','latex');
-set(l,'Fontsize',18);
+set(l,'Fontsize',30);
 set(l,'Location','SouthWest');
 
 

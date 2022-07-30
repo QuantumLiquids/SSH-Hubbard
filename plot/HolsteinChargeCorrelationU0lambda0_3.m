@@ -1,13 +1,13 @@
-clear;
-figure
+% clear;
+% figure
 Lx=32; Ly=4;
 omega = 5; 
 g = 2.4495;
 Np=3;
 
-U = 0; Numhole = Lx*Ly/8;
+U = 1; Numhole = Lx*Ly/8;
 
-Dset=[12000];%bond dimension set
+Dset=[14000];%bond dimension set
 
 extrapolation_poly_degree = 2;
 selected_fit_data=[1];
@@ -39,7 +39,7 @@ for j = 1:numel(Dset)
 end
 
 [distance, I]=sort(distance); ReducedChargeCorrelation=ReducedChargeCorrelation(:, I);
-h = loglog(distance,abs(ReducedChargeCorrelation),'x');hold on;
+h = loglog(distance,abs(ReducedChargeCorrelation),'o');hold on;
 
 
 
@@ -50,10 +50,11 @@ ReducedChargeCorrelation_ex=ReducedChargeCorrelation;
 %     ReducedChargeCorrelation_ex(i)=p.p3;
 % end
 
-loglog(distance, abs(ReducedChargeCorrelation_ex),'o');hold on;
+% loglog(distance, abs(ReducedChargeCorrelation_ex),'o');hold on;
 
 
-fit_x=[1,3,5,10,12];
+% fit_x=[1,3,5,10,12];
+fit_x = [1,4,10];
 %  fit_x=[6,7,10,11,14];
 fit_y=zeros(size(fit_x));
 for i=1:numel(fit_x)
