@@ -1,4 +1,0 @@
-ChargeDensity4x16lambda0_3_fit2;
-ChargeDensity4x24lambda0_3_fit2;
-ChargeDensity4x32lambda0_3_fit2;
-ChargeDensity4x40lambda0_3_fit2;

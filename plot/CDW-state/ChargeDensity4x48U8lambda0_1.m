@@ -14,7 +14,7 @@ ChargeDensityData = jsondecode(fileread(['../../data/nf',FileNamePostfix]));
 distance = zeros(1, size(ChargeDensityData,1));
 for i=1:numel(distance)
     FermionSite = Site2FermionSite(ChargeDensityData(i, 1),Ly,Np);
-    distance(i) = fix((Fermi`onSite)/Ly);
+    distance(i) = fix((FermionSite)/Ly);
 end
 
 ChargeDensity = zeros( numel(Dset), numel(distance) );
@@ -51,7 +51,7 @@ end
 ChargeDensity_ex = (ChargeDensity_ex + ChargeDensity_ex(end:-1:1))/2;
 distanceMean=mean(reshape(distance,4,[]));
 ChargeDensity_exMean=mean(reshape(ChargeDensity_ex,4,[]));
-plot(distanceMean + 1, ChargeDensity_exMean,'o'); hold on;
+hex = plot(distanceMean + 1, ChargeDensity_exMean,'o'); hold on;
 
 cos_fix_x = Lx/4:3*Lx/4-1;
 % cos_fix_x = Lx/4+1:3*Lx/4-2;
@@ -65,6 +65,8 @@ fprintf("A_cdw = %.6f\n",Acdw);
 continous_cos_x = min(cos_fix_x)-3:0.01:max(cos_fix_x)+3;
 plot(continous_cos_x + 1, modelfun(b,continous_cos_x),'-');
 
+
+set(hex, 'Markersize',9);
 
 set(gca,'fontsize',24);
 set(gca,'linewidth',1.5);

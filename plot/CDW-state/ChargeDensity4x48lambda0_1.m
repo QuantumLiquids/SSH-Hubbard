@@ -48,6 +48,8 @@ hex = plot(distance, ChargeDensity_ex,'-o'); hold on;
 % set(l,'Location','SouthWest');
 
 
+set(hex, 'Markersize',9);
+
 
 set(gca,'fontsize',24);
 set(gca,'linewidth',1.5);

@@ -41,7 +41,7 @@ end
 distanceMean=mean(transpose(reshape(distance,[],4)));
 scsyy_exMean=mean(transpose(reshape(scsyy_ex,[],4)));
 
-semilogy(distanceMean, scsyy_exMean,'o');hold on;
+hex = semilogy(distanceMean, scsyy_exMean,'o');hold on;
 
 
 fit_x=[10,18];
@@ -75,6 +75,8 @@ fprintf('Ksc=%.5f\n',-p.p1);
 % set(l,'Location','SouthWest');
 
 
+
+set(hex, 'Markersize',9);
 
 set(gca,'fontsize',24);
 set(gca,'linewidth',1.5);

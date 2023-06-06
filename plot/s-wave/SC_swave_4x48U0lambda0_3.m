@@ -38,14 +38,19 @@ end
 
 
 scs_ex=zeros(size(distance));
+scs_ex_error = zeros(size(distance));
 fit_x = trunc_err;
 for i=1:numel(distance)
-    p = fit(fit_x(selected_fit_data)',scs_onsite(selected_fit_data,i),'poly2');
+    [p] = fit(fit_x(selected_fit_data)',scs_onsite(selected_fit_data,i),'poly2');
+    range=confint(p, 0.95);
+    scs_ex_error(i) = (range(2,3)-range(1,3))/2;
+%     fprintf('error bar of Ksc = %.12f\n', scs_ex_error(i));
     scs_ex(i)=p.p3;
 end
 
 h=loglog(distance, scs_ex,'o');hold on;
-
+% h = errorbar(distance, scs_ex, scs_ex_error,'o');hold on;
+% set(gca, 'XScale','log', 'YScale','log')
 
 fit_x=3:10;
 fit_y=zeros(size(fit_x));
@@ -56,10 +61,13 @@ end
 
 
 
-p = fit(log(fit_x'),log(abs(fit_y')),'poly1');
+[p] = fit(log(fit_x'),log(abs(fit_y')),'poly1');
 fprintf('Ksc=%.5f\n',-p.p1);
 x = fit_x(1)-1:0.5:fit_x(end)+6;
 fl=loglog(x,exp(p.p2)*x.^p.p1,'-.');
+range=confint(p, 0.95);
+fprintf('error bar of Ksc = %.12f\n', (range(2,1)-range(1,1))/2);
+
 % T=text(6,3e-2,['$K_{sc}=',num2str(-p.p1),'$']);
 % set(T,'Interpreter','latex');set(T,'Fontsize',24);
 
@@ -111,6 +119,7 @@ set(l,'Location','SouthWest');
 
 set(gca,'fontsize',24);
 set(gca,'linewidth',1.5);
+set([h,h2], 'Markersize',9);
 set(get(gca,'Children'),'linewidth',2); % Set line width 1.5 pounds
 xlabel('$r$','Interpreter','latex');
 %ylabel('$|\langle\Delta_s^\dagger(x)\Delta_s(0)\rangle|$','Interpreter','latex');

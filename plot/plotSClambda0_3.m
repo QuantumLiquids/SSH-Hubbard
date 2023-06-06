@@ -13,6 +13,9 @@ p = fit(log(distance([1:2,3])'),log(SC([1:2,3])'),'poly1');
 fprintf('Ksc=%.5f\n',-p.p1);
 x = distance(1):0.5:distance(end)+2;
 fl=loglog(x,exp(p.p2)*x.^p.p1,'-.');
+range=confint(p, 0.95);
+fprintf('error bar of Kc = %.12f\n', (range(2,1)-range(1,1))/2);
+
 % T=text(8,4.5e-3,['$K_{sc}=',num2str(-p.p1),'$']);
 % set(T,'Interpreter','latex');set(T,'Fontsize',28);
 

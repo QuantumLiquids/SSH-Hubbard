@@ -52,3 +52,7 @@ build
 
 #Running Directory
 run/*
+
+#Manuscript
+draft
+submit

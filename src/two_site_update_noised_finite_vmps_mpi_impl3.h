@@ -22,12 +22,15 @@
 #include "gqten/gqten.h"
 #include "gqmps2/algorithm/lanczos_solver.h"                        //LanczosParams
 #include "boost/mpi.hpp"                                            //boost::mpi
-#include "gqmps2/algo_mpi/framework.h"                              //VMPSORDER
-#include "gqmps2/algo_mpi/vmps/vmps_mpi_init.h"                     //MPI vmps initial
-#include "gqmps2/algo_mpi/vmps/two_site_update_finite_vmps_mpi.h"   //TwoSiteMPIVMPSSweepParams
-#include "gqmps2/algo_mpi/vmps/two_site_update_noised_finite_vmps_mpi.h" //TwoSiteMPINoisedVMPSSweepParams
-#include "gqmps2/algo_mpi/lanczos_solver_mpi.h"                     //MPI Lanczos solver
-#include "gqmps2/algo_mpi/vmps/two_site_update_finite_vmps_mpi_impl.h" //SlaveTwoSiteFiniteVMPS
+#include "gqmps2/algo_mpi/mps_algo_order.h"                         //VMPSORDER
+#include "gqmps2/algo_mpi/vmps/vmps_mpi_init_master.h"                           //MPI vmps initial
+#include "gqmps2/algo_mpi/vmps/vmps_mpi_init_slave.h"                           //MPI vmps initial
+#include "gqmps2/algo_mpi/vmps/two_site_update_finite_vmps_mpi.h"         //SweepParams
+#include "gqmps2/algo_mpi/vmps/two_site_update_noised_finite_vmps_mpi.h"  //TwoSiteMPINoisedVMPSSweepParams
+#include "gqmps2/algo_mpi/lanczos_solver_mpi_master.h"                           //MPI Lanczos solver
+#include "gqmps2/algo_mpi/lanczos_solver_mpi_slave.h"                           //MPI Lanczos solver
+#include "gqmps2/algo_mpi/vmps/two_site_update_finite_vmps_mpi_impl_master.h"
+#include "gqmps2/algo_mpi/vmps/two_site_update_finite_vmps_mpi_impl_slave.h"    //SlaveTwoSiteFiniteVMPS
 #include "gqmps2/algo_mpi/vmps/two_site_update_noised_finite_vmps_mpi_impl.h" //Load related tensors
 #include <thread>                                                       //thread
 
@@ -75,7 +78,7 @@ inline GQTEN_Double TwoSiteFiniteVMPS2(
   if(world.rank()== kMasterRank){
     e0 = MasterTwoSiteFiniteVMPS2(mps,mpo,sweep_params,world, start_site, start_direction);
   }else{
-    SlaveTwoSiteFiniteVMPS<TenElemT, QNT>(world);
+    SlaveTwoSiteFiniteVMPS<TenElemT, QNT>(mpo, world);
   }
   return e0;
 }
@@ -95,6 +98,16 @@ GQTEN_Double MasterTwoSiteFiniteVMPS2(
   assert(mps.size() == mpo.size());
   std::cout << "***** Two-Site Noised Update VMPS FIX Program (with MPI Parallel) *****" << "\n";
   MasterBroadcastOrder(program_start, world );
+  for (size_t node = 1; node < world.size(); node++) {
+    int node_num;
+    world.recv(node, 2 * node, node_num);
+    if (node_num == node) {
+      std::cout << "Node " << node << " received the program start order." << std::endl;
+    } else {
+      std::cout << "unexpected " << std::endl;
+      exit(1);
+    }
+  }
   std::cout << "=====> Checking and updating boundary tensors =====>" << std::endl;
   auto [left_boundary, right_boundary] = CheckAndUpdateBoundaryMPSTensors(
       mps,
@@ -180,7 +193,7 @@ double TwoSiteFiniteVMPSSweep2_StartToRight(
 ) {
   std::cout << "To right"<< std::endl;
   auto N = mps.size();
-  TwoSiteMPIVMPSSweepParams sweep_params_no_noise = (TwoSiteMPIVMPSSweepParams) sweep_params;
+  SweepParams sweep_params_no_noise = (SweepParams) sweep_params;
   using TenT = GQTensor<TenElemT, QNT>;
   TenVec<TenT> lenvs(N - 1);
   TenVec<TenT> renvs(N - 1);
@@ -281,7 +294,7 @@ double TwoSiteFiniteVMPSSweep2_StartToLeft(
 ) {
   std::cout <<"To left."<<std::endl;
   auto N = mps.size();
-  TwoSiteMPIVMPSSweepParams sweep_params_no_noise = (TwoSiteMPIVMPSSweepParams) sweep_params;
+  SweepParams sweep_params_no_noise = (SweepParams) sweep_params;
   using TenT = GQTensor<TenElemT, QNT>;
   TenVec<TenT> lenvs(N - 1);
   TenVec<TenT> renvs(N - 1);
@@ -422,9 +435,10 @@ double MasterTwoSiteFiniteVMPSUpdate2(
 #endif
   Timer lancz_timer("two_site_fvmps_lancz");
   MasterBroadcastOrder(lanczos, world);
-  for(size_t i = 0; i < 4; i++) {
-    std::cout << " raw data of eff_ham[" << i <<"] = " << eff_ham[i]->GetBlkSparDataTen().GetActualRawDataSize() << std::endl;
-  }
+  broadcast(world, lsite_idx, kMasterRank);
+//  for(size_t i = 0; i < 4; i++) {
+//    std::cout << " raw data of eff_ham[" << i <<"] = " << eff_ham[i]->GetBlkSparDataTen().GetActualRawDataSize() << std::endl;
+//  }
   auto lancz_res = MasterLanczosSolver(
       eff_ham, init_state,
       sweep_params.lancz_params,

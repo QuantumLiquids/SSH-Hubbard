@@ -75,15 +75,17 @@ end
 % set(T,'Interpreter','latex');set(T,'Fontsize',24);
 
 
-p = fit(log(fit_x'),log(abs(fit_y')),'poly1');
+[p]= fit(log(fit_x'),log(abs(fit_y')),'poly1');
 fprintf('Kc=%.5f\n',-p.p1);
 x = fit_x(1):0.5:fit_x(end)+8;
 fl=loglog(x,exp(p.p2)*x.^p.p1,'-.');
 % T=text(8,4.5e-3,['$K_{c}=',num2str(-p.p1),'$']);
 % set(T,'Interpreter','latex');set(T,'Fontsize',24);
-
-set(gca, 'Xlim', [0,16]);
-
+range=confint(p, 0.95);
+fprintf('error bar of Kc = %.12f\n', (range(2,1)-range(1,1))/2);
+% set(gca, 'Xlim', [0,16]);
+% fprintf('std error of Kc = %.12f\n', gp.rmse);
+ 
 
 % l=legend([h; hex],'$D=10000$', '$11000$','$12000$','$13000$','$\infty$');
 % set(l,'Box','off');set(l,'Interpreter','latex');
@@ -91,6 +93,7 @@ set(gca, 'Xlim', [0,16]);
 % set(l,'Location','SouthWest');
 
 
+set(hex, 'Markersize',9);
 
 set(gca,'fontsize',24);
 set(gca,'linewidth',1.5);
