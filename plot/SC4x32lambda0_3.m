@@ -5,10 +5,12 @@ Np=3;
 
 U = 8; Numhole = Lx*Ly/8;
 
-Dset=[8000,10000,12000, 14000];%bond dimension set
+Dset=[8000,9000, 10001,12000, 14000, 16000, 17000,18000];%bond dimension set
+trunc_err = 1e7*[3.70e-06, 3.28e-06, 3.06e-06, 2.65e-06, 2.32e-06, 2.09e-06, 2.01e-06,1.92e-06];
+%D14000 old version(come from 16000) 2.52e-06
 
-
-
+extrapolation_poly_degree = 2;
+selected_fit_data=[3,5,6:7];
 D=Dset(1);
 FileNamePostfix=['ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
 A = jsondecode(fileread(['../data/scsyya',FileNamePostfix]));
@@ -33,17 +35,22 @@ end
 h=loglog(distance,scsyy,'x');hold on;
 
 
-
 scsyy_ex=zeros(size(distance));
-%fit_x=[1/8,1/10,1/12,1/14];%1/D
-%fit_x=1e7*[ 6.73e-06, 5.44e-06,4.59e-06, 4.13e-06];%Site  433
-fit_x = 1e7*[3.70e-06,  2.96e-06, 2.60e-06,2.52e-06 ];%middle bond
+
+fit_x = trunc_err;%middle bond
 for i=1:numel(distance)
-    p = fit(fit_x(1:end)',scsyy(1:end,i),'poly2');
+    p = fit(fit_x(selected_fit_data)',scsyy(selected_fit_data,i),'poly2');
     scsyy_ex(i)=p.p3;
+%     if(distance(i) == 15)
+%         range=confint(p, 0.95);
+%         error_bar = (range(2,3) - range(1,3))/2;
+%         fprintf("error bar for scsyy_ex at %d = %.6f\n", distance(i), error_bar);
+%     end
 end
 
 loglog(distance, scsyy_ex,'o');hold on;
+I=find(distance==15);
+fprintf("<Delta_yy^dag Delta_yy>(Lx/2-1) = %.6f\n",mean(scsyy_ex(I)));
 
 
 fit_x=[6,7,10,11,14];
@@ -71,7 +78,7 @@ set(T,'Interpreter','latex');set(T,'Fontsize',24);
 
 
 
-l=legend(h,'$D=8000$', '$10000$', '$12000$', '$14000$');
+l=legend(h,'$D=8000$',  '$9000$', '$10000$', '$12000$', '$14000$', '$16000$',  '$17000$');
 set(l,'Box','off');set(l,'Interpreter','latex');
 set(l,'Fontsize',24);
 set(l,'Location','SouthWest');

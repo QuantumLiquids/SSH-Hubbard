@@ -130,13 +130,13 @@ int main(int argc, char *argv[]) {
   }
 
   if(world.rank()==0){
-    MeasureElectronPhonon4PointFunction(mps,sc_phys_ops_a,yy_fourpoint_sitessetF,Np,"scsyya" + file_name_postfix);
+    MeasureElectronPhonon4PointFunction(mps,sc_phys_ops_a,yy_fourpoint_sitessetF,"scsyya" + file_name_postfix);
   }else if(world.rank()==1){
-    MeasureElectronPhonon4PointFunction(mps,sc_phys_ops_b,yy_fourpoint_sitessetF,Np,"scsyyb" + file_name_postfix);
+    MeasureElectronPhonon4PointFunction(mps,sc_phys_ops_b,yy_fourpoint_sitessetF,"scsyyb" + file_name_postfix);
   }else if(world.rank()==2){
-    MeasureElectronPhonon4PointFunction(mps,sc_phys_ops_c,yy_fourpoint_sitessetF,Np,"scsyyc" + file_name_postfix);
+    MeasureElectronPhonon4PointFunction(mps,sc_phys_ops_c,yy_fourpoint_sitessetF,"scsyyc" + file_name_postfix);
   }else if(world.rank()==3){
-    MeasureElectronPhonon4PointFunction(mps,sc_phys_ops_d,yy_fourpoint_sitessetF,Np,"scsyyd" + file_name_postfix);
+    MeasureElectronPhonon4PointFunction(mps,sc_phys_ops_d,yy_fourpoint_sitessetF,"scsyyd" + file_name_postfix);
   }
 
   cout << "measured y--y four point function.<====" <<endl;

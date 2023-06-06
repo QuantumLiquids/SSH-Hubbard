@@ -22,7 +22,7 @@ size_t GetNumofMps(){
 
 //If site `i` is electron site, for SSH-Hubbard model
 bool IsElectron(size_t i, size_t Ly, size_t Np){
-    int residue=i%((2*Np+1)*Ly );
+    size_t residue=i%((2*Np+1)*Ly );
     if(residue<(Np+1)*Ly && residue%(Np+1)==0){
         return true;
     }
@@ -70,4 +70,39 @@ bool Parser(const int argc, char *argv[],
   }
 
   return start_argument_has;
+}
+
+
+bool ParserBondDimension(int argc, char *argv[],
+                         std::vector<size_t>& D_set) {
+  int nOptionIndex = 1;
+  std::string D_string;
+  std::string arguement1 = "--D=";
+  bool has_D_parameter(false);
+  while (nOptionIndex < argc){
+    if (strncmp(argv[nOptionIndex], arguement1.c_str(), arguement1.size()) == 0){
+      D_string = &argv[nOptionIndex][arguement1.size()];
+      has_D_parameter = true;
+    }
+    nOptionIndex++;
+  }
+
+  //split thread num list
+  const char* split = ",";
+  char *p;
+  const size_t MAX_CHAR_LENTH = 1000;
+  char D_char[MAX_CHAR_LENTH];
+  for(size_t i =0;i< MAX_CHAR_LENTH;i++) {
+    D_char[i] = 0;
+  }
+
+  strcpy(D_char, D_string.c_str() );
+
+  p = strtok(D_char, split);
+  while(p != nullptr){
+    D_set.push_back( atoi(p) );
+    p = strtok(nullptr, split);
+  }
+
+  return has_D_parameter;
 }

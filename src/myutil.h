@@ -7,3 +7,5 @@ void Show(std::vector<size_t> v);
 bool Parser(const int argc, char *argv[],
             size_t& start,
             size_t& end);
+bool ParserBondDimension(int argc, char *argv[],
+                         std::vector<size_t>& D_set);

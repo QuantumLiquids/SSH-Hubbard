@@ -41,8 +41,8 @@ int main(int argc, char *argv[]) {
     vector<IndexT2>  pb_out_set(N);
     vector<long> Tx(N,-1), Ty(N,-1), ElectronSite(Lx*Ly);
     // translation along x(for electron) and translation along y(for electron);
-    for(int i =0;i < N; ++i){
-        int residue=i%((2*Np+1)*Ly );
+    for(size_t i =0;i < N; ++i){
+      size_t residue=i%((2*Np+1)*Ly );
         if(residue<(Np+1)*Ly && residue%(Np+1)==0){
             pb_out_set[i] = pb_outF;
         }
@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) {
 
     srand((unsigned)time(NULL));
     int qn_label = 1;
-    for (int i = 0; i <ElectronSite.size() ; i++) {
+    for (size_t i = 0; i <ElectronSite.size() ; i++) {
         if(i%sitenumber_perhole==sitenumber_perhole/2){
             stat_labs[ElectronSite[i]] = 3;
         }else{

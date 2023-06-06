@@ -5,13 +5,13 @@ Np=3;
 
 U = 8; Numhole = Lx*Ly/8;
 
-Dset=[8000,10000,12000,14000];%bond dimension set
-trunc_err=1e7*[5.90e-6,4.90e-6,4.19e-06,3.70e-06];%, 3.33e-06];%Site  657
+Dset=[8000,9000,10000,12000,13000, 14000,15000,16000,17000,18000];%bond dimension set
+trunc_err=1e7*[3.47e-6,3.12e-6,2.88e-6,2.49e-06, 2.33e-06,2.20e-06,2.09e-6,1.98e-6, 1.89e-06,1.71e-06];
 
 D = Dset(1);
 
 FileNamePostfix=['ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
-SpinCorrelationData = jsondecode(fileread(['../data/sxsx',FileNamePostfix]));
+SpinCorrelationData = jsondecode(fileread(['../data/szsz',FileNamePostfix]));
 distance = zeros(1,numel(SpinCorrelationData));
 for i=1:numel(SpinCorrelationData)
     FermionSite1 = Site2FermionSite(SpinCorrelationData{i}{1}(1),Ly,Np);
@@ -77,7 +77,7 @@ set(T,'Interpreter','latex');set(T,'Fontsize',24);
 
 
 
-l=legend(h,'$D=8000$', '$10000$','$12000$','$14000$');
+l=legend(h,'$D=8000$', '$10000$','$12000$','$14000$','$16000$','$18000$');
 set(l,'Box','off');set(l,'Interpreter','latex');
 set(l,'Fontsize',24);
 set(l,'Location','SouthWest');
