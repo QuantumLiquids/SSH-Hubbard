@@ -1,4 +1,5 @@
-#pragma once
+#ifndef MY_MEASURE_H
+#define MY_MEASURE_H
 
 #include "gqmps2/one_dim_tn/mps/finite_mps/finite_mps.h"    // FiniteMPS
 #include "gqmps2/one_dim_tn/mps/finite_mps/finite_mps_measu.h"
@@ -240,6 +241,7 @@ inline MeasuRes<TenElemT> MeasureTwoSiteOp(
     const GQTensor<TenElemT, QNT> &phys_ops1,
     const GQTensor<TenElemT, QNT> &phys_ops2,
     const std::vector<std::vector<size_t>> &sites_set,
+    const size_t Ly,
     const std::string &res_file_basename,
     const boost::mpi::communicator &world
 ) {
@@ -253,8 +255,6 @@ inline MeasuRes<TenElemT> MeasureTwoSiteOp(
 
   assert(sites_set[0].size() == 2);
   const size_t total_event_size = sites_set.size();
-  const size_t Ly = 4;
-  std::cout << "Note that this subroutine supposed Ly = 4 " << std::endl;
   assert(world.size() >= Ly);
   const size_t event_size_every_group = total_event_size / Ly;
   const size_t group = world.rank();
@@ -439,8 +439,8 @@ inline MeasuRes<TenElemT> MeasureElectronPhonon4PointFunction(
     size_t site2 = sites_set_group[0][1];
     assert(sites_set_group.size() == measure_event_per_group_num);
     for (auto iter = sites_set_group.begin(); iter < sites_set_group.cend(); iter++) {
-      assert((*iter)[0] = site1);
-      assert((*iter)[1] = site2);
+      assert((*iter)[0] == site1);
+      assert((*iter)[1] == site2);
       //TODO: check order: a. site1<site2<3<4 b. for every 3,4, ascending order
     }
   }
@@ -603,3 +603,5 @@ inline MeasuRes<TenElemT> MeasureElectronPhonon4PointFunctionGroup(
 }
 
 }//gqmps2
+
+#endif // MY_MEASURE_H

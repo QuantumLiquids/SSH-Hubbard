@@ -33,14 +33,14 @@ White_s_yy_data=[1.0015174506828526, 0.025132130355934434
 distance = White_s_yy_data(:,1);
 P_yy = White_s_yy_data(:,2);
 
-loglog(distance, P_yy,'-o');hold on;
+semilogy(distance, P_yy,'-o');hold on;
 fit_x = distance(distance<33 & distance>3);
 fit_y = P_yy(distance<33 & distance>3);
 
 p = fit(log(fit_x),log(abs(fit_y)),'poly1');
 fprintf('Ksc=%.5f\n',-p.p1);
 x = 1:0.5:fit_x(end)+10;
-fl=loglog(x,exp(p.p2)*x.^p.p1,'-.');
+fl=semilogy(x,exp(p.p2)*x.^p.p1,'-.');
 T=text(10,2.5e-3,['$K_{sc}=',num2str(-p.p1),'$']);
 set(T,'Interpreter','latex');set(T,'Fontsize',24);
 

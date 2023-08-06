@@ -21,9 +21,15 @@ struct CaseParams : public CaseParamsParserBasic {
     MaxLanczIter = ParseInt("MaxLanczIter");
     TotalThreads = ParseInt("TotalThreads");
     SvdOuterThreads = ParseInt("SvdOuterThreads");
-    Perturbation=ParseBool("Perturbation");
-    PA=ParseDouble("PerturbationAmplitude");
-    PerturbationPeriod = ParseInt("PerturbationPeriod");
+    Perturbation = ParseBool("Perturbation");
+    if (Perturbation) {
+      PA = ParseDouble("PerturbationAmplitude");
+      PerturbationPeriod = ParseInt("PerturbationPeriod");
+    } else {
+      PA = 0.0;
+      PerturbationPeriod = 1;
+    }
+
   }
 
   long Lx;

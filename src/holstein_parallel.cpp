@@ -9,115 +9,100 @@
 #include "myutil.h"
 #include "two_site_update_noised_finite_vmps_mpi_impl2.h"
 
-
 using namespace gqmps2;
 using namespace gqten;
 using namespace std;
 
-
 #include "params_case.h"
-
 
 int main(int argc, char *argv[]) {
   namespace mpi = boost::mpi;
   mpi::environment env(mpi::threading::multiple);
-  if(env.thread_level() < mpi::threading::multiple){
+  if (env.thread_level() < mpi::threading::multiple) {
     std::cout << "thread level of env is not right." << std::endl;
     env.abort(-1);
   }
   mpi::communicator world;
   CaseParams params(argv[1]);
-  size_t Lx=params.Lx, Ly = params.Ly, Np = params.Np;
+  size_t Lx = params.Lx, Ly = params.Ly, Np = params.Np;
   size_t N = (1 + Np) * (Lx * Ly);
   float t = params.t, g = params.g, U = params.U, omega = params.omega;
 
-  if(world.rank() == 0) {
+  if (world.rank() == 0) {
     std::cout << "Holstein Model DMRG." << std::endl;
-    cout << "System size = (" << Lx << "," << Ly <<")"<< endl;
-    cout << "The number of electron sites =" << Lx*Ly << endl;
-    cout << "The number of phonon pseudosite (per bond) =" << Np <<endl;
-    cout << "The number of phonon pseudosite (total) =" << Np * Lx * Ly <<endl;
-    cout << "The total number of sites = " << N <<endl;
-    cout << "Model parameter: t =" << t <<", g =" << g <<", U =" << U <<",omega=" << omega<< endl;
+    cout << "System size = (" << Lx << "," << Ly << ")" << endl;
+    cout << "The number of electron sites =" << Lx * Ly << endl;
+    cout << "The number of phonon pseudosite (per bond) =" << Np << endl;
+    cout << "The number of phonon pseudosite (total) =" << Np * Lx * Ly << endl;
+    cout << "The total number of sites = " << N << endl;
+    cout << "Model parameter: t =" << t << ", g =" << g << ", U =" << U << ",omega=" << omega << endl;
   }
   std::vector<size_t> input_D_set;
   bool has_bond_dimension_parameter = ParserBondDimension(
       argc, argv,
       input_D_set);
 
-  clock_t startTime,endTime;
+  clock_t startTime, endTime;
   startTime = clock();
   OperatorInitial();
-  vector<IndexT2>  pb_out_set(N);
-  vector<long> Tx(N,-1), Ty(N,-1), ElectronSite(Lx*Ly);
+  vector<IndexT2> pb_out_set(N);
+  vector<long> Tx(N, -1), Ty(N, -1), ElectronSite(Lx * Ly);
   auto iter = ElectronSite.begin();
   // translation along x(for electron) and translation along y(for electron);
-  for(int i = 0;i < N; ++i){
-    if( i % (Np + 1) == 0 ){
+  for (int i = 0; i < N; ++i) {
+    if (i % (Np + 1) == 0) {
       pb_out_set[i] = pb_outF;
       *iter = i;
       iter++;
-    }
-    else pb_out_set[i] = pb_outB;
+    } else pb_out_set[i] = pb_outB;
   }
 
-  SiteVec<TenElemT, U1U1QN> sites=SiteVec<TenElemT, U1U1QN>(pb_out_set);
+  SiteVec<TenElemT, U1U1QN> sites = SiteVec<TenElemT, U1U1QN>(pb_out_set);
   MPO<Tensor> mpo(N);
   const std::string kMpoPath = "mpo";
   const std::string kMpoTenBaseName = "mpo_ten";
-  for(size_t i=0; i<mpo.size();i++){
+  for (size_t i = 0; i < mpo.size(); i++) {
     std::string filename = kMpoPath + "/" +
         kMpoTenBaseName + std::to_string(i) + "." + kGQTenFileSuffix;
-    mpo.LoadTen(i,filename);
+    mpo.LoadTen(i, filename);
   }
 
-  if(world.rank() == 0) {
+  if (world.rank() == 0) {
     cout << "MPO loaded." << endl;
   }
   using FiniteMPST = gqmps2::FiniteMPS<TenElemT, U1U1QN>;
   FiniteMPST mps(sites);
 
-  std::vector<long unsigned int> stat_labs(N,1);
+  std::vector<long unsigned int> stat_labs(N, 1);
   int sitenumber_perhole;
-  if(params.Numhole>0){
-    sitenumber_perhole = ElectronSite.size()/params.Numhole;
-  }else{
-    sitenumber_perhole = 4*ElectronSite.size();
+  if (params.Numhole > 0) {
+    sitenumber_perhole = ElectronSite.size() / params.Numhole;
+  } else {
+    sitenumber_perhole = 4 * ElectronSite.size();
   }
 
-
   int qn_label = 1;
-  for (int i = 0; i < ElectronSite.size() ; i++) {
-    if(i%sitenumber_perhole==sitenumber_perhole/2){
+  for (int i = 0; i < ElectronSite.size(); i++) {
+    if (i % sitenumber_perhole == sitenumber_perhole / 2) {
       stat_labs[ElectronSite[i]] = 3;
-    }else{
+    } else {
       stat_labs[ElectronSite[i]] = qn_label;
-      qn_label=3-qn_label;
+      qn_label = 3 - qn_label;
     }
   }
 
-
-
-  if(world.rank() == 0){
-    if(params.TotalThreads > 2 ){
-      gqten::hp_numeric::SetTensorTransposeNumThreads(params.TotalThreads-2);
-      gqten::hp_numeric::SetTensorManipulationThreads(params.TotalThreads-2);
-    }else{
+  if (world.rank() == 0) {
+    if (params.TotalThreads > 2) {
+      gqten::hp_numeric::SetTensorTransposeNumThreads(params.TotalThreads - 2);
+      gqten::hp_numeric::SetTensorManipulationThreads(params.TotalThreads - 2);
+    } else {
       gqten::hp_numeric::SetTensorTransposeNumThreads(params.TotalThreads);
       gqten::hp_numeric::SetTensorManipulationThreads(params.TotalThreads);
     }
-  }else{
+  } else {
     gqten::hp_numeric::SetTensorTransposeNumThreads(params.TotalThreads);
     gqten::hp_numeric::SetTensorManipulationThreads(params.TotalThreads);
   }
-
-
-  gqmps2::TwoSiteMPINoisedVMPSSweepParams sweep_params(
-      params.Sweeps,
-      params.Dmin, params.Dmax, params.CutOff,
-      gqmps2::LanczosParams(params.LanczErr, params.MaxLanczIter),
-      params.noise
-  );
 
   gqmps2::TwoSiteVMPSSweepParams sweep_params_single(
       params.Sweeps,
@@ -125,39 +110,49 @@ int main(int argc, char *argv[]) {
       gqmps2::LanczosParams(params.LanczErr, params.MaxLanczIter),
       params.noise
   );
-  if(IsPathExist(kMpsPath)){//mps only can be load from file
-    if(N== GetNumofMps() ){
-      cout << "The number of mps files is consistent with mps size." <<endl;
-      cout << "Directly use mps from files." <<endl;
-    }else{
+
+  gqmps2::TwoSiteMPINoisedVMPSSweepParams sweep_params_parallel(
+      params.Sweeps,
+      params.Dmin, params.Dmax, params.CutOff,
+      gqmps2::LanczosParams(params.LanczErr, params.MaxLanczIter),
+      params.noise
+  );
+
+  if (world.rank() == 0) {
+    if (IsPathExist(kMpsPath)) {//mps only can be load from file
+      if (N == GetNumofMps()) {
+        cout << "The number of mps files is consistent with mps size." << endl;
+        cout << "Directly use mps from files." << endl;
+      } else {
+        gqmps2::DirectStateInitMps(mps, stat_labs);
+        cout << "Initial mps as direct product state." << endl;
+        mps.Dump(sweep_params_single.mps_path, true);
+      }
+    } else {
       gqmps2::DirectStateInitMps(mps, stat_labs);
-      cout << "Initial mps as direct product state." <<endl;
-      mps.Dump(sweep_params.mps_path, true);
+      cout << "Initial mps as direct product state." << endl;
+      mps.Dump(sweep_params_single.mps_path, true);
     }
-  }else{
-    gqmps2::DirectStateInitMps(mps, stat_labs);
-    cout << "Initial mps as direct product state." <<endl;
-    mps.Dump(sweep_params.mps_path, true);
   }
 
   double e0;
-  if(!has_bond_dimension_parameter) {
+  if (!has_bond_dimension_parameter) {
     if (world.size() == 1) {
       e0 = gqmps2::TwoSiteFiniteVMPS2(mps, mpo, sweep_params_single);
     } else {
-      e0 = gqmps2::TwoSiteFiniteVMPS2(mps, mpo, sweep_params, world);
+      e0 = gqmps2::TwoSiteFiniteVMPS2(mps, mpo, sweep_params_parallel, world);
     }
   } else {
     size_t DMRG_time = input_D_set.size();
     std::vector<size_t> MaxLanczIterSet(DMRG_time);
     MaxLanczIterSet.back() = params.MaxLanczIter;
-    if(DMRG_time > 1) {
+    if (DMRG_time > 1) {
       size_t MaxLanczIterSetSpace;
       MaxLanczIterSet[0] = 3;
-      MaxLanczIterSetSpace = (params.MaxLanczIter - 3)/(DMRG_time - 1);
+      MaxLanczIterSetSpace = (params.MaxLanczIter - 3) / (DMRG_time - 1);
       std::cout << "Setting MaxLanczIter as : [" << MaxLanczIterSet[0] << ", ";
-      for(size_t i = 1; i < DMRG_time - 1; i++) {
-        MaxLanczIterSet[i] = MaxLanczIterSet[i-1] + MaxLanczIterSetSpace;
+      for (size_t i = 1; i < DMRG_time - 1; i++) {
+        MaxLanczIterSet[i] = MaxLanczIterSet[i - 1] + MaxLanczIterSetSpace;
         std::cout << MaxLanczIterSet[i] << ", ";
       }
       std::cout << MaxLanczIterSet.back() << "]" << std::endl;
@@ -165,41 +160,31 @@ int main(int argc, char *argv[]) {
       std::cout << "Setting MaxLanczIter as : [" << MaxLanczIterSet[0] << "]" << std::endl;
     }
 
-    if(world.size() == 1) {
-      for(size_t i = 0; i < DMRG_time; i++ ) {
+    if (world.size() == 1) {
+      for (size_t i = 0; i < DMRG_time; i++) {
         size_t D = input_D_set[i];
-        std::cout<< "D_max = " << D << std::endl;
-        gqmps2::TwoSiteVMPSSweepParams sweep_params(
-            params.Sweeps,
-            D, D, params.CutOff,
-            gqmps2::LanczosParams(params.LanczErr, MaxLanczIterSet[i]),
-            params.noise
-        );
-
-        e0 = gqmps2::TwoSiteFiniteVMPS(mps, mpo, sweep_params);
+        std::cout << "D_max = " << D << std::endl;
+        sweep_params_single.Dmax = D;
+        sweep_params_single.Dmin = D;
+        e0 = gqmps2::TwoSiteFiniteVMPS(mps, mpo, sweep_params_single);
       }
     } else {
-      for(size_t i = 0; i < DMRG_time; i++ ) {
+      for (size_t i = 0; i < DMRG_time; i++) {
         size_t D = input_D_set[i];
-        if(world.rank() == 1) {
-          std::cout<< "D_max = " << D << std::endl;
+        if (world.rank() == 1) {
+          std::cout << "D_max = " << D << std::endl;
         }
-        gqmps2::TwoSiteMPINoisedVMPSSweepParams sweep_params(
-            params.Sweeps,
-            D, D, params.CutOff,
-            gqmps2::LanczosParams(params.LanczErr, MaxLanczIterSet[i]),
-            params.noise
-        );
-        e0 = gqmps2::TwoSiteFiniteVMPS(mps, mpo, sweep_params, world);
+        sweep_params_parallel.Dmax = D;
+        sweep_params_parallel.Dmin = D;
+        e0 = gqmps2::TwoSiteFiniteVMPS(mps, mpo, sweep_params_parallel, world);
       }
     }
   }
-  if(world.rank() == 0){
+
+  if (world.rank() == 0) {
     std::cout << "E0/site: " << e0 / N << std::endl;
     endTime = clock();
-    cout << "CPU Time : " <<(double)(endTime - startTime) / CLOCKS_PER_SEC << "s" << endl;
+    cout << "CPU Time : " << (double) (endTime - startTime) / CLOCKS_PER_SEC << "s" << endl;
   }
   return 0;
-
-
 }

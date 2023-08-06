@@ -1,0 +1,133 @@
+#include "gqdouble.h"
+#include "operators.h"
+#include <time.h>
+#include <vector>
+#include <stdlib.h>     // system
+#include "gqmps2/gqmps2.h"
+
+using namespace gqmps2;
+using namespace gqten;
+using namespace std;
+
+#include "params_case.h"
+
+int main(int argc, char *argv[]) {
+  CaseParams params(argv[1]);
+
+  const size_t Lx = params.Lx, Ly = params.Ly;
+  const size_t N = Lx * Ly;
+  cout << "System size = (" << Lx << "," << Ly << ")" << endl;
+  cout << "The number of electron sites =" << Lx * Ly << endl;
+  cout << "The total number of sites = " << N << endl;
+  float t = params.t, g = params.g, U = params.U, omega = params.omega;
+  cout << "Model parameter: t =" << t << ", g =" << g << ", U =" << U << ",omega=" << omega << endl;
+
+  std::ifstream ifs(argv[2], std::ofstream::binary);
+  double *x_vec = new double[N + (Lx - 1) * Ly];
+  ifs.read((char *) x_vec, (N + (Lx - 1) * Ly) * sizeof(double));
+  ifs.close();
+
+  clock_t startTime, endTime;
+  startTime = clock();
+
+
+  // average reflection symmetry
+  std::vector<double> x_vec_reverse(N + (Lx - 1) * Ly);
+  for (size_t i = 0; i < N + (Lx - 1) * Ly; i++) {
+    x_vec_reverse[i] = x_vec[i];
+  }
+  reverse(x_vec_reverse.begin(), x_vec_reverse.end());
+  std::cout << "x_vec:" << std::endl;
+  std::cout << "[";
+  for (size_t i = 0; i < N + (Lx - 1) * Ly; i++) {
+    std::cout << " " << x_vec[i];
+  }
+  std::cout << "]" << std::endl;
+  for (size_t i = 0; i < N + (Lx - 1) * Ly; i++) {
+    x_vec[i] = (x_vec[i] + x_vec_reverse[i]) / 2;
+  }
+  std::cout << "[";
+  for (size_t i = 0; i < N + (Lx - 1) * Ly; i++) {
+    std::cout << " " << x_vec[i];
+  }
+  std::cout << "]" << std::endl;
+  // average translation symmetry
+  std::vector<double> horizontal_x((Lx - 1)), vertical_x(Lx);
+  for (size_t x = 0; x < Lx; x++) {
+    size_t start_ph_site = x * 2 * Ly;
+    double sum_a = 0.0;
+    for (size_t i = start_ph_site; i < start_ph_site + Ly; i++) {
+      sum_a += x_vec[i];
+    }
+    vertical_x[x] = sum_a / Ly;
+    if (x < Lx - 1) {
+      double sum_b = 0.0;
+      for (size_t i = start_ph_site + Ly; i < start_ph_site + 2 * Ly; i++) {
+        sum_b += x_vec[i];
+      }
+      horizontal_x[x] = sum_b / Ly;
+    }
+  }
+
+  OperatorInitial();
+  const SiteVec<TenElemT, U1U1QN> sites = SiteVec<TenElemT, U1U1QN>(N, pb_outF);
+  gqmps2::MPOGenerator<TenElemT, U1U1QN> mpo_gen(sites, qn0);
+
+  for (size_t i = 0; i < N; ++i) {
+    mpo_gen.AddTerm(U, Uterm, i);
+//    cout << "add site" << i << "Hubbard U term" << endl;
+  }
+
+  //horizontal interaction
+  for (size_t i = 0; i < N - Ly; ++i) {
+    size_t site1 = i, site2 = i + Ly;
+    size_t x = i / Ly;
+    mpo_gen.AddTerm(-t + g * horizontal_x[x], bupcF, site1, bupa, site2, f);
+    mpo_gen.AddTerm(-t + g * horizontal_x[x], bdnc, site1, Fbdna, site2, f);
+    mpo_gen.AddTerm(t - g * horizontal_x[x], bupaF, site1, bupc, site2, f);
+    mpo_gen.AddTerm(t - g * horizontal_x[x], bdna, site1, Fbdnc, site2, f);
+//    cout << "add site (" << site1 << "," << site2 << ")  hopping term" << endl;
+  }
+  //vertical interaction
+  for (size_t i = 0; i < N; ++i) {
+    size_t y = i % Ly, x = i / Ly;
+    if (y < Ly - 1) {
+      size_t site1 = i, site2 = i + 1;
+      mpo_gen.AddTerm(-t + g * vertical_x[x], bupcF, site1, bupa, site2);
+      mpo_gen.AddTerm(-t + g * vertical_x[x], bdnc, site1, Fbdna, site2);
+      mpo_gen.AddTerm(t - g * vertical_x[x], bupaF, site1, bupc, site2);
+      mpo_gen.AddTerm(t - g * vertical_x[x], bdna, site1, Fbdnc, site2);
+//      cout << "add site (" << site1 << "," << site2 << ")  hopping term" << endl;
+    } else if (Ly > 2) {
+      size_t site1 = i - Ly + 1, site2 = i;
+      mpo_gen.AddTerm(-t + g * vertical_x[x], bupcF, site1, bupa, site2, f);
+      mpo_gen.AddTerm(-t + g * vertical_x[x], bdnc, site1, Fbdna, site2, f);
+      mpo_gen.AddTerm(t - g * vertical_x[x], bupaF, site1, bupc, site2, f);
+      mpo_gen.AddTerm(t - g * vertical_x[x], bdna, site1, Fbdnc, site2, f);
+//      cout << "add site (" << site1 << "," << site2 << ")  hopping term" << endl;
+    }
+  }
+
+  auto mpo = mpo_gen.Gen();
+  cout << "MPO generated." << endl;
+
+  const std::string kMpoPath = "mpo";
+  const std::string kMpoTenBaseName = "mpo_ten";
+
+  if (!IsPathExist(kMpoPath)) {
+    CreatPath(kMpoPath);
+  }
+
+  for (size_t i = 0; i < mpo.size(); i++) {
+    std::string filename = kMpoPath + "/" +
+        kMpoTenBaseName + std::to_string(i) + "." + kGQTenFileSuffix;
+    mpo.DumpTen(i, filename);
+  }
+
+  delete[] x_vec;
+  endTime = clock();
+  cout << "CPU Time : " << (double) (endTime - startTime) / CLOCKS_PER_SEC << "s" << endl;
+
+  return 0;
+
+}

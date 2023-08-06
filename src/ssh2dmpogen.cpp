@@ -14,8 +14,8 @@ using namespace std;
 int main(int argc, char *argv[]) {
   CaseParams params(argv[1]);
 
-  unsigned Lx = params.Lx, Ly = params.Ly, Np = params.Np;
-  unsigned N = Lx * Ly + (2 * Lx * Ly - Ly) * Np;
+  const size_t Lx = params.Lx, Ly = params.Ly, Np = params.Np;
+  const size_t N = Lx * Ly + (2 * Lx * Ly - Ly) * Np;
   cout << "System size = (" << Lx << "," << Ly << ")" << endl;
   cout << "The number of electron sites =" << Lx * Ly << endl;
   cout << "The number of phonon pseudosite (per bond) =" << Np << endl;

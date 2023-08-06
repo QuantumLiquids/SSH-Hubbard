@@ -1,3 +1,4 @@
+addpath('../');
 Lx=32; Ly=4;
 omega = 5; 
 g = 2.4495;
@@ -16,7 +17,7 @@ selected_fit_data=[4,5,6:7];
 D = Dset(1);
 
 FileNamePostfix=['ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
-ChargeCorrelation = jsondecode(fileread(['../data/nfnf',FileNamePostfix]));
+ChargeCorrelation = jsondecode(fileread(['../../data/nfnf',FileNamePostfix]));
 distance = zeros(1,numel(ChargeCorrelation));
 for i=1:numel(ChargeCorrelation)
     FermionSite1 = Site2FermionSite(ChargeCorrelation{i}{1}(1),Ly,Np);
@@ -30,8 +31,8 @@ ReducedChargeCorrelation = zeros(numel(Dset), numel(ChargeCorrelation));
 for j = 1:numel(Dset)
     D = Dset(j);
     FileNamePostfix=['ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
-    ChargeDensity = jsondecode(fileread(['../data/nf',FileNamePostfix]));
-    ChargeCorrelation = jsondecode(fileread(['../data/nfnf',FileNamePostfix]));
+    ChargeDensity = jsondecode(fileread(['../../data/nf',FileNamePostfix]));
+    ChargeCorrelation = jsondecode(fileread(['../../data/nfnf',FileNamePostfix]));
     for i=1:numel(ChargeCorrelation)
         I1=find(ChargeDensity(:,1)==ChargeCorrelation{i}{1}(1));
         I2=find(ChargeDensity(:,1)==ChargeCorrelation{i}{1}(2));
