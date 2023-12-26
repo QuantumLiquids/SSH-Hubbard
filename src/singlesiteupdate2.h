@@ -17,21 +17,22 @@
 #ifndef GQMPS2_ALGORITM_VMPS_ONE_SITE_UPDATE_FINITE_VMPS_IMPL2_H
 #define GQMPS2_ALGORITM_VMPS_ONE_SITE_UPDATE_FINITE_VMPS_IMPL2_H
 
-#include "gqmps2/algorithm/vmps/single_site_update_finite_vmps.h"   // SingleVMPSSweepParams
-#include "gqmps2/algorithm/vmps/two_site_update_finite_vmps.h"      // helper functions
-#include "gqmps2/one_dim_tn/mpo/mpo.h"                              // MPO
-#include "gqmps2/one_dim_tn/mps/finite_mps/finite_mps.h"  
-#include "gqmps2/one_dim_tn/mps/finite_mps/finite_mps_measu.h"          // FiniteMPS
-#include "gqmps2/utilities.h"                                       // IsPathExist, CreatPath
-#include "gqmps2/one_dim_tn/framework/ten_vec.h"                    // TenVec
-#include "gqmps2/consts.h"
-#include "gqten/gqten.h"
-#include "gqten/utility/timer.h"                                    // Timer
-
 #include <iostream>
 #include <iomanip>
 #include <vector>
 #include <string>
+
+#include "gqten/gqten.h"
+#include "gqten/utility/timer.h"                                        // Timer
+#include "gqmps2/consts.h"
+
+#include "gqmps2/algorithm/vmps/single_site_update_finite_vmps_impl.h"   // FiniteVMPSSweepParams
+#include "gqmps2/algorithm/vmps/two_site_update_finite_vmps_impl.h"      // helper functions
+#include "gqmps2/one_dim_tn/mpo/mpo.h"                                   // MPO
+#include "gqmps2/one_dim_tn/mps/finite_mps/finite_mps.h"  
+#include "gqmps2/one_dim_tn/mps/finite_mps/finite_mps_measu.h"           // FiniteMPS
+#include "gqmps2/utilities.h"                                            // IsPathExist, CreatPath
+#include "gqmps2/one_dim_tn/framework/ten_vec.h"                         // TenVec
 
 #include <stdio.h>    // remove
 #ifdef Release
@@ -65,8 +66,12 @@ inline  void DumpMaxSVSet(
 
 inline void DumpSVBlk(std::ofstream &ofs, const std::vector<long> &sites);
 inline MaxSVSet MaxSVInEachBlock(const GQTensor<GQTEN_Double, U1U1QN>& s,const std::string& file_basename);
+
 /**
 Function to perform single-site update finite vMPS algorithm.
+The difference to SingleSiteFiniteVMPS in Package GQMPS2 is
+ this function will dump SVD quantum number sector information and the particle number in site information
+ when sweeping.
 
 @note The input MPS will be considered an empty one.
 @note The canonical center of MPS should be set at site 0.
@@ -75,7 +80,7 @@ template <typename TenElemT, typename QNT>
 GQTEN_Double SingleSiteFiniteVMPS2(
     FiniteMPS<TenElemT, QNT> &mps,
     const MPO<GQTensor<TenElemT, QNT>> &mpo,
-    SingleVMPSSweepParams &sweep_params
+    FiniteVMPSSweepParams &sweep_params
 ){
     assert(mps.size() == mpo.size());
 
@@ -151,7 +156,7 @@ template <typename TenElemT, typename QNT>
 double SingleSiteFiniteVMPSSweep2(
     FiniteMPS<TenElemT, QNT> &mps,
     const MPO<GQTensor<TenElemT, QNT>> &mpo,
-    const SingleVMPSSweepParams &sweep_params,
+    const FiniteVMPSSweepParams &sweep_params,
     double& noise_start
 ) {
   auto N = mps.size();
@@ -231,7 +236,7 @@ double SingleSiteFiniteVMPSUpdate2(
     TenVec<GQTensor<TenElemT, QNT>> &lenvs,
     TenVec<GQTensor<TenElemT, QNT>> &renvs,
     const MPO<GQTensor<TenElemT, QNT>> &mpo,
-    const SingleVMPSSweepParams &sweep_params,
+    const FiniteVMPSSweepParams &sweep_params,
     const char dir,
     const size_t target_site,
     const double preset_noise

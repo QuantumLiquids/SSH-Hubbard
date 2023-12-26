@@ -50,8 +50,6 @@ int main(int argc, char *argv[]) {
   }
   SiteVec<TenElemT, U1U1QN> sites = SiteVec<TenElemT, U1U1QN>(pb_out_set);
   MPO<Tensor> mpo(N);
-  const std::string kMpoPath = "mpo";
-  const std::string kMpoTenBaseName = "mpo_ten";
   for (size_t i = 0; i < mpo.size(); i++) {
     std::string filename = kMpoPath + "/" +
         kMpoTenBaseName + std::to_string(i) + "." + kGQTenFileSuffix;
@@ -74,7 +72,7 @@ int main(int argc, char *argv[]) {
     gqten::hp_numeric::SetTensorTransposeNumThreads(params.TotalThreads);
     gqten::hp_numeric::SetTensorManipulationThreads(params.TotalThreads);
   }
-  gqmps2::TwoSiteMPINoisedVMPSSweepParams sweep_params(
+  gqmps2::FiniteVMPSSweepParams sweep_params(
       params.Sweeps,
       params.Dmin, params.Dmax, params.CutOff,
       gqmps2::LanczosParams(params.LanczErr, params.MaxLanczIter),
@@ -82,7 +80,7 @@ int main(int argc, char *argv[]) {
   );
 
   std::vector<long unsigned int> stat_labs(N, 1);
-  int sitenumber_perhole;
+  size_t sitenumber_perhole;
   if (params.Numhole > 0) {
     sitenumber_perhole = ElectronSite.size() / params.Numhole;
   } else {

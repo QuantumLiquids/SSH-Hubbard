@@ -1,13 +1,15 @@
+/**
+ * Single-Site Update Variational MPS for the SSHH model.
+ * Measurement of particle number and the SVD quantum number information are dumped in DMRG sweeping.
+ */
 #include "gqdouble.h"
-#include "operators.h"
 #include <time.h>
 #include <vector>
 #include <stdlib.h>     // system
 #include "gqmps2/gqmps2.h"
+#include "operators.h"
 #include "singlesiteupdate2.h"
-#include "twositeupdate2.h"
 #include "myutil.h"
-#include "two_site_update_noised_finite_vmps_mpi_impl2.h"
 
 using namespace gqmps2;
 using namespace gqten;
@@ -16,40 +18,38 @@ using namespace std;
 #include "params_case.h"
 
 int main(int argc, char *argv[]) {
-  namespace mpi = boost::mpi;
-  mpi::environment env(mpi::threading::multiple);
-  if (env.thread_level() < mpi::threading::multiple) {
-    std::cout << "thread level of env is not right." << std::endl;
-    env.abort(-1);
-  }
-  mpi::communicator world;
   CaseParams params(argv[1]);
+
   unsigned Lx = params.Lx, Ly = params.Ly, Np = params.Np;
-  unsigned N = Lx * Ly + (2 * Lx * Ly - Ly - Lx) * Np;
+  unsigned N = Lx * Ly + (2 * Lx * Ly - Ly) * Np;
   cout << "System size = (" << Lx << "," << Ly << ")" << endl;
   cout << "The number of electron sites =" << Lx * Ly << endl;
   cout << "The number of phonon pseudosite (per bond) =" << Np << endl;
-  cout << "The number of phonon pseudosite (total) =" << (2 * Lx * Ly - Ly - Lx) * Np << endl;
+  cout << "The number of phonon pseudosite (total) =" << (2 * Lx * Ly - Ly) * Np << endl;
   cout << "The total number of sites = " << N << endl;
   float t = params.t, g = params.g, U = params.U, omega = params.omega;
   cout << "Model parameter: t =" << t << ", g =" << g << ", U =" << U << ",omega=" << omega << endl;
+
   clock_t startTime, endTime;
   startTime = clock();
+
   OperatorInitial();
+
   vector<IndexT2> pb_out_set(N);
   vector<long> Tx(N, -1), Ty(N, -1), ElectronSite(Lx * Ly);
   auto iter = ElectronSite.begin();
   // translation along x(for electron) and translation along y(for electron);
-  const size_t total_Ly = (2 * Np + 1) * Ly - Np;
   for (size_t i = 0; i < N; ++i) {
-    size_t residue = i % total_Ly;
+    size_t residue = i % ((2 * Np + 1) * Ly);
     if (residue < (Np + 1) * Ly && residue % (Np + 1) == 0) {
       pb_out_set[i] = pb_outF;
       *iter = i;
       iter++;
     } else pb_out_set[i] = pb_outB;
   }
+
   SiteVec<TenElemT, U1U1QN> sites = SiteVec<TenElemT, U1U1QN>(pb_out_set);
+
   MPO<Tensor> mpo(N);
   const std::string kMpoPath = "mpo";
   const std::string kMpoTenBaseName = "mpo_ten";
@@ -63,42 +63,52 @@ int main(int argc, char *argv[]) {
   using FiniteMPST = gqmps2::FiniteMPS<TenElemT, U1U1QN>;
   FiniteMPST mps(sites);
 
-  if (world.rank() == 0) {
-    if (params.TotalThreads > 2) {
-      gqten::hp_numeric::SetTensorTransposeNumThreads(params.TotalThreads - 2);
-      gqten::hp_numeric::SetTensorManipulationThreads(params.TotalThreads - 2);
-    } else {
-      gqten::hp_numeric::SetTensorTransposeNumThreads(params.TotalThreads);
-      gqten::hp_numeric::SetTensorManipulationThreads(params.TotalThreads);
-    }
+  std::vector<long unsigned int> stat_labs(N, 1);
+  size_t sitenumber_perhole;
+  if (params.Numhole > 0) {
+    sitenumber_perhole = ElectronSite.size() / params.Numhole;
   } else {
-    gqten::hp_numeric::SetTensorTransposeNumThreads(params.TotalThreads);
-    gqten::hp_numeric::SetTensorManipulationThreads(params.TotalThreads);
+    sitenumber_perhole = 4 * ElectronSite.size();
   }
+
+  int qn_label = 1;
+  for (size_t i = 0; i < ElectronSite.size(); i++) {
+    if (i % sitenumber_perhole == sitenumber_perhole / 2) {
+      stat_labs[ElectronSite[i]] = 3;
+    } else {
+      stat_labs[ElectronSite[i]] = qn_label;
+      qn_label = 3 - qn_label;
+    }
+  }
+
+  gqten::hp_numeric::SetTensorTransposeNumThreads(params.TotalThreads);
+  gqten::hp_numeric::SetTensorManipulationThreads(params.TotalThreads);
+
   gqmps2::FiniteVMPSSweepParams sweep_params(
       params.Sweeps,
       params.Dmin, params.Dmax, params.CutOff,
       gqmps2::LanczosParams(params.LanczErr, params.MaxLanczIter),
       params.noise
   );
-  if (IsPathExist(kMpsPath)) {//mps only can be load from file
+  if (IsPathExist(kMpsPath)) {
     if (N == GetNumofMps()) {
       cout << "The number of mps files is consistent with mps size." << endl;
       cout << "Directly use mps from files." << endl;
     } else {
-      cout << "mps file number do not right" << endl;
-      env.abort(-1);
+      gqmps2::DirectStateInitMps(mps, stat_labs);
+      cout << "Initial mps as direct product state." << endl;
+      mps.Dump(sweep_params.mps_path, true);
     }
   } else {
-    cout << " no mps file" << endl;
-    env.abort(-1);
+    gqmps2::DirectStateInitMps(mps, stat_labs);
+    cout << "Initial mps as direct product state." << endl;
+    mps.Dump(sweep_params.mps_path, true);
   }
-  auto e0 = gqmps2::TwoSiteFiniteVMPS2(mps, mpo, sweep_params, world);
-  if (world.rank() == 0) {
-    std::cout << "E0/site: " << e0 / N << std::endl;
-    endTime = clock();
-    cout << "CPU Time : " << (double) (endTime - startTime) / CLOCKS_PER_SEC << "s" << endl;
-  }
-  return 0;
+  auto e0 = gqmps2::SingleSiteFiniteVMPS2(mps, mpo, sweep_params);
+  std::cout << "E0/site: " << e0 / N << std::endl;
 
+  endTime = clock();
+  cout << "CPU Time : " << (double) (endTime - startTime) / CLOCKS_PER_SEC << "s" << endl;
+
+  return 0;
 }

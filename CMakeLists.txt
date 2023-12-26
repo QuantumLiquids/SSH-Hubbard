@@ -120,47 +120,67 @@ link_libraries(
   ${MPI_mpi_LIBRARY}
 )
 
+#add_executable(mpi_test src/mpi_test.cpp)
 
-add_executable(mpogen src/ssh2dmpogen.cpp src/operators.cpp)
-add_executable(mf_mpogen src/MF_mpogen.cpp src/operators.cpp)
+
+## The SSHH model on Cylinder
+add_executable(sshh_cylinder_mpogen src/sshh_cylinder_mpogen.cpp src/operators.cpp)
+add_executable(sshh_cylinder_single_site src/sshh_cylinder_singlesiteupdate.cpp src/operators.cpp src/myutil.cpp)
+add_executable(sshh_cylinder_two_site_vmps src/sshh_cylinder_2sitevmps.cpp src/operators.cpp src/myutil.cpp)
+add_executable(measure1 src/sshh_cylinder_measure1.cpp src/operators.cpp src/myutil.cpp)
+add_executable(measurex src/sshh_cylinder_measure_phonon_x.cpp src/operators.cpp src/myutil.cpp)
+add_executable(measure2 src/sshh_cylinder_measure2.cpp src/operators.cpp src/myutil.cpp)
+add_executable(measureSC src/sshh_cylinder_measureSC.cpp src/operators.cpp src/myutil.cpp)
+add_executable(measureSC_ps src/sshh_cylinder_measureSC_plaquette_sym.cpp src/operators.cpp src/myutil.cpp)
+
+
+## The SSHH model on Open Boundary Stripe
 add_executable(OBCmpogen src/OBCmpogen.cpp src/operators.cpp)
+add_executable(OBCsshMC src/OBCsshMC.cpp src/operators.cpp src/myutil.cpp)
+add_executable(OBCparallel src/OBCparallel.cpp src/operators.cpp src/myutil.cpp)
+add_executable(OBCmeasure1 src/OBCmeasure1.cpp src/operators.cpp src/myutil.cpp)
+add_executable(OBCmeasure2 src/OBCmeasure2.cpp src/operators.cpp src/myutil.cpp)
+add_executable(OBCmeasureSC src/OBCmeasureSC.cpp src/operators.cpp src/myutil.cpp)
+#add_executable(OBCmeasureSC_ps OBCmeasureSC_plaquette_sym.cpp operators.cpp myutil.cpp)
+
+
+
+
+## The Holstein-Hubbard model on cylinder
 add_executable(holsteinmpogen src/holstein2dmpogen.cpp src/operators.cpp)
+add_executable(holstein_parallel src/holstein_parallel.cpp src/operators.cpp src/myutil.cpp)
+add_executable(holstein_measure1 src/holstein_measure1.cpp src/operators.cpp src/myutil.cpp)
+add_executable(holstein_measure2 src/holstein_measure2.cpp src/operators.cpp src/myutil.cpp)
+add_executable(holstein_measureSC src/holstein_measureSC.cpp src/operators.cpp src/myutil.cpp)
+
+
+add_executable(mf_mpogen src/MF_mpogen.cpp src/operators.cpp)
+
+
+
+
+add_executable(vmps_hubbard src/Hubbard_vmps.cpp  src/myutil.cpp)
+
+
 #add_executable(pla_mpogen pla_ssh2dmpogen.cpp operators.cpp)
 #add_executable(oy_mpogen oy_ssh2dmpogen.cpp operators.cpp)
 #add_executable(ox_mpogen ox_ssh2dmpogen.cpp operators.cpp)
 #add_executable(pla_sshMC pla_sshMC.cpp operators.cpp myutil.cpp)
 #add_executable(oy_sshMC oy_sshMC.cpp operators.cpp myutil.cpp)
 #add_executable(ox_sshMC ox_sshMC.cpp operators.cpp myutil.cpp)
-add_executable(OBCsshMC src/OBCsshMC.cpp src/operators.cpp src/myutil.cpp)
-add_executable(vmps_ssh_pbc src/vmps_ssh_pbc.cpp src/operators.cpp src/myutil.cpp)
-add_executable(vmps_hubbard src/Hubbard_vmps.cpp  src/myutil.cpp)
-add_executable(holstein_parallel src/holstein_parallel.cpp src/operators.cpp src/myutil.cpp)
 #add_executable(pla_parallel pla_parallel.cpp operators.cpp myutil.cpp)
 #add_executable(oy_parallel oy_parallel.cpp operators.cpp myutil.cpp)
 #add_executable(ox_parallel ox_parallel.cpp operators.cpp myutil.cpp)
-add_executable(OBCparallel src/OBCparallel.cpp src/operators.cpp src/myutil.cpp)
-add_executable(measure2 src/measure2.cpp src/operators.cpp src/myutil.cpp)
-add_executable(OBCmeasure2 src/OBCmeasure2.cpp src/operators.cpp src/myutil.cpp)
-add_executable(measure1 src/measure1.cpp src/operators.cpp src/myutil.cpp)
-add_executable(measurex src/measure_phonon_x.cpp src/operators.cpp src/myutil.cpp)
-add_executable(measureSC_ps src/measureSC_plaquette_sym.cpp src/operators.cpp src/myutil.cpp)
-add_executable(OBCmeasure1 src/OBCmeasure1.cpp src/operators.cpp src/myutil.cpp)
-add_executable(holstein_measure1 src/holstein_measure1.cpp src/operators.cpp src/myutil.cpp)
-add_executable(holstein_measure2 src/holstein_measure2.cpp src/operators.cpp src/myutil.cpp)
-add_executable(measureSC src/measureSC.cpp src/operators.cpp src/myutil.cpp)
-add_executable(OBCmeasureSC src/OBCmeasureSC.cpp src/operators.cpp src/myutil.cpp)
-add_executable(holstein_measureSC src/holstein_measureSC.cpp src/operators.cpp src/myutil.cpp)
-#add_executable(OBCmeasureSC_ps OBCmeasureSC_plaquette_sym.cpp operators.cpp myutil.cpp)
 #add_executable(oy_measureSC_ps oy_measureSC_pla.cpp operators.cpp myutil.cpp)
 #add_executable(ox_measureSC_ps ox_measureSC_pla.cpp operators.cpp myutil.cpp)
 #add_executable(ox_measureSC ox_measureSC.cpp operators.cpp myutil.cpp)
 #add_executable(pla_measureSC_ps pla_measureSC_pla.cpp operators.cpp myutil.cpp)
-add_executable(ssh2ds src/ssh2ds.cpp src/operators.cpp src/myutil.cpp)
+
 add_executable(move_center src/move_center.cpp src/myutil.cpp)
 add_executable(fix_mps src/fix_mps.cpp src/myutil.cpp)
 add_executable(fix_mps2 src/fix_mps2.cpp src/myutil.cpp)
 add_executable(fix_update_renv src/fix_update_renv.cpp src/myutil.cpp)
 add_executable(fix_update_lenv src/fix_update_lenv.cpp src/myutil.cpp)
 add_executable(continue src/continue.cpp src/operators.cpp src/myutil.cpp)
-#add_executable(mpi_test src/mpi_test.cpp)
+
 add_executable(phonon_renormalization src/phonon_renormalization.cpp src/myutil.cpp)

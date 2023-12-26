@@ -32,8 +32,8 @@ int main(int argc, char *argv[]) {
   vector<IndexT2> pb_out_set(N);
   vector<long> Tx(N, -1), Ty(N, -1), ElectronSite(Lx * Ly);
   // translation along x(for electron) and translation along y(for electron);
-  for (int i = 0; i < N; ++i) {
-    int residue = i % ((2 * Np + 1) * Ly);
+  for (size_t i = 0; i < N; ++i) {
+    size_t residue = i % ((2 * Np + 1) * Ly);
     if (residue < (Np + 1) * Ly && residue % (Np + 1) == 0) {
       pb_out_set[i] = pb_outF;
     } else pb_out_set[i] = pb_outB;
@@ -106,7 +106,7 @@ int main(int argc, char *argv[]) {
 
   for (size_t i = 0; i < N; i++) {
     //electron phonon interaction, in y-direction bond
-    if (Ty[i] != -1 && Ty[i] == i + Np + 1) {
+    if (Ty[i] != -1 && Ty[i] == (int) (i + Np + 1)) {
       vector<size_t> op_sites(Np + 2);
       for (size_t j = 0; j < Np + 2; j++) {
         op_sites[j] = i + j;
@@ -510,7 +510,7 @@ int main(int argc, char *argv[]) {
       size_t residue = i % ((2 * Np + 1) * Ly);
       size_t y = residue / (Np + 1);
       size_t x_coor = i / ((2 * Np + 1) * Ly);
-      int phonon1 = x_coor * ((2 * Np + 1) * Ly) + Ly * (Np + 1) + Np * y;
+      size_t phonon1 = x_coor * ((2 * Np + 1) * Ly) + Ly * (Np + 1) + Np * y;
       vector<size_t> op_sites(Np + 2);
       op_sites[0] = i;
       op_sites.back() = Tx[i];
@@ -812,6 +812,9 @@ int main(int argc, char *argv[]) {
         kMpoTenBaseName + std::to_string(i) + "." + kGQTenFileSuffix;
     mpo.DumpTen(i, filename);
   }
+
+  gqmps2::FiniteMPO<TenElemT, U1U1QN> finite_mpo(mpo);
+  finite_mpo.Truncate(1e-16, 1, 1000);
 
   endTime = clock();
   cout << "CPU Time : " << (double) (endTime - startTime) / CLOCKS_PER_SEC << "s" << endl;

@@ -18,15 +18,12 @@
 
 #include <stdlib.h>
 #include "gqten/gqten.h"
-#include "gqmps2/algorithm/lanczos_solver.h"                        //LanczosParams
 #include "boost/mpi.hpp"                                            //boost::mpi
 #include "gqmps2/algo_mpi/mps_algo_order.h"                         //VMPSORDER
 #include "gqmps2/algo_mpi/vmps/vmps_mpi_init_master.h"                           //MPI vmps initial
 #include "gqmps2/algo_mpi/vmps/vmps_mpi_init_slave.h"                           //MPI vmps initial
 #include "gqmps2/algo_mpi/vmps/two_site_update_finite_vmps_mpi.h"         //TwoSiteMPIVMPSSweepParams
-#include "gqmps2/algo_mpi/vmps/two_site_update_noised_finite_vmps_mpi.h"  //TwoSiteMPINoisedVMPSSweepParams
-#include "gqmps2/algo_mpi/lanczos_solver_mpi_master.h"                           //MPI Lanczos solver
-#include "gqmps2/algo_mpi/lanczos_solver_mpi_slave.h"                           //MPI Lanczos solver
+#include "gqmps2/algo_mpi/vmps/two_site_update_noised_finite_vmps_mpi.h"  //FiniteVMPSSweepParams
 #include "gqmps2/algo_mpi/vmps/two_site_update_finite_vmps_mpi_impl_master.h"
 #include "gqmps2/algo_mpi/vmps/two_site_update_finite_vmps_mpi_impl_slave.h"    //SlaveTwoSiteFiniteVMPS
 #include "gqmps2/algo_mpi/vmps/two_site_update_noised_finite_vmps_mpi_impl.h" //Load related tensors
@@ -43,7 +40,7 @@ inline void LoadRelatedTensOnTwoSiteAlgWhenNoisedRightMoving(
     TenVec<GQTensor<TenElemT, QNT>> &renvs,
     const size_t target_site,
     const size_t left_boundary,
-    const TwoSiteMPINoisedVMPSSweepParams &sweep_params
+    const FiniteVMPSSweepParams &sweep_params
 );
 
 template<typename TenElemT, typename QNT>
@@ -53,7 +50,7 @@ inline void LoadRelatedTensOnTwoSiteAlgWhenNoisedLeftMoving(
     TenVec<GQTensor<TenElemT, QNT>> &renvs,
     const size_t target_site,
     const size_t right_boundary,
-    const TwoSiteMPINoisedVMPSSweepParams &sweep_params
+    const FiniteVMPSSweepParams &sweep_params
 );
 
 /**
@@ -64,7 +61,7 @@ template<typename TenElemT, typename QNT>
 inline GQTEN_Double TwoSiteFiniteVMPS2(
     FiniteMPS<TenElemT, QNT> &mps,
     const MPO<GQTensor<TenElemT, QNT>> &mpo,
-    TwoSiteMPINoisedVMPSSweepParams &sweep_params,
+    FiniteVMPSSweepParams &sweep_params,
     mpi::communicator &world
 ) {
   GQTEN_Double e0(0.0);
@@ -80,7 +77,7 @@ template<typename TenElemT, typename QNT>
 GQTEN_Double MasterTwoSiteFiniteVMPS2(
     FiniteMPS<TenElemT, QNT> &mps,
     const MPO<GQTensor<TenElemT, QNT>> &mpo,
-    TwoSiteMPINoisedVMPSSweepParams &sweep_params,
+    FiniteVMPSSweepParams &sweep_params,
     mpi::communicator world
 ) {
   assert(mps.size() == mpo.size());
@@ -96,7 +93,7 @@ GQTEN_Double MasterTwoSiteFiniteVMPS2(
       exit(1);
     }
   }
-  auto [left_boundary, right_boundary] = TwoSiteFiniteVMPSInit(mps, mpo, (SweepParams) sweep_params, world);
+  auto [left_boundary, right_boundary] = TwoSiteFiniteVMPSInit(mps, mpo, sweep_params, world);
   std::cout << "Preseted noises: \t[";
   for (size_t i = 0; i < sweep_params.noises.size(); i++) {
     std::cout << sweep_params.noises[i];
@@ -144,14 +141,13 @@ template<typename TenElemT, typename QNT>
 double TwoSiteFiniteVMPSSweep2(
     FiniteMPS<TenElemT, QNT> &mps,
     const MPO<GQTensor<TenElemT, QNT>> &mpo,
-    const TwoSiteMPINoisedVMPSSweepParams &sweep_params,
+    const FiniteVMPSSweepParams &sweep_params,
     const size_t left_boundary,
     const size_t right_boundary,
     const double noise,
     mpi::communicator world
 ) {
   auto N = mps.size();
-  SweepParams sweep_params_no_noise = (SweepParams) sweep_params;
   using TenT = GQTensor<TenElemT, QNT>;
   TenVec<TenT> lenvs(N - 1);
   TenVec<TenT> renvs(N - 1);
@@ -185,7 +181,7 @@ double TwoSiteFiniteVMPSSweep2(
         std::ref(lenvs),
         std::ref(renvs),
         i,
-        std::ref(sweep_params_no_noise)
+        std::ref(sweep_params)
     );
     if (i < right_boundary - 2) {
       load_related_tens_thread.join();
@@ -217,7 +213,7 @@ double TwoSiteFiniteVMPSSweep2(
         std::ref(lenvs),
         std::ref(renvs),
         i,
-        std::ref(sweep_params_no_noise)
+        std::ref(sweep_params)
     );
     if (i > left_boundary + 2) {
       load_related_tens_thread.join();
@@ -233,7 +229,7 @@ double MasterTwoSiteFiniteVMPSUpdate2(
     TenVec<GQTensor<TenElemT, QNT>> &lenvs,
     TenVec<GQTensor<TenElemT, QNT>> &renvs,
     const MPO<GQTensor<TenElemT, QNT>> &mpo,
-    const TwoSiteMPINoisedVMPSSweepParams &sweep_params,
+    const FiniteVMPSSweepParams &sweep_params,
     const char dir,
     const size_t target_site,
     double noise,
