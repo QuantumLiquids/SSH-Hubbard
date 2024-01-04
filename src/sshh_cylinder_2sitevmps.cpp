@@ -17,11 +17,7 @@ using namespace std;
 
 int main(int argc, char *argv[]) {
   namespace mpi = boost::mpi;
-  mpi::environment env(mpi::threading::multiple);
-  if (env.thread_level() < mpi::threading::multiple) {
-    std::cout << "thread level of env is not right." << std::endl;
-    env.abort(-1);
-  }
+  mpi::environment env;
   mpi::communicator world;
   CaseParams params(argv[1]);
   unsigned Lx = params.Lx, Ly = params.Ly, Np = params.Np;
@@ -36,7 +32,7 @@ int main(int argc, char *argv[]) {
   clock_t startTime, endTime;
   startTime = clock();
   OperatorInitial();
-  vector<IndexT2> pb_out_set(N);
+  vector<IndexT> pb_out_set(N);
   vector<long> Tx(N, -1), Ty(N, -1), ElectronSite(Lx * Ly);
   auto iter = ElectronSite.begin();
   // translation along x(for electron) and translation along y(for electron);

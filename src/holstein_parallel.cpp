@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
   clock_t startTime, endTime;
   startTime = clock();
   OperatorInitial();
-  vector<IndexT2> pb_out_set(N);
+  vector<IndexT> pb_out_set(N);
   vector<long> Tx(N, -1), Ty(N, -1), ElectronSite(Lx * Ly);
   auto iter = ElectronSite.begin();
   // translation along x(for electron) and translation along y(for electron);

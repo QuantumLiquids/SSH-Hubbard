@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
 
   OperatorInitial();
 
-  std::vector<IndexT2> pb_out_set(N);
+  std::vector<IndexT> pb_out_set(N);
   std::vector<size_t> Fsite_set(Lx * Ly);
   std::vector<size_t> Bsite_set(N - Lx * Ly);
   auto iterF = Fsite_set.begin();

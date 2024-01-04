@@ -55,7 +55,7 @@ int main(int argc, char *argv[]) {
   using TenT = Tensor;
   const string temp_path = kRuntimeTempPath;
   const size_t Lx(48), Ly(4), Np(3);
-  vector<IndexT2> pb_out_set(N);
+  vector<IndexT> pb_out_set(N);
   // translation along x(for electron) and translation along y(for electron);
   for (int i = 0; i < N; ++i) {
     int residue = i % ((2 * Np + 1) * Ly);

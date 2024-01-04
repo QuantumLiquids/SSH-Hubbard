@@ -49,7 +49,7 @@ int main(int argc, char *argv[]){
     const size_t Ly(4), Lx(N/Ly), Np(3);
     std::cout << "Note we set Ly = 4 and Np = 3 by default" << std::endl;
 
-    vector<IndexT2>  pb_out_set(N);
+    vector<IndexT>  pb_out_set(N);
     // translation along x(for electron) and translation along y(for electron);
     for(int i =0;i < N; ++i){
         int residue=i%((2*Np+1)*Ly );

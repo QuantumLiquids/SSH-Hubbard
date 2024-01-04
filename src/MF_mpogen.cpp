@@ -32,17 +32,18 @@ int main(int argc, char *argv[]) {
 
 
   // average reflection symmetry
-  std::vector<double> x_vec_reverse(N + (Lx - 1) * Ly);
+  std::vector<double> x_vec_reverse(x_vec_reverse);
   for (size_t i = 0; i < N + (Lx - 1) * Ly; i++) {
     x_vec_reverse[i] = x_vec[i];
   }
   reverse(x_vec_reverse.begin(), x_vec_reverse.end());
-  std::cout << "x_vec:" << std::endl;
+  std::cout << "Displacement X : " << std::endl;
   std::cout << "[";
   for (size_t i = 0; i < N + (Lx - 1) * Ly; i++) {
     std::cout << " " << x_vec[i];
   }
-  std::cout << "]" << std::endl;
+  std::cout << "]\n" << std::endl;
+  std::cout << "Reflection Averaged Displacement X : ";
   for (size_t i = 0; i < N + (Lx - 1) * Ly; i++) {
     x_vec[i] = (x_vec[i] + x_vec_reverse[i]) / 2;
   }
@@ -50,7 +51,7 @@ int main(int argc, char *argv[]) {
   for (size_t i = 0; i < N + (Lx - 1) * Ly; i++) {
     std::cout << " " << x_vec[i];
   }
-  std::cout << "]" << std::endl;
+  std::cout << "]\n" << std::endl;
   // average translation symmetry
   std::vector<double> horizontal_x((Lx - 1)), vertical_x(Lx);
   for (size_t x = 0; x < Lx; x++) {
@@ -110,9 +111,6 @@ int main(int argc, char *argv[]) {
 
   auto mpo = mpo_gen.Gen();
   cout << "MPO generated." << endl;
-
-  const std::string kMpoPath = "mpo";
-  const std::string kMpoTenBaseName = "mpo_ten";
 
   if (!IsPathExist(kMpoPath)) {
     CreatPath(kMpoPath);

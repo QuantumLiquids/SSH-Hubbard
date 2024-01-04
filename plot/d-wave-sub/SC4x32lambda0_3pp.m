@@ -18,7 +18,7 @@ D=Dset(1);
 FileNamePostfix=['begin',num2str(begin),'end',num2str(endx),...
     'ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),...
     'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
-A = jsondecode(fileread(['../data/scsyya',FileNamePostfix]));
+A = jsondecode(fileread(['../../data/scsyya',FileNamePostfix]));
 distance=zeros(1,numel(A));
 for i=1:numel(A)
     distance(i) = (A{i}{1}(3)-A{i}{1}(1))/(2*Np+1)/Ly;
@@ -31,10 +31,10 @@ for j = 1:numel(Dset)
     'ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),...
     'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
     
-    A = jsondecode(fileread(['../data/scsyya',FileNamePostfix]));
-    B = jsondecode(fileread(['../data/scsyyb',FileNamePostfix]));
-    C = jsondecode(fileread(['../data/scsyyc',FileNamePostfix]));
-    D = jsondecode(fileread(['../data/scsyyd',FileNamePostfix]));
+    A = jsondecode(fileread(['../../data/scsyya',FileNamePostfix]));
+    B = jsondecode(fileread(['../../data/scsyyb',FileNamePostfix]));
+    C = jsondecode(fileread(['../../data/scsyyc',FileNamePostfix]));
+    D = jsondecode(fileread(['../../data/scsyyd',FileNamePostfix]));
     for i=1:numel(A)
         scsyy(j,i) = A{i}{2}+B{i}{2}+C{i}{2}+D{i}{2};
     end

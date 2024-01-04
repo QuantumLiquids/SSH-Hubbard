@@ -84,7 +84,7 @@ int main(int argc, char *argv[]){
     } else{
       new_code = true;
     }
-    IndexT2 index0, index1, index2;
+    IndexT index0, index1, index2;
     if(!new_code){
       index0 = InverseIndex( lenv.GetIndexes()[0] ) ;
       index1 = InverseIndex( mpo.GetIndexes()[1] ) ;
@@ -95,7 +95,7 @@ int main(int argc, char *argv[]){
       index2 =  renv.GetIndexes()[0] ;
     }
 
-    vector<IndexT2> indexes = {index0, index1, index2};
+    vector<IndexT> indexes = {index0, index1, index2};
 
     Tensor *initial_state;
     if(!load_mps) {

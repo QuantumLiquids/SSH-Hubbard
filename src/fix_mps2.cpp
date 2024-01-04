@@ -18,27 +18,27 @@ using namespace gqten;
 using namespace std;
 
 int ParserFixMpsArgs(const int argc, char *argv[],
-                     size_t& lsite,
-                     size_t& thread,
-                     bool& load_mps);
+                     size_t &lsite,
+                     size_t &thread,
+                     bool &load_mps);
 
 /**
  * @example ./fix_mps --thread=24, --site=10
  *
  */
-int main(int argc, char *argv[]){
-  std::cout << "This program used to patch two mps tensor by two site Lanczos" <<std::endl;
-  std::cout << "The input must include the relevant files: renv*.gqten, lenv*.gqten, mpo_ten*.gqten" <<std::endl;
-  std::cout << "The output is the file mps_ten*.gqten" <<std::endl;
+int main(int argc, char *argv[]) {
+  std::cout << "This program used to patch two mps tensor by two site Lanczos" << std::endl;
+  std::cout << "The input must include the relevant files: renv*.gqten, lenv*.gqten, mpo_ten*.gqten" << std::endl;
+  std::cout << "The output is the file mps_ten*.gqten" << std::endl;
   std::cout << "Mps canonical central will be put on left mps tensor" << std::endl;
-  size_t lsite(0),  thread(0);
+  size_t lsite(0), thread(0);
   bool load_mps;
-  ParserFixMpsArgs(argc, argv,lsite, thread, load_mps);
+  ParserFixMpsArgs(argc, argv, lsite, thread, load_mps);
 
-  std::cout << "Argument read: "<< std::endl;
+  std::cout << "Argument read: " << std::endl;
   std::cout << "left site = " << lsite << std::endl;
   std::cout << "thread = " << thread << std::endl;
-  std::cout << "load old mps = " << load_mps <<std::endl;
+  std::cout << "load old mps = " << load_mps << std::endl;
 
   gqten::hp_numeric::SetTensorTransposeNumThreads(thread);
   gqten::hp_numeric::SetTensorManipulationThreads(thread);
@@ -47,10 +47,10 @@ int main(int argc, char *argv[]){
 
   const size_t target_site = lsite;
 
-  Tensor  renv, lenv, lmpo, rmpo, lmps, rmps;
+  Tensor renv, lenv, lmpo, rmpo, lmps, rmps;
   //mps1 is the target tensor
-  string  file = GenEnvTenName("r", (N-1) - target_site - 1, temp_path);
-  if( access( file.c_str(), 4) != 0){
+  string file = GenEnvTenName("r", (N - 1) - target_site - 1, temp_path);
+  if (access(file.c_str(), 4) != 0) {
     std::cout << "The progress doesn't access to read the file " << file << "!" << std::endl;
     exit(1);
   }
@@ -59,7 +59,7 @@ int main(int argc, char *argv[]){
   tensor_file.close();
 
   file = GenEnvTenName("l", target_site, temp_path);
-  if( access( file.c_str(), 4) != 0){
+  if (access(file.c_str(), 4) != 0) {
     std::cout << "The progress doesn't access to read the file " << file << "!" << std::endl;
     exit(1);
   }
@@ -67,8 +67,8 @@ int main(int argc, char *argv[]){
   tensor_file >> lenv;
   tensor_file.close();
 
-  file = "mpo/mpo_ten"+std::to_string( target_site ) +".gqten";
-  if( access( file.c_str(), 4) != 0){
+  file = "mpo/mpo_ten" + std::to_string(target_site) + ".gqten";
+  if (access(file.c_str(), 4) != 0) {
     std::cout << "The progress doesn't access to read the file " << file << "!" << std::endl;
     exit(1);
   }
@@ -76,8 +76,8 @@ int main(int argc, char *argv[]){
   tensor_file >> lmpo;
   tensor_file.close();
 
-  file = "mpo/mpo_ten"+std::to_string( target_site +1 ) +".gqten";
-  if( access( file.c_str(), 4) != 0){
+  file = "mpo/mpo_ten" + std::to_string(target_site + 1) + ".gqten";
+  if (access(file.c_str(), 4) != 0) {
     std::cout << "The progress doesn't access to read the file " << file << "!" << std::endl;
     exit(1);
   }
@@ -88,29 +88,29 @@ int main(int argc, char *argv[]){
   std::cout << "Load renv, lenv, and mpo tensors" << "\n";
 
   bool new_code;
-  if(lenv.GetIndexes()[0].GetDir() == GQTenIndexDirType::OUT ){
+  if (lenv.GetIndexes()[0].GetDir() == GQTenIndexDirType::OUT) {
     new_code = false;
-  } else{
+  } else {
     new_code = true;
   }
 
-  IndexT2 index0, index1, index2,index3;
-  if(!new_code){
-    index0 = InverseIndex( lenv.GetIndexes()[0] ) ;
-    index1 = InverseIndex( lmpo.GetIndexes()[1] ) ;
-    index2 = InverseIndex( rmpo.GetIndexes()[1]);
-    index3 = InverseIndex( renv.GetIndexes()[0] ) ;
+  IndexT index0, index1, index2, index3;
+  if (!new_code) {
+    index0 = InverseIndex(lenv.GetIndexes()[0]);
+    index1 = InverseIndex(lmpo.GetIndexes()[1]);
+    index2 = InverseIndex(rmpo.GetIndexes()[1]);
+    index3 = InverseIndex(renv.GetIndexes()[0]);
   } else {
-    index0 =  lenv.GetIndexes()[0] ;
-    index1 =  InverseIndex( lmpo.GetIndexes()[1] ) ;
-    index2 =  InverseIndex( rmpo.GetIndexes()[1] ) ;
-    index3 =  renv.GetIndexes()[0] ;
+    index0 = lenv.GetIndexes()[0];
+    index1 = InverseIndex(lmpo.GetIndexes()[1]);
+    index2 = InverseIndex(rmpo.GetIndexes()[1]);
+    index3 = renv.GetIndexes()[0];
   }
 
-  vector<IndexT2> indexes = {index0, index1, index2, index3};
+  vector<IndexT> indexes = {index0, index1, index2, index3};
 
   Tensor *initial_state;
-  if(!load_mps) {
+  if (!load_mps) {
     initial_state = new Tensor({index0, index1, index2, index3});
 //    std::cout << "new the initial state as default tensor." << std::endl;
     gqten::ShapeT blk_shape = {index0.GetQNSctNum(),
@@ -122,7 +122,7 @@ int main(int argc, char *argv[]){
     for (size_t i = 0; i < blk_shape[0]; i++) {
       for (size_t j = 0; j < blk_shape[1]; j++) {
         for (size_t k = 0; k < blk_shape[2]; k++) {
-          for (size_t l = 0; l < blk_shape[3]; l++){
+          for (size_t l = 0; l < blk_shape[3]; l++) {
             if (CalcDiv(indexes, {i, j, k, l}) == qn0) {
               blk_coors = {i, j, k, l};
               flag = true;
@@ -149,39 +149,38 @@ int main(int argc, char *argv[]){
     std::cout << "Generate the intial tensor" << std::endl;
   } else {
 
-    file = "mps/mps_ten"+std::to_string( target_site ) +".gqten";
-    if( access( file.c_str(), 4) != 0){
+    file = "mps/mps_ten" + std::to_string(target_site) + ".gqten";
+    if (access(file.c_str(), 4) != 0) {
       std::cout << "The progress doesn't access to read the file " << file << "!" << std::endl;
       exit(1);
     }
     tensor_file.open(file, ifstream::binary);
-    tensor_file >>  lmps;
+    tensor_file >> lmps;
     tensor_file.close();
 
-    file = "mps/mps_ten"+std::to_string( target_site +1 ) +".gqten";
-    if( access( file.c_str(), 4) != 0){
+    file = "mps/mps_ten" + std::to_string(target_site + 1) + ".gqten";
+    if (access(file.c_str(), 4) != 0) {
       std::cout << "The progress doesn't access to read the file " << file << "!" << std::endl;
       exit(1);
     }
     tensor_file.open(file, ifstream::binary);
-    tensor_file >>  rmps;
+    tensor_file >> rmps;
     tensor_file.close();
     std::cout << "load two mps tensors." << std::endl;
 
     initial_state = new Tensor();
     Contract(&lmps, &rmps, {{2}, {0}}, initial_state);
 
-    if(initial_state->GetIndexes() != indexes  ){
+    if (initial_state->GetIndexes() != indexes) {
       std::cout << "the index of loaded mps is not consistent" << std::endl;
-      for(size_t i = 0; i < 4; i++){
-        if(initial_state->GetIndexes()[i] != indexes[i] ){
+      for (size_t i = 0; i < 4; i++) {
+        if (initial_state->GetIndexes()[i] != indexes[i]) {
           std::cout << "dismatch i =" << i << std::endl;
         }
       }
       exit(2);
     }
   }
-
 
   gqmps2::LanczosParams params(1e-9, 30);
 
@@ -211,70 +210,67 @@ int main(int argc, char *argv[]){
       &u, &s, &vt, &actual_trunc_err, &D
   );
 
-  std::cout << "ground state energy = " << lancz_res.gs_eng <<std::endl;
+  std::cout << "ground state energy = " << lancz_res.gs_eng << std::endl;
   std::cout << "svd D = " << D << ", TruncErr = " << actual_trunc_err << std::endl;
   delete lancz_res.gs_vec;
   lmps = Tensor();
   rmps = std::move(vt);
   Contract(&u, &s, {{2}, {0}}, &lmps);
 
-  file = "mps/mps_ten"+ std::to_string(target_site) +".gqten";
+  file = "mps/mps_ten" + std::to_string(target_site) + ".gqten";
   ofstream dump_file(file, ofstream::binary);
   dump_file << lmps;
   dump_file.close();
 
-  file = "mps/mps_ten"+ std::to_string(target_site + 1) +".gqten";
+  file = "mps/mps_ten" + std::to_string(target_site + 1) + ".gqten";
   dump_file.open(file, ofstream::binary);
   dump_file << rmps;
   dump_file.close();
   return 0;
 
-
 }
 
-
-
 int ParserFixMpsArgs(const int argc, char *argv[],
-                     size_t& lsite,
-                     size_t& thread,
-                     bool& load_mps){
+                     size_t &lsite,
+                     size_t &thread,
+                     bool &load_mps) {
   int nOptionIndex = 1;
 
   string arguement1 = "--lsite=";
   string arguement2 = "--thread=";
   string arguement3 = "--load_mps=";
   bool site_argument_has(false), thread_argument_has(false), load_mps_argument_has(false);
-  while (nOptionIndex < argc){
-    if (strncmp(argv[nOptionIndex], arguement1.c_str() , arguement1.size()) == 0){
+  while (nOptionIndex < argc) {
+    if (strncmp(argv[nOptionIndex], arguement1.c_str(), arguement1.size()) == 0) {
       std::string para_string = &argv[nOptionIndex][arguement1.size()];
       lsite = atoi(para_string.c_str());
       site_argument_has = true;
-    }else if (strncmp(argv[nOptionIndex], arguement2.c_str(), arguement2.size()) == 0){
+    } else if (strncmp(argv[nOptionIndex], arguement2.c_str(), arguement2.size()) == 0) {
       std::string para_string = &argv[nOptionIndex][arguement2.size()];
       thread = atoi(para_string.c_str());
       thread_argument_has = true;
-    }else if (strncmp(argv[nOptionIndex], arguement3.c_str(), arguement3.size()) == 0 ){
+    } else if (strncmp(argv[nOptionIndex], arguement3.c_str(), arguement3.size()) == 0) {
       std::string para_string = &argv[nOptionIndex][arguement3.size()];
       load_mps = (bool) atoi(para_string.c_str());
       load_mps_argument_has = true;
-    }else{
+    } else {
       cout << "Options '" << argv[nOptionIndex] << "' not valid. Run '" << argv[0] << "' for details." << endl;
       //   return -1;
     }
     nOptionIndex++;
   }
 
-  if(!site_argument_has){
+  if (!site_argument_has) {
     lsite = 0;
-    std::cout << "Note: no site argument, set it as 0 by default."  << std::endl;
+    std::cout << "Note: no site argument, set it as 0 by default." << std::endl;
   }
 
-  if(!thread_argument_has){
+  if (!thread_argument_has) {
     thread = 24;
     std::cout << "Note: no thread argument, set it as 24 by default." << std::endl;
   }
 
-  if(!load_mps_argument_has){
+  if (!load_mps_argument_has) {
     load_mps = false;
     std::cout << "Note: no load_mps argument, set it as false by default." << std::endl;
   }
