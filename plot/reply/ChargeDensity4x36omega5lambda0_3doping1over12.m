@@ -1,11 +1,12 @@
 addpath('../');
-% figure;
+figure;
 Lx=36; Ly=4;
 omega = 5; g = 2.4495; Np = 2; U = 8; Numhole = Lx*Ly/12;
 
+
 Dset=[8000,10000,12000,14000,16000];%bond dimension set
-trunc_err = 1e7*[6.0531e-06,4.7841e-06,3.9204e-06,3.2577e-06,2.7966e-06];
-selected_fit_data=[1,2,3,4];
+trunc_err = 1e7*[6.0531e-06,4.7841e-06,3.9204e-06,3.2577e-06,2.8115e-06,2.4299e-06];
+selected_fit_data=[1,2,3,4,5];
 extrapolation_poly_degree = 2;
 
 
@@ -38,26 +39,26 @@ for j = 1:numel(Dset)
     end
 end
 
-% ChargeDensity = (ChargeDensity + ChargeDensity(:,end:-1:1))/2;
-h_data=plot(distance + 1, ChargeDensity,'-o'); hold on;
+ChargeDensity = (ChargeDensity + ChargeDensity(:,end:-1:1))/2;
+h_data=plot(distance + 1, ChargeDensity,'x'); hold on;
 
-% ChargeDensity_ex = zeros(1, numel(distance) );
-% 
-% 
-% fit_x = trunc_err;
-% error_bar_set = zeros(1, numel(distance));
-% for i=1:numel(distance)
-%     p = fit(fit_x(selected_fit_data)',ChargeDensity(selected_fit_data,i),'poly2');
-%     range=confint(p, 0.95);
-%     error_bar = (range(2,3) - range(1,3))/2;
-%     error_bar_set(i) = error_bar;
-%     fprintf("error bar for site %d = %.6f\n", distance(i), error_bar);
-%     ChargeDensity_ex(i)=p.p3;
-% end
+ChargeDensity_ex = zeros(1, numel(distance) );
+
+
+fit_x = trunc_err;
+error_bar_set = zeros(1, numel(distance));
+for i=1:numel(distance)
+    p = fit(fit_x(selected_fit_data)',ChargeDensity(selected_fit_data,i),'poly2');
+    % range=confint(p, 0.95);
+    % error_bar = (range(2,3) - range(1,3))/2;
+    % error_bar_set(i) = error_bar;
+    % fprintf("error bar for site %d = %.6f\n", distance(i), error_bar);
+    ChargeDensity_ex(i)=p.p3;
+end
 % fprintf("mean error bar = %.6f\n", mean(error_bar));
 % 
 % ChargeDensity_ex = (ChargeDensity_ex + ChargeDensity_ex(end:-1:1))/2;
-% h_ex = plot(distance + 1, ChargeDensity_ex,'o'); hold on;
+h_ex = plot(distance + 1, ChargeDensity_ex,'-o'); hold on;
 % 
 % cos_fix_x = Lx/4:3*Lx/4-1;
 % % cos_fix_x = Lx/4+1:3*Lx/4-2;
@@ -85,53 +86,17 @@ xlabel('$x$','Interpreter','latex');
 ylabel('$n(x)$','Interpreter','latex');
 set(get(gca,'XLabel'),'FontSize',24); 
 set(get(gca,'YLabel'),'FontSize',24); 
-
 % set(gca,'XLim',[9,24]);
 % set(gca,'Ylim',[0.85,0.94]);
 set(gcf,'position',[1000,1000,600,450]);
 
 
-%{
-figure;
-% ChargeDensity_ex = (ChargeDensity_ex+ChargeDensity_ex(end:-1:1))/2;
-
-plot(distance(1:end/2), ChargeDensity_ex(1:end/2),'o'); hold on;
-
-distance = distance(1:end/2-2);
-ChargeDensity_ex = ChargeDensity_ex(1:end/2-2);
-
-ChargeDensity_ex = ChargeDensity_ex( distance > 2 );
-distance = distance( distance > 2 );
+%=== dump the figure
+figure_directory = '../../figure';
+figure_name_eps = 'CDWdoping1over12.eps';
+figure_path = fullfile(figure_directory, figure_name_eps);
+saveas(gcf, figure_path, 'epsc');
+disp(['the CDW profile figure has been saved at ', figure_path]);
 
 
 
-set(gca, 'Xlim',[1,Lx/2]);
-
-
-modelfun = @(b,x)(b(5)+ b(3).*cos(2*b(4).*x+b(1)).*x.^(-b(2)/2) );
-mdl = fitnlm(distance',ChargeDensity_ex',modelfun,[ -2.1135
-    0.8895
-   -0.0357
-    0.7866
-    0.8757]);
-
-sites = distance;
-phi = mdl.Coefficients.Estimate(1);
-Kc = mdl.Coefficients.Estimate(2);
-deltan = mdl.Coefficients.Estimate(3);
-b = mdl.Coefficients.Estimate;
-sites = sites(1):0.01:sites(end)+1;
-plot(sites, modelfun(b,sites),'-');
-l=legend('DMRG data', ['fitting, $K_c= ',num2str(Kc),'$']);
-set(l,'Box','off');set(l,'Interpreter','latex');
-set(l,'Fontsize',18);
-
-set(gca,'fontsize',24);
-set(gca,'linewidth',1.5);
-set(get(gca,'Children'),'linewidth',2); % Set line width 1.5 pounds
-xlabel('$x$','Interpreter','latex');
-ylabel('Charge Density','Interpreter','latex');
-set(get(gca,'XLabel'),'FontSize',24); 
-set(get(gca,'YLabel'),'FontSize',24); 
-
-%}

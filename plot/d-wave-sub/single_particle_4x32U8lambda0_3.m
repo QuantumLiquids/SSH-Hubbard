@@ -72,12 +72,11 @@ set(T,'Interpreter','latex');set(T,'Fontsize',24);
 % T=text(5,2e-2,['$K_{c}=',num2str(-p.p1),'$']);
 % set(T,'Interpreter','latex');set(T,'Fontsize',24);
 
-T2=text(5,4e-1,['$U=',num2str(8),', \lambda = 0.3$']);
+T2=text(5,3.5e-1,['$U=',num2str(8),', \lambda = 0.3$']);
 set(T2,'Interpreter','latex');set(T2,'Fontsize',24);
 
 
-
-l=legend([h; h_ex],'$D=12000$','$14000$','$16000$','$17000$','$18000$','$+\infty$');
+l=legend([h; h_ex],'$D=12000$','$14000$','$16000$','$17000$','$18000$','extrapolation, $+\infty$');
 set(l,'Box','off');set(l,'Interpreter','latex');
 set(l,'Fontsize',18);
 set(l,'Location','SouthWest');
@@ -89,7 +88,7 @@ set(gca,'fontsize',24);
 set(gca,'linewidth',1.5);
 set(get(gca,'Children'),'linewidth',2); % Set line width 1.5 pounds
 xlabel('$r$','Interpreter','latex');
-ylabel('$|\langle c^\dagger(0)c(r)\rangle|$','Interpreter','latex');
+ylabel('$|G(r)|$','Interpreter','latex');
 set(get(gca,'XLabel'),'FontSize',24); 
 set(get(gca,'YLabel'),'FontSize',24); 
 
