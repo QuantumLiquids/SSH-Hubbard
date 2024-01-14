@@ -86,7 +86,7 @@ find_path(TENSOR_HEADER_PATH "gqten")
 find_path(MPS2_HEADER_PATH "gqmps2")
 find_package(hptt)
 find_package(Boost
-        1.76.0
+        1.74.0
         REQUIRED
         COMPONENTS serialization mpi)
 find_package(MPI REQUIRED)

@@ -59,8 +59,6 @@ int main(int argc, char *argv[]) {
 
   SiteVec<TenElemT, U1U1QN> sites = SiteVec<TenElemT, U1U1QN>(pb_out_set);
   MPO<Tensor> mpo(N);
-  const std::string kMpoPath = "mpo";
-  const std::string kMpoTenBaseName = "mpo_ten";
   for (size_t i = 0; i < mpo.size(); i++) {
     std::string filename = kMpoPath + "/" +
         kMpoTenBaseName + std::to_string(i) + "." + kGQTenFileSuffix;
@@ -104,14 +102,7 @@ int main(int argc, char *argv[]) {
     gqten::hp_numeric::SetTensorManipulationThreads(params.TotalThreads);
   }
 
-  gqmps2::TwoSiteVMPSSweepParams sweep_params_single(
-      params.Sweeps,
-      params.Dmin, params.Dmax, params.CutOff,
-      gqmps2::LanczosParams(params.LanczErr, params.MaxLanczIter),
-      params.noise
-  );
-
-  gqmps2::TwoSiteMPINoisedVMPSSweepParams sweep_params_parallel(
+  gqmps2::FiniteVMPSSweepParams sweep_params(
       params.Sweeps,
       params.Dmin, params.Dmax, params.CutOff,
       gqmps2::LanczosParams(params.LanczErr, params.MaxLanczIter),
@@ -126,22 +117,18 @@ int main(int argc, char *argv[]) {
       } else {
         gqmps2::DirectStateInitMps(mps, stat_labs);
         cout << "Initial mps as direct product state." << endl;
-        mps.Dump(sweep_params_single.mps_path, true);
+        mps.Dump(sweep_params.mps_path, true);
       }
     } else {
       gqmps2::DirectStateInitMps(mps, stat_labs);
       cout << "Initial mps as direct product state." << endl;
-      mps.Dump(sweep_params_single.mps_path, true);
+      mps.Dump(sweep_params.mps_path, true);
     }
   }
 
   double e0;
   if (!has_bond_dimension_parameter) {
-    if (world.size() == 1) {
-      e0 = gqmps2::TwoSiteFiniteVMPS2(mps, mpo, sweep_params_single);
-    } else {
-      e0 = gqmps2::TwoSiteFiniteVMPS2(mps, mpo, sweep_params_parallel, world);
-    }
+    e0 = gqmps2::TwoSiteFiniteVMPS2(mps, mpo, sweep_params, world);
   } else {
     size_t DMRG_time = input_D_set.size();
     std::vector<size_t> MaxLanczIterSet(DMRG_time);
@@ -160,24 +147,14 @@ int main(int argc, char *argv[]) {
       std::cout << "Setting MaxLanczIter as : [" << MaxLanczIterSet[0] << "]" << std::endl;
     }
 
-    if (world.size() == 1) {
-      for (size_t i = 0; i < DMRG_time; i++) {
-        size_t D = input_D_set[i];
+    for (size_t i = 0; i < DMRG_time; i++) {
+      size_t D = input_D_set[i];
+      if (world.rank() == 1) {
         std::cout << "D_max = " << D << std::endl;
-        sweep_params_single.Dmax = D;
-        sweep_params_single.Dmin = D;
-        e0 = gqmps2::TwoSiteFiniteVMPS(mps, mpo, sweep_params_single);
       }
-    } else {
-      for (size_t i = 0; i < DMRG_time; i++) {
-        size_t D = input_D_set[i];
-        if (world.rank() == 1) {
-          std::cout << "D_max = " << D << std::endl;
-        }
-        sweep_params_parallel.Dmax = D;
-        sweep_params_parallel.Dmin = D;
-        e0 = gqmps2::TwoSiteFiniteVMPS(mps, mpo, sweep_params_parallel, world);
-      }
+      sweep_params.Dmax = D;
+      sweep_params.Dmin = D;
+      e0 = gqmps2::TwoSiteFiniteVMPS(mps, mpo, sweep_params, world);
     }
   }
 

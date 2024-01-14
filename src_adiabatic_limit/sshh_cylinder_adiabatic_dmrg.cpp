@@ -70,14 +70,30 @@ int main(int argc, char *argv[]) {
       // random generate the phonon displacement;
       CreatPath(phonon_disp_data_dir);
 
-      std::default_random_engine random_engine;
-      random_engine.seed(std::random_device{}());
-      std::uniform_real_distribution<double> u(0, 1);
-      for (size_t i = 0; i < N - Ly; i++) {
-        horizontal_x[i] = u(random_engine);
-      }
-      for (size_t i = 0; i < N; i++) {
-        vertical_x[i] = u(random_engine);
+      switch(params.ph_init_config) {
+        case Zero:
+        {
+          for (size_t i = 0; i < N - Ly; i++) {
+            horizontal_x[i] = 0.0;
+          }
+          for (size_t i = 0; i < N; i++) {
+            vertical_x[i] = 0.0;
+          }
+          break;
+        }
+        case Random:
+        {
+          std::default_random_engine random_engine;
+          random_engine.seed(std::random_device{}());
+          std::uniform_real_distribution<double> u(0, 1);
+          for (size_t i = 0; i < N - Ly; i++) {
+            horizontal_x[i] = u(random_engine);
+          }
+          for (size_t i = 0; i < N; i++) {
+            vertical_x[i] = u(random_engine);
+          }
+          break;
+        }
       }
     }
     // the phonon displacement data are only stored in main processor.

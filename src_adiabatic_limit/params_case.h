@@ -2,6 +2,11 @@
 #include "gqmps2/gqmps2.h"
 using gqmps2::CaseParamsParserBasic;
 
+enum PhononConfigIntialType {
+  Zero = 0,
+  Random
+};
+
 struct CaseParams : public CaseParamsParserBasic {
   CaseParams(const char *pf) : CaseParamsParserBasic(pf) {
     Lx = ParseInt("Lx");
@@ -28,7 +33,7 @@ struct CaseParams : public CaseParamsParserBasic {
       PA = 0.0;
       PerturbationPeriod = 1;
     }
-
+    ph_init_config = static_cast<PhononConfigIntialType>(ParseInt("InitialPhononConfig"));
   }
 
   size_t Lx;
@@ -46,6 +51,7 @@ struct CaseParams : public CaseParamsParserBasic {
   double LanczErr;
   size_t MaxLanczIter;
   size_t TotalThreads;
+  PhononConfigIntialType ph_init_config;
   std::vector<double> noise;
   bool Perturbation;
   double PA;

@@ -18,6 +18,7 @@
       0.001,
       0.001
     ],
+    "InitialPhononConfig": 0,
     "Perturbation": false,
     "PerturbationAmplitude": 0.5,
     "TotalThreads": 2,
