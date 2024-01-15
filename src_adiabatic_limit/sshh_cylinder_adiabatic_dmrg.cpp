@@ -237,22 +237,22 @@ int main(int argc, char *argv[]) {
                                        hopping1,
                                        vertical_bond_inserts,
                                        vertical_bond_sites,
-                                       "horizontal_cupcreationcupannihilation");
+                                       "vertical_cupcreationcupannihilation");
       hopping_data2 = MeasureTwoSiteOp(mps,
                                        hopping2,
                                        vertical_bond_inserts,
                                        vertical_bond_sites,
-                                       "horizontal_cdowncreationcdownannihilation");
+                                       "vertical_cdowncreationcdownannihilation");
       hopping_data3 = MeasureTwoSiteOp(mps,
                                        hopping3,
                                        vertical_bond_inserts,
                                        vertical_bond_sites,
-                                       "horizontal_cupannihilationcupcreation");
+                                       "vertical_cupannihilationcupcreation");
       hopping_data4 = MeasureTwoSiteOp(mps,
                                        hopping4,
                                        vertical_bond_inserts,
                                        vertical_bond_sites,
-                                       "horizontal_cdownannihilationcdowncreation");
+                                       "vertical_cdownannihilationcdowncreation");
       for (size_t i = 0; i < N; i++) {
         vertical_x[i] =
             -alpha / K * (hopping_data1[i].avg + hopping_data2[i].avg + hopping_data3[i].avg + hopping_data4[i].avg);
