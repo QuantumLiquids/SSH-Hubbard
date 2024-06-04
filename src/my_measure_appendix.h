@@ -7,8 +7,8 @@
 
 #include "my_measure.h"
 
-namespace gqmps2 {
-using namespace gqten;
+namespace qlmps {
+using namespace qlten;
 
 /**
  * This function used to measure two point function in such case:
@@ -30,14 +30,14 @@ template<typename TenElemT, typename QNT>
 inline MeasuRes<TenElemT> MeasureTwoSiteFermionOpGroup(
     FiniteMPS<TenElemT, QNT> &mps,
     const size_t initial_center,
-    const GQTensor<TenElemT, QNT> &phys_ops1,
-    const GQTensor<TenElemT, QNT> &phys_ops2,
+    const Qltensor<TenElemT, QNT> &phys_ops1,
+    const Qltensor<TenElemT, QNT> &phys_ops2,
     const size_t site1,
     const std::vector<size_t> &site2_set
 ) {
   std::string mps_path = kMpsPath;//usual case
   const size_t bonson_op_dim(2);
-  using Tensor = GQTensor<TenElemT, QNT>;
+  using Tensor = Qltensor<TenElemT, QNT>;
 
   static bool is_f_initial = false;
   static Tensor f;
@@ -67,14 +67,14 @@ inline MeasuRes<TenElemT> MeasureTwoSiteFermionOpGroup(
   std::vector<size_t> head_mps_ten_ctrct_axes1{1};
   std::vector<size_t> head_mps_ten_ctrct_axes2{0, 2};
   std::vector<size_t> head_mps_ten_ctrct_axes3{0, 1};
-  GQTensor<TenElemT, QNT> temp_ten0;
-  auto ptemp_ten = new GQTensor<TenElemT, QNT>;//TODO: delete
+  Qltensor<TenElemT, QNT> temp_ten0;
+  auto ptemp_ten = new Qltensor<TenElemT, QNT>;//TODO: delete
   Contract(
       &mps[site1], &phys_ops1,
       {{1}, {0}},
       &temp_ten0
   );
-  GQTensor<TenElemT, QNT> mps_ten_dag = Dag(mps[site1]);
+  Qltensor<TenElemT, QNT> mps_ten_dag = Dag(mps[site1]);
   Contract(
       &temp_ten0, &mps_ten_dag,
       {head_mps_ten_ctrct_axes2, head_mps_ten_ctrct_axes3},
@@ -106,7 +106,7 @@ inline MeasuRes<TenElemT> MeasureTwoSiteFermionOpGroup(
     //Contract ptemp_ten*mps[site2]*ops2*dag(mps[site2]) gives the expected value.
     std::vector<size_t> tail_mps_ten_ctrct_axes1{0, 1, 2};
     std::vector<size_t> tail_mps_ten_ctrct_axes2{2, 0, 1};
-    GQTensor<TenElemT, QNT> temp_ten2, temp_ten3, res_ten;
+    Qltensor<TenElemT, QNT> temp_ten2, temp_ten3, res_ten;
     Contract(&mps[site2], ptemp_ten, {{0}, {0}}, &temp_ten2);
     Contract(&temp_ten2, &phys_ops2, {{0}, {0}}, &temp_ten3);
     mps_ten_dag = Dag(mps[site2]);
@@ -136,8 +136,8 @@ MPI version, memory optimized version
 template<typename TenElemT, typename QNT>
 inline MeasuRes<TenElemT> MeasureTwoSiteFermionOp(
     FiniteMPS<TenElemT, QNT> &mps,
-    const GQTensor<TenElemT, QNT> &phys_ops1,
-    const GQTensor<TenElemT, QNT> &phys_ops2,
+    const Qltensor<TenElemT, QNT> &phys_ops1,
+    const Qltensor<TenElemT, QNT> &phys_ops2,
     const std::vector<std::vector<size_t>> &sites_set,
     const size_t Ly,
     const std::string &res_file_basename,
@@ -201,7 +201,7 @@ inline MeasuRes<TenElemT> MeasureTwoSiteFermionOp(
 template<typename TenElemT, typename QNT>
 MeasuRes<TenElemT> MeasureOnePhoneOp(
     FiniteMPS<TenElemT, QNT> &mps,
-    const std::vector<GQTensor<TenElemT, QNT>> &op_vec,
+    const std::vector<Qltensor<TenElemT, QNT>> &op_vec,
     const std::vector<size_t> &boson_set, // pseudo-sites
     const std::string &res_file_basename
 ) {

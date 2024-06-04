@@ -12,25 +12,25 @@
 #include "operators.h"
 #include "params_case.h"
 
-#include "gqmps2/gqmps2.h"
-#include "gqten/gqten.h"
+#include "qlmps/qlmps.h"
+#include "qlten/qlten.h"
 #include <time.h>
 #include <stdlib.h>
 
 #include "myutil.h"
 #include "my_measure_appendix.h"
 
-#include "gqten/utility/timer.h"
+#include "qlten/utility/timer.h"
 
 #include "boost/mpi.hpp"
 
 using std::cout;
 using std::endl;
 using std::vector;
-using FiniteMPST = gqmps2::FiniteMPS<TenElemT, U1U1QN>;
-using gqmps2::SiteVec;
-using gqmps2::MeasureOneSiteOp;
-using gqten::Timer;
+using FiniteMPST = qlmps::FiniteMPS<TenElemT, U1U1QN>;
+using qlmps::SiteVec;
+using qlmps::MeasureOneSiteOp;
+using qlten::Timer;
 
 int main(int argc, char *argv[]) {
   namespace mpi = boost::mpi;
@@ -85,8 +85,8 @@ int main(int argc, char *argv[]) {
   SiteVec<TenElemT, U1U1QN> sites = SiteVec<TenElemT, U1U1QN>(pb_out_set);
   FiniteMPST mps(sites);
 
-  gqten::hp_numeric::SetTensorTransposeNumThreads(params.TotalThreads);
-  gqten::hp_numeric::SetTensorManipulationThreads(params.TotalThreads);
+  qlten::hp_numeric::SetTensorTransposeNumThreads(params.TotalThreads);
+  qlten::hp_numeric::SetTensorManipulationThreads(params.TotalThreads);
 
   vector<vector<size_t>> two_point_sites_setF;
 
@@ -112,14 +112,14 @@ int main(int argc, char *argv[]) {
   MeasureTwoSiteOp(mps, sm, sp, two_point_sites_setF, Ly, "smsp" + file_name_postfix, world);
   MeasureTwoSiteOp(mps, nf, nf, two_point_sites_setF, Ly, "nfnf" + file_name_postfix, world);
   MeasureTwoSiteOp(mps, cupccdnc, cdnacupa, two_point_sites_setF, Ly, "onsitesc" + file_name_postfix, world);
-  gqmps2::MeasureTwoSiteFermionOp(mps,
+  qlmps::MeasureTwoSiteFermionOp(mps,
                                   bupc,
                                   bupa,
                                   two_point_sites_setF,
                                   Ly,
                                   "single_particle" + file_name_postfix,
                                   world); // correlation <c^dag_spinup(i) c_spinup(j)>
-  gqmps2::MeasureTwoSiteFermionOp(mps,
+  qlmps::MeasureTwoSiteFermionOp(mps,
                                   -Fbdnc,
                                   Fbdna,
                                   two_point_sites_setF,

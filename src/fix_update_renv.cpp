@@ -4,9 +4,9 @@
  */
 
 #include "gqdouble.h"
-// #include "gqmps2/algorithm/lanczos_solver.h"
-// #include "gqmps2/algorithm/lanczos_solver_impl.h"
-#include "gqmps2/gqmps2.h"
+// #include "qlmps/algorithm/lanczos_solver.h"
+// #include "qlmps/algorithm/lanczos_solver_impl.h"
+#include "qlmps/qlmps.h"
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -16,8 +16,8 @@ using std::ifstream;
 using std::ofstream;
 using std::string;
 using std::vector;
-using namespace gqmps2;
-using namespace gqten;
+using namespace qlmps;
+using namespace qlten;
 using namespace std;
 
 int Parser(const int argc, char *argv[],
@@ -29,8 +29,8 @@ int Parser(const int argc, char *argv[],
  *
  * @example
  * ./fix_update_renv --thread=24  --from=10 --to=35
- * which uses 24 threads, update from the renv10.gqten (note you require to prepare renv9.gqten and other mps mpo tensors),
- * and update to renv34.gqten (note renv35.gqten will not get);
+ * which uses 24 threads, update from the renv10.qlten (note you require to prepare renv9.qlten and other mps mpo tensors),
+ * and update to renv34.qlten (note renv35.qlten will not get);
  *
  * the `from` renv will be generated, and `to` won't.
  *
@@ -48,8 +48,8 @@ int main(int argc, char *argv[]) {
   std::cout << "to = " << to << std::endl;
   std::cout << "thread = " << thread << std::endl;
 
-  gqten::hp_numeric::SetTensorTransposeNumThreads(thread);
-  gqten::hp_numeric::SetTensorManipulationThreads(thread);
+  qlten::hp_numeric::SetTensorTransposeNumThreads(thread);
+  qlten::hp_numeric::SetTensorManipulationThreads(thread);
 
   const size_t N = GetNumofMps();
   using TenT = Tensor;
@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
   const std::string kMpoTenBaseName = "mpo_ten";
   for (size_t i = N - from; i > N - to; i--) {
     std::string filename = kMpoPath + "/" +
-        kMpoTenBaseName + std::to_string(i) + "." + kGQTenFileSuffix;
+        kMpoTenBaseName + std::to_string(i) + "." + kQltenFileSuffix;
     mpo.LoadTen(i, filename);
   }
 
@@ -88,7 +88,7 @@ int main(int argc, char *argv[]) {
     renv({0, 0, 0}) = 1;
     mps.dealloc(N - 1);
     string file = GenEnvTenName("r", 0, temp_path);
-    WriteGQTensorTOFile(renv, file);
+    WriteQltensorTOFile(renv, file);
     from = 1;
   }
 
@@ -125,7 +125,7 @@ int main(int argc, char *argv[]) {
       renv = std::move(UpdateSiteRenvs(renv, mps[N - i], mpo[N - i]));
     }
 
-    WriteGQTensorTOFile(renv, file);
+    WriteQltensorTOFile(renv, file);
     mps.dealloc(N - i);
   }
 

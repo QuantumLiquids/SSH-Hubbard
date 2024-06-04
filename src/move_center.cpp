@@ -4,7 +4,7 @@
  */
 
 #include "gqdouble.h"
-#include "gqmps2/gqmps2.h"
+#include "qlmps/qlmps.h"
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -12,10 +12,10 @@
 #include "myutil.h"
 #include "params_case.h"
 
-using namespace gqmps2;
-using namespace gqten;
+using namespace qlmps;
+using namespace qlten;
 using namespace std;
-using FiniteMPST = gqmps2::FiniteMPS<TenElemT, U1U1QN>;
+using FiniteMPST = qlmps::FiniteMPS<TenElemT, U1U1QN>;
 
 
 
@@ -39,8 +39,8 @@ int main(int argc, char *argv[]){
     std::cout << "thread = " << thread << std::endl;
 
 
-    gqten::hp_numeric::SetTensorTransposeNumThreads(thread);
-    gqten::hp_numeric::SetTensorManipulationThreads(thread);
+    qlten::hp_numeric::SetTensorTransposeNumThreads(thread);
+    qlten::hp_numeric::SetTensorManipulationThreads(thread);
 
 
     const size_t N = GetNumofMps();

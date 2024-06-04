@@ -3,10 +3,10 @@
 #include <time.h>
 #include <vector>
 #include <stdlib.h>     // system
-#include "gqmps2/gqmps2.h"
+#include "qlmps/qlmps.h"
 
-using namespace gqmps2;
-using namespace gqten;
+using namespace qlmps;
+using namespace qlten;
 using namespace std;
 
 #include "params_case.h"
@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
   }
 
   SiteVec<TenElemT, U1U1QN> sites = SiteVec<TenElemT, U1U1QN>(pb_out_set);
-  gqmps2::MPOGenerator<TenElemT, U1U1QN> mpo_gen(sites, qn0);
+  qlmps::MPOGenerator<TenElemT, U1U1QN> mpo_gen(sites, qn0);
 
   auto iter = ElectronSite.begin();
   for (size_t i = 0; i < N; ++i) {
@@ -185,7 +185,7 @@ int main(int argc, char *argv[]) {
 
   for (size_t i = 0; i < mpo.size(); i++) {
     std::string filename = kMpoPath + "/" +
-        kMpoTenBaseName + std::to_string(i) + "." + kGQTenFileSuffix;
+        kMpoTenBaseName + std::to_string(i) + "." + kQltenFileSuffix;
     mpo.DumpTen(i, filename);
   }
 

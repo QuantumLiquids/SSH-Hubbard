@@ -1,17 +1,17 @@
 #ifndef GQDOUBLE_H
 #define GQDOUBLE_H
-#include "gqten/gqten.h"
+#include "qlten/qlten.h"
 
-using gqten::QNCard;
-using gqten::U1QNVal;
-using gqten::GQTenIndexDirType;
+using qlten::QNCard;
+using qlten::U1QNVal;
+using qlten::QltenIndexDirType;
 
-using TenElemT = gqten::GQTEN_Double;
-using U1U1QN = gqten::QN<U1QNVal, U1QNVal>;
-using Tensor = gqten::GQTensor<TenElemT, U1U1QN>;
+using TenElemT = qlten::QLTEN_Double;
+using U1U1QN = qlten::QN<U1QNVal, U1QNVal>;
+using Tensor = qlten::Qltensor<TenElemT, U1U1QN>;
 
-using QNSctT = gqten::QNSector<U1U1QN>;
-using IndexT = gqten::Index<U1U1QN>;
+using QNSctT = qlten::QNSector<U1U1QN>;
+using IndexT = qlten::Index<U1U1QN>;
 
 const auto qn0 = U1U1QN(
     {QNCard("N", U1QNVal(0)), QNCard("Sz", U1QNVal(0))}
@@ -21,12 +21,12 @@ const IndexT pb_outF = IndexT({QNSctT(U1U1QN({QNCard("N", U1QNVal(2)), QNCard("S
                                QNSctT(U1U1QN({QNCard("N", U1QNVal(1)), QNCard("Sz", U1QNVal(1))}), 1),
                                QNSctT(U1U1QN({QNCard("N", U1QNVal(1)), QNCard("Sz", U1QNVal(-1))}), 1),
                                QNSctT(U1U1QN({QNCard("N", U1QNVal(0)), QNCard("Sz", U1QNVal(0))}), 1)},
-                              GQTenIndexDirType::OUT
+                              QltenIndexDirType::OUT
 );
-const auto pb_inF = gqten::InverseIndex(pb_outF);
+const auto pb_inF = qlten::InverseIndex(pb_outF);
 
-const IndexT pb_outB = IndexT({QNSctT(qn0, 2)}, GQTenIndexDirType::OUT);
-const IndexT pb_inB = gqten::InverseIndex(pb_outB);
+const IndexT pb_outB = IndexT({QNSctT(qn0, 2)}, QltenIndexDirType::OUT);
+const IndexT pb_inB = qlten::InverseIndex(pb_outB);
 
 void OperatorInitial();
 

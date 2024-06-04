@@ -3,36 +3,34 @@
  *
  * data of X_ij are stored in the directory phonon_displacement
  */
-#include "gqmps2/gqmps2.h"
+#include "qlmps/qlmps.h"
 #include "./gqdouble.h"
 #include "./operators.h"
 #include "../src/myutil.h"
 #include "./params_case.h"
 
-using FiniteMPST = gqmps2::FiniteMPS<TenElemT, U1U1QN>;
+using FiniteMPST = qlmps::FiniteMPS<TenElemT, U1U1QN>;
 
 int main(int argc, char *argv[]) {
   using namespace std;
-  using namespace gqmps2;
-  using namespace gqten;
+  using namespace qlmps;
+  using namespace qlten;
   namespace mpi = boost::mpi;
   mpi::environment env;
   mpi::communicator world;
   CaseParams params(argv[1]);
 
   if (world.rank() == 0 && world.size() > 1 && params.TotalThreads > 2) {
-    gqten::hp_numeric::SetTensorTransposeNumThreads(params.TotalThreads - 2);
-    gqten::hp_numeric::SetTensorManipulationThreads(params.TotalThreads - 2);
+    qlten::hp_numeric::SetTensorManipulationThreads(params.TotalThreads - 2);
   } else {
-    gqten::hp_numeric::SetTensorTransposeNumThreads(params.TotalThreads);
-    gqten::hp_numeric::SetTensorManipulationThreads(params.TotalThreads);
+    qlten::hp_numeric::SetTensorManipulationThreads(params.TotalThreads);
   }
 
   /******** Model parameter ********/
   size_t Lx = params.Lx, Ly = params.Ly;
   size_t N = Lx * Ly;
   double t = params.t, alpha = params.alpha, U = params.U, K = params.K;
-  double W = 8.0 * t; // band width
+  double W = 8.0 * t; // bandwidth
   double lambda = alpha * alpha / K / W;
   cout << "System size = (" << Lx << "," << Ly << ")" << endl;
   cout << "The number of electron sites =" << Lx * Ly << endl;
@@ -42,10 +40,10 @@ int main(int argc, char *argv[]) {
        << endl;
 
   /****** DMRG parameter *******/
-  gqmps2::FiniteVMPSSweepParams sweep_params(
+  qlmps::FiniteVMPSSweepParams sweep_params(
       params.Sweeps,
       params.Dmin, params.Dmax, params.CutOff,
-      gqmps2::LanczosParams(params.LanczErr, params.MaxLanczIter),
+      qlmps::LanczosParams(params.LanczErr, params.MaxLanczIter),
       params.noise
   );
 
@@ -70,9 +68,8 @@ int main(int argc, char *argv[]) {
       // random generate the phonon displacement;
       CreatPath(phonon_disp_data_dir);
 
-      switch(params.ph_init_config) {
-        case Zero:
-        {
+      switch (params.ph_init_config) {
+        case Zero: {
           for (size_t i = 0; i < N - Ly; i++) {
             horizontal_x[i] = 0.0;
           }
@@ -81,8 +78,7 @@ int main(int argc, char *argv[]) {
           }
           break;
         }
-        case Random:
-        {
+        case Random: {
           std::default_random_engine random_engine;
           random_engine.seed(std::random_device{}());
           std::uniform_real_distribution<double> u(0, 1);
@@ -91,6 +87,20 @@ int main(int argc, char *argv[]) {
           }
           for (size_t i = 0; i < N; i++) {
             vertical_x[i] = u(random_engine);
+          }
+          break;
+        }
+        case VBS: {
+          for (size_t i = 0; i < N - Ly; i++) {
+            horizontal_x[i] = 0.0;
+          }
+          for (size_t i = 0; i < N; i++) {
+            size_t y = i % Ly, x = i / Ly;
+            if (x + y == 0) {
+              vertical_x[i] = -3.5;
+            } else {
+              vertical_x[i] = 0.0;
+            }
           }
           break;
         }
@@ -126,7 +136,7 @@ int main(int argc, char *argv[]) {
           half_filled_qn_label = 3 - half_filled_qn_label;
         }
       }
-      gqmps2::DirectStateInitMps(mps, stat_labs);
+      qlmps::DirectStateInitMps(mps, stat_labs);
       mps.Dump(sweep_params.mps_path, true);
     }
   }
@@ -162,7 +172,7 @@ int main(int argc, char *argv[]) {
   /*******  Calculation Subroutine *******/
   for (size_t iter = 0; iter < params.HamiltonianIters; iter++) {
     // creation the mpo/mro by the newest phonon displacement data
-    gqmps2::MPOGenerator<TenElemT, U1U1QN> mpo_gen(sites, qn0);
+    qlmps::MPOGenerator<TenElemT, U1U1QN> mpo_gen(sites, qn0);
     for (size_t i = 0; i < N; ++i) {
       mpo_gen.AddTerm(U, Uterm, i);
     }
@@ -200,7 +210,7 @@ int main(int argc, char *argv[]) {
     cout << "MRO generated." << endl;
 
     // dmrg
-    double e0 = gqmps2::FiniteDMRG(mps, mro, sweep_params, world);
+    double e0 = qlmps::FiniteDMRG(mps, mro, sweep_params, world);
 
 
     //measure hopping and update the phonon displacement

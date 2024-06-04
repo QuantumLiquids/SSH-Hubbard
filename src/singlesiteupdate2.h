@@ -4,7 +4,7 @@
 * Creation Date: 2021-6-12
 *
 * Description: GraceQ/MPS2 project. Implementation details for single-site algorithm.
-* The difference between this version with the standarad version in GQMPS2 is 
+* The difference between this version with the standarad version in QLMPS is
 * this version save the maximum singluar values in different quantum number sectors,
 * and qunatum block infos. Also measure electron numbers when update fermion sites.
 */
@@ -14,25 +14,25 @@
 @brief single-site finite variational MPS algorithm, magic change
 */
 
-#ifndef GQMPS2_ALGORITM_VMPS_ONE_SITE_UPDATE_FINITE_VMPS_IMPL2_H
-#define GQMPS2_ALGORITM_VMPS_ONE_SITE_UPDATE_FINITE_VMPS_IMPL2_H
+#ifndef QLMPS_ALGORITM_VMPS_ONE_SITE_UPDATE_FINITE_VMPS_IMPL2_H
+#define QLMPS_ALGORITM_VMPS_ONE_SITE_UPDATE_FINITE_VMPS_IMPL2_H
 
 #include <iostream>
 #include <iomanip>
 #include <vector>
 #include <string>
 
-#include "gqten/gqten.h"
-#include "gqten/utility/timer.h"                                        // Timer
-#include "gqmps2/consts.h"
+#include "qlten/qlten.h"
+#include "qlten/utility/timer.h"                                        // Timer
+#include "qlmps/consts.h"
 
-#include "gqmps2/algorithm/vmps/single_site_update_finite_vmps_impl.h"   // FiniteVMPSSweepParams
-#include "gqmps2/algorithm/vmps/two_site_update_finite_vmps_impl.h"      // helper functions
-#include "gqmps2/one_dim_tn/mpo/mpo.h"                                   // MPO
-#include "gqmps2/one_dim_tn/mps/finite_mps/finite_mps.h"  
-#include "gqmps2/one_dim_tn/mps/finite_mps/finite_mps_measu.h"           // FiniteMPS
-#include "gqmps2/utilities.h"                                            // IsPathExist, CreatPath
-#include "gqmps2/one_dim_tn/framework/ten_vec.h"                         // TenVec
+#include "qlmps/algorithm/vmps/single_site_update_finite_vmps_impl.h"   // FiniteVMPSSweepParams
+#include "qlmps/algorithm/vmps/two_site_update_finite_vmps_impl.h"      // helper functions
+#include "qlmps/one_dim_tn/mpo/mpo.h"                                   // MPO
+#include "qlmps/one_dim_tn/mps/finite_mps/finite_mps.h"
+#include "qlmps/one_dim_tn/mps/finite_mps/finite_mps_measu.h"           // FiniteMPS
+#include "qlmps/utilities.h"                                            // IsPathExist, CreatPath
+#include "qlmps/one_dim_tn/framework/ten_vec.h"                         // TenVec
 
 #include <stdio.h>    // remove
 #ifdef Release
@@ -40,8 +40,8 @@
 #endif
 #include <assert.h>
 
-namespace gqmps2 {
-  using namespace gqten;
+namespace qlmps {
+  using namespace qlten;
 
   using U1U1QN = QN<U1QNVal, U1QNVal>;
 /**
@@ -49,11 +49,11 @@ Max singular values in every block
 */
 struct MaxSVElem {
   MaxSVElem(void) = default;
-  MaxSVElem(const std::vector<long> &qn_vals, const GQTEN_Double max_sv, const long degeneracy) :
+  MaxSVElem(const std::vector<long> &qn_vals, const QLTEN_Double max_sv, const long degeneracy) :
     qn_vals(qn_vals), max_sv(max_sv), degeneracy(degeneracy) {}
 
   std::vector<long> qn_vals;  ///< QN vals label block
-  GQTEN_Double max_sv;         ///< average of the observation.
+  QLTEN_Double max_sv;         ///< average of the observation.
   long degeneracy;
 };
 
@@ -65,11 +65,11 @@ inline  void DumpMaxSVSet(
 );
 
 inline void DumpSVBlk(std::ofstream &ofs, const std::vector<long> &sites);
-inline MaxSVSet MaxSVInEachBlock(const GQTensor<GQTEN_Double, U1U1QN>& s,const std::string& file_basename);
+inline MaxSVSet MaxSVInEachBlock(const Qltensor<QLTEN_Double, U1U1QN>& s,const std::string& file_basename);
 
 /**
 Function to perform single-site update finite vMPS algorithm.
-The difference to SingleSiteFiniteVMPS in Package GQMPS2 is
+The difference to SingleSiteFiniteVMPS in Package QLMPS is
  this function will dump SVD quantum number sector information and the particle number in site information
  when sweeping.
 
@@ -77,9 +77,9 @@ The difference to SingleSiteFiniteVMPS in Package GQMPS2 is
 @note The canonical center of MPS should be set at site 0.
 */
 template <typename TenElemT, typename QNT>
-GQTEN_Double SingleSiteFiniteVMPS2(
+QLTEN_Double SingleSiteFiniteVMPS2(
     FiniteMPS<TenElemT, QNT> &mps,
-    const MPO<GQTensor<TenElemT, QNT>> &mpo,
+    const MPO<Qltensor<TenElemT, QNT>> &mpo,
     FiniteVMPSSweepParams &sweep_params
 ){
     assert(mps.size() == mpo.size());
@@ -124,7 +124,7 @@ GQTEN_Double SingleSiteFiniteVMPS2(
     ofs.close();
 
 
-    GQTEN_Double e0;
+    QLTEN_Double e0;
 
     if (sweep_params.noises.size() == 0) { sweep_params.noises.push_back(0.0); }
     double noise_start;
@@ -155,12 +155,12 @@ Single-site update DMRG algorithm refer to 10.1103/PhysRevB.91.155115
 template <typename TenElemT, typename QNT>
 double SingleSiteFiniteVMPSSweep2(
     FiniteMPS<TenElemT, QNT> &mps,
-    const MPO<GQTensor<TenElemT, QNT>> &mpo,
+    const MPO<Qltensor<TenElemT, QNT>> &mpo,
     const FiniteVMPSSweepParams &sweep_params,
     double& noise_start
 ) {
   auto N = mps.size();
-  using TenT = GQTensor<TenElemT, QNT>;
+  using TenT = Qltensor<TenElemT, QNT>;
   TenVec<TenT> lenvs(N), renvs(N);
   double e0(0.0), actual_e0(0.0), actual_laststep_e0(0.0);
 
@@ -233,9 +233,9 @@ its environment tensors and `mps[next_site]`.
 template <typename TenElemT, typename QNT>
 double SingleSiteFiniteVMPSUpdate2(
     FiniteMPS<TenElemT, QNT> &mps,
-    TenVec<GQTensor<TenElemT, QNT>> &lenvs,
-    TenVec<GQTensor<TenElemT, QNT>> &renvs,
-    const MPO<GQTensor<TenElemT, QNT>> &mpo,
+    TenVec<Qltensor<TenElemT, QNT>> &lenvs,
+    TenVec<Qltensor<TenElemT, QNT>> &renvs,
+    const MPO<Qltensor<TenElemT, QNT>> &mpo,
     const FiniteVMPSSweepParams &sweep_params,
     const char dir,
     const size_t target_site,
@@ -263,7 +263,7 @@ double SingleSiteFiniteVMPSUpdate2(
       exit(3);
   }
 
-  using TenT = GQTensor<TenElemT, QNT>;
+  using TenT = Qltensor<TenElemT, QNT>;
 
     //particle number operator
   static TenT nf = TenT();
@@ -293,7 +293,7 @@ double SingleSiteFiniteVMPSUpdate2(
                        &eff_ham_mul_single_site_state,
                        sweep_params.lancz_params
                    );                                   //note here mps(target_site) are destroyed.
-#ifdef GQMPS2_TIMING_MODE
+#ifdef QLMPS_TIMING_MODE
   auto lancz_elapsed_time = lancz_timer.PrintElapsed();
 #else
   auto lancz_elapsed_time = lancz_timer.Elapsed();
@@ -302,7 +302,7 @@ double SingleSiteFiniteVMPSUpdate2(
 
   if(mps_ten_shape[1]==4){
   //measure and dump singluar particle number
-#ifdef GQMPS2_TIMING_MODE
+#ifdef QLMPS_TIMING_MODE
   Timer measure_timer("single_site_fvmps_measure");
 #endif
   MeasuResElem<TenElemT> nf_res = OneSiteOpAvg(*lancz_res.gs_vec, nf,target_site,N );
@@ -311,12 +311,12 @@ double SingleSiteFiniteVMPSUpdate2(
   DumpSites(ofs, nf_res.sites); DumpAvgVal(ofs, nf_res.avg);
   ofs << "],\n";
   ofs.close();
-#ifdef GQMPS2_TIMING_MODE
+#ifdef QLMPS_TIMING_MODE
   measure_timer.PrintElapsed();
 #endif
   }
 
-#ifdef GQMPS2_TIMING_MODE
+#ifdef QLMPS_TIMING_MODE
   Timer noise_timer("single_site_fvmps_add_noise");
 #endif
 
@@ -344,17 +344,17 @@ double SingleSiteFiniteVMPSUpdate2(
     mps(target_site) = lancz_res.gs_vec;
   }
 
-#ifdef GQMPS2_TIMING_MODE
+#ifdef QLMPS_TIMING_MODE
   noise_timer.PrintElapsed();
 #endif
 
-#ifdef GQMPS2_TIMING_MODE
+#ifdef QLMPS_TIMING_MODE
   Timer svd_timer("single_site_fvmps_svd");
 #endif
 
   TenT u, vt;
-  GQTensor<GQTEN_Double, QNT> s;
-  GQTEN_Double actual_trunc_err;
+  Qltensor<QLTEN_Double, QNT> s;
+  QLTEN_Double actual_trunc_err;
   size_t D;
   auto zero_div = Div(mps[target_site]) - Div(mps[target_site]);
   auto div_left = (dir=='r' ? Div(mps[target_site]) : zero_div);
@@ -366,10 +366,10 @@ double SingleSiteFiniteVMPSUpdate2(
   );
   auto ee = MeasureEE(s, D);
 
-#ifdef GQMPS2_TIMING_MODE
+#ifdef QLMPS_TIMING_MODE
   svd_timer.PrintElapsed();
 #endif
-#ifdef GQMPS2_TIMING_MODE
+#ifdef QLMPS_TIMING_MODE
   Timer max_sv_timer("single_site_fvmps_find_and_dump_max_sv");
 #endif
   unsigned bond = (dir=='r')? (target_site+1):target_site;
@@ -377,11 +377,11 @@ double SingleSiteFiniteVMPSUpdate2(
   sstream << bond;
   std::string file_basename = sweep_params.mps_path+ "/sv_bond" + sstream.str();
   MaxSVInEachBlock( s, file_basename);
-#ifdef GQMPS2_TIMING_MODE
+#ifdef QLMPS_TIMING_MODE
   max_sv_timer.PrintElapsed();
 #endif
 
-#ifdef GQMPS2_TIMING_MODE
+#ifdef QLMPS_TIMING_MODE
   Timer update_mps_ten_timer("single_site_fvmps_update_mps_ten");
 #endif
 
@@ -406,12 +406,12 @@ double SingleSiteFiniteVMPSUpdate2(
       break;
   }
 
-#ifdef GQMPS2_TIMING_MODE
+#ifdef QLMPS_TIMING_MODE
   update_mps_ten_timer.PrintElapsed();
 #endif
 
 // Update environment tensors
-#ifdef GQMPS2_TIMING_MODE
+#ifdef QLMPS_TIMING_MODE
   Timer update_env_ten_timer("single_site_fvmps_update_env_ten");
 #endif
 
@@ -427,7 +427,7 @@ double SingleSiteFiniteVMPSUpdate2(
   }
 
 
-#ifdef GQMPS2_TIMING_MODE
+#ifdef QLMPS_TIMING_MODE
   update_env_ten_timer.PrintElapsed();
 #endif
 
@@ -448,7 +448,7 @@ double SingleSiteFiniteVMPSUpdate2(
 
 
 inline MaxSVSet MaxSVInEachBlock(
-  const GQTensor<GQTEN_Double, U1U1QN>& s,
+  const Qltensor<QLTEN_Double, U1U1QN>& s,
   const std::string& file_basename
 ){
   assert(s.Rank()==2);
@@ -456,7 +456,7 @@ inline MaxSVSet MaxSVInEachBlock(
 
   const auto& bsdt_s=s.GetBlkSparDataTen();
   const auto& bidbm_s = bsdt_s.GetBlkIdxDataBlkMap();
-  const GQTEN_Double* raw_data_pr_s = bsdt_s.GetActualRawDataPtr();
+  const QLTEN_Double* raw_data_pr_s = bsdt_s.GetActualRawDataPtr();
   std::cout << "qn block num of singular value" <<bidbm_s.size()<<std::endl;
   MaxSVSet max_sv_set; 
   max_sv_set.reserve(bidbm_s.size());
@@ -465,8 +465,8 @@ inline MaxSVSet MaxSVInEachBlock(
     const long degeneracy=datablk.shape[0];
     int Nval = qn.GetQNVal(0).GetVal();
     int Szval = qn.GetQNVal(1).GetVal();
-    const GQTEN_Double* pmax_sv = raw_data_pr_s+datablk.data_offset;
-    GQTEN_Double max_sv = *(pmax_sv);
+    const QLTEN_Double* pmax_sv = raw_data_pr_s+datablk.data_offset;
+    QLTEN_Double max_sv = *(pmax_sv);
     max_sv_set.push_back(MaxSVElem({Nval, Szval}, max_sv, degeneracy));
   }
   DumpMaxSVSet(max_sv_set, file_basename);
@@ -521,5 +521,5 @@ inline void DumpAvgVal(std::ofstream &ofs, const long num) {
   ofs << std::setw(14) << num;
 }
 
-} /* gqmps2 */
-#endif //GQMPS2_ALGORITM_VMPS_ONE_SITE_UPDATE_FINITE_VMPS_IMPL_H
+} /* qlmps */
+#endif //QLMPS_ALGORITM_VMPS_ONE_SITE_UPDATE_FINITE_VMPS_IMPL_H

@@ -12,26 +12,26 @@
 #include "operators.h"
 #include "params_case.h"
 
-#include "gqmps2/gqmps2.h"
-#include "gqten/gqten.h"
+#include "qlmps/qlmps.h"
+#include "qlten/qlten.h"
 #include <time.h>
 #include <stdlib.h>
 
 #include "myutil.h"
 #include "my_measure.h"
 
-#include "gqten/utility/timer.h"
+#include "qlten/utility/timer.h"
 
 #include "boost/mpi.hpp"
 
 using std::cout;
 using std::endl;
 using std::vector;
-using FiniteMPST = gqmps2::FiniteMPS<TenElemT, U1U1QN>;
-using gqmps2::SiteVec;
-using gqmps2::MeasureOneSiteOp;
-using gqten::Timer;
-using gqmps2::MeasureElectronPhonon4PointFunction;
+using FiniteMPST = qlmps::FiniteMPS<TenElemT, U1U1QN>;
+using qlmps::SiteVec;
+using qlmps::MeasureOneSiteOp;
+using qlten::Timer;
+using qlmps::MeasureElectronPhonon4PointFunction;
 
 
 int main(int argc, char *argv[]) {
@@ -88,8 +88,8 @@ int main(int argc, char *argv[]) {
 
   SiteVec<TenElemT, U1U1QN> sites=SiteVec<TenElemT, U1U1QN>(pb_out_set);
   FiniteMPST mps(sites);
-  gqten::hp_numeric::SetTensorTransposeNumThreads(params.TotalThreads);
-  gqten::hp_numeric::SetTensorManipulationThreads(params.TotalThreads);
+  qlten::hp_numeric::SetTensorTransposeNumThreads(params.TotalThreads);
+  qlten::hp_numeric::SetTensorManipulationThreads(params.TotalThreads);
 
 
   Timer foursite_timer("measure four site operators");

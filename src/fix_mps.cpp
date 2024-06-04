@@ -4,9 +4,9 @@
  */
 
 #include "gqdouble.h"
-// #include "gqmps2/algorithm/lanczos_solver.h"
-// #include "gqmps2/algorithm/lanczos_solver_impl.h"
-#include "gqmps2/gqmps2.h"
+// #include "qlmps/algorithm/lanczos_solver.h"
+// #include "qlmps/algorithm/lanczos_solver_impl.h"
+#include "qlmps/qlmps.h"
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -15,8 +15,8 @@ using std::ifstream;
 using std::ofstream;
 using std::string;
 using std::vector;
-using namespace gqmps2;
-using namespace gqten;
+using namespace qlmps;
+using namespace qlten;
 using namespace std;
 
 int ParserFixMpsArgs(const int argc, char *argv[],
@@ -30,8 +30,8 @@ int ParserFixMpsArgs(const int argc, char *argv[],
  */
 int main(int argc, char *argv[]){
     std::cout << "This program used to patch one mps tensor by single site Lanczos" <<std::endl;
-    std::cout << "The input must include the relevant files: renv*.gqten, lenv*.gqten, mpo_ten*.gqten" <<std::endl;
-    std::cout << "The output is the file mps_ten*.gqten" <<std::endl;
+    std::cout << "The input must include the relevant files: renv*.qlten, lenv*.qlten, mpo_ten*.qlten" <<std::endl;
+    std::cout << "The output is the file mps_ten*.qlten" <<std::endl;
 
     size_t site(0),  thread(0);
     bool load_mps;
@@ -41,8 +41,8 @@ int main(int argc, char *argv[]){
     std::cout << "site = " << site << std::endl;
     std::cout << "thread = " << thread << std::endl;
 
-    gqten::hp_numeric::SetTensorTransposeNumThreads(thread);
-    gqten::hp_numeric::SetTensorManipulationThreads(thread);
+    qlten::hp_numeric::SetTensorTransposeNumThreads(thread);
+    qlten::hp_numeric::SetTensorManipulationThreads(thread);
     const size_t N = GetNumofMps();
     const string temp_path = kRuntimeTempPath;
 
@@ -68,7 +68,7 @@ int main(int argc, char *argv[]){
     tensor_file >> lenv;
     tensor_file.close();
 
-    file = "mpo/mpo_ten"+std::to_string( target_site ) +".gqten";
+    file = "mpo/mpo_ten"+std::to_string( target_site ) +".qlten";
     if( access( file.c_str(), 4) != 0){
         std::cout << "The progress doesn't access to read the file " << file << "!" << std::endl;
         exit(1);
@@ -79,7 +79,7 @@ int main(int argc, char *argv[]){
     std::cout << "Load renv, lenv, and mpo tensors" << "\n";
 
     bool new_code;
-    if(lenv.GetIndexes()[0].GetDir() == GQTenIndexDirType::OUT ){
+    if(lenv.GetIndexes()[0].GetDir() == QltenIndexDirType::OUT ){
       new_code = false;
     } else{
       new_code = true;
@@ -101,10 +101,10 @@ int main(int argc, char *argv[]){
     if(!load_mps) {
       initial_state = new Tensor({index0, index1, index2});
       std::cout << "new the initial state as default tensor." << std::endl;
-      gqten::ShapeT blk_shape = {index0.GetQNSctNum(),
+      qlten::ShapeT blk_shape = {index0.GetQNSctNum(),
                                  index1.GetQNSctNum(),
                                  index2.GetQNSctNum()};
-      gqten::CoorsT blk_coors;
+      qlten::CoorsT blk_coors;
       bool flag(false);
       for (size_t i = 0; i < blk_shape[0]; i++) {
         for (size_t j = 0; j < blk_shape[1]; j++) {
@@ -128,13 +128,13 @@ int main(int argc, char *argv[]){
         std::cout << "can not find a proper block. " << std::endl;
         exit(0);
       }
-      gqten::CoorsT zeros_coor = {0, 0, 0};
-      gqten::BlockSparseDataTensor<gqten::GQTEN_Double, U1U1QN> &bstd = initial_state->GetBlkSparDataTen();
+      qlten::CoorsT zeros_coor = {0, 0, 0};
+      qlten::BlockSparseDataTensor<qlten::QLTEN_Double, U1U1QN> &bstd = initial_state->GetBlkSparDataTen();
       bstd.ElemSet(std::make_pair(blk_coors, zeros_coor), 1.0);
       std::cout << "Generate the intial tensor" << std::endl;
     } else {
       initial_state = new Tensor();
-      file = "mps/mps_ten"+std::to_string( target_site ) +".gqten";
+      file = "mps/mps_ten"+std::to_string( target_site ) +".qlten";
       if( access( file.c_str(), 4) != 0){
         std::cout << "The progress doesn't access to read the file " << file << "!" << std::endl;
         exit(1);
@@ -150,7 +150,7 @@ int main(int argc, char *argv[]){
     }
 
 
-    gqmps2::LanczosParams params(1e-9, 200);
+    qlmps::LanczosParams params(1e-9, 200);
 
     std::vector<Tensor *> eff_ham(3);
     eff_ham[0] = const_cast<Tensor *>(&lenv);
@@ -166,7 +166,7 @@ int main(int argc, char *argv[]){
     std::cout << "ground state energy = " << res.gs_eng <<std::endl;
     delete res.gs_vec;
     
-    file = "mps/mps_ten"+ std::to_string(target_site) +".gqten";
+    file = "mps/mps_ten"+ std::to_string(target_site) +".qlten";
     ofstream dump_file(file, ofstream::binary);
     dump_file << mps;
 

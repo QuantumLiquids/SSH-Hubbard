@@ -47,7 +47,7 @@ build
 debug
 
 #tensor
-*.gqten
+*.qlten
 
 
 #Running Directory

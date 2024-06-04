@@ -1,10 +1,11 @@
 #pragma once
-#include "gqmps2/gqmps2.h"
-using gqmps2::CaseParamsParserBasic;
+#include "qlmps/qlmps.h"
+using qlmps::CaseParamsParserBasic;
 
 enum PhononConfigIntialType {
   Zero = 0,
-  Random
+  Random,
+  VBS
 };
 
 struct CaseParams : public CaseParamsParserBasic {

@@ -2,11 +2,11 @@
 
 #ifndef PHONON_ELECTRON_OPERATORS2_H
 #define PHONON_ELECTRON_OPERATORS2_H
-#include "gqten/gqten.h"
+#include "qlten/qlten.h"
 
-using TenElemT = gqten::GQTEN_Double;
-using U1U1QN = gqten::QN<U1QNVal, U1QNVal>;
-using Tensor = gqten::GQTensor<TenElemT, U1U1QN>;
+using TenElemT = qlten::QLTEN_Double;
+using U1U1QN = qlten::QN<U1QNVal, U1QNVal>;
+using Tensor = qlten::Qltensor<TenElemT, U1U1QN>;
 
 
 //Fermionic operators

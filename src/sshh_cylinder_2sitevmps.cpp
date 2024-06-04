@@ -3,14 +3,14 @@
 #include <time.h>
 #include <vector>
 #include <stdlib.h>     // system
-#include "gqmps2/gqmps2.h"
+#include "qlmps/qlmps.h"
 #include "singlesiteupdate2.h"
 #include "twositeupdate2.h"
 #include "myutil.h"
 #include "two_site_update_noised_finite_vmps_mpi_impl2.h"
 
-using namespace gqmps2;
-using namespace gqten;
+using namespace qlmps;
+using namespace qlten;
 using namespace std;
 
 #include "params_case.h"
@@ -48,30 +48,30 @@ int main(int argc, char *argv[]) {
   MPO<Tensor> mpo(N);
   for (size_t i = 0; i < mpo.size(); i++) {
     std::string filename = kMpoPath + "/" +
-        kMpoTenBaseName + std::to_string(i) + "." + kGQTenFileSuffix;
+        kMpoTenBaseName + std::to_string(i) + "." + kQltenFileSuffix;
     mpo.LoadTen(i, filename);
   }
 
   cout << "MPO loaded." << endl;
-  using FiniteMPST = gqmps2::FiniteMPS<TenElemT, U1U1QN>;
+  using FiniteMPST = qlmps::FiniteMPS<TenElemT, U1U1QN>;
   FiniteMPST mps(sites);
 
   if (world.rank() == 0) {
     if (params.TotalThreads > 2) {
-      gqten::hp_numeric::SetTensorTransposeNumThreads(params.TotalThreads - 2);
-      gqten::hp_numeric::SetTensorManipulationThreads(params.TotalThreads - 2);
+      qlten::hp_numeric::SetTensorTransposeNumThreads(params.TotalThreads - 2);
+      qlten::hp_numeric::SetTensorManipulationThreads(params.TotalThreads - 2);
     } else {
-      gqten::hp_numeric::SetTensorTransposeNumThreads(params.TotalThreads);
-      gqten::hp_numeric::SetTensorManipulationThreads(params.TotalThreads);
+      qlten::hp_numeric::SetTensorTransposeNumThreads(params.TotalThreads);
+      qlten::hp_numeric::SetTensorManipulationThreads(params.TotalThreads);
     }
   } else {
-    gqten::hp_numeric::SetTensorTransposeNumThreads(params.TotalThreads);
-    gqten::hp_numeric::SetTensorManipulationThreads(params.TotalThreads);
+    qlten::hp_numeric::SetTensorTransposeNumThreads(params.TotalThreads);
+    qlten::hp_numeric::SetTensorManipulationThreads(params.TotalThreads);
   }
-  gqmps2::FiniteVMPSSweepParams sweep_params(
+  qlmps::FiniteVMPSSweepParams sweep_params(
       params.Sweeps,
       params.Dmin, params.Dmax, params.CutOff,
-      gqmps2::LanczosParams(params.LanczErr, params.MaxLanczIter),
+      qlmps::LanczosParams(params.LanczErr, params.MaxLanczIter),
       params.noise
   );
 
@@ -100,21 +100,21 @@ int main(int argc, char *argv[]) {
       } else {
         cout << "mps file number do not right" << endl;
         cout << "Initial mps as direct product state." << endl;
-        gqmps2::DirectStateInitMps(mps, stat_labs);
+        qlmps::DirectStateInitMps(mps, stat_labs);
         mps.Dump(sweep_params.mps_path, true);
       }
     } else {
       cout << " no mps file" << endl;
       cout << "Initial mps as direct product state." << endl;
-      gqmps2::DirectStateInitMps(mps, stat_labs);
+      qlmps::DirectStateInitMps(mps, stat_labs);
       mps.Dump(sweep_params.mps_path, true);
     }
   }
   double e0;
   if (world.size() == 1) {
-    e0 = gqmps2::TwoSiteFiniteVMPS2(mps, mpo, sweep_params);
+    e0 = qlmps::TwoSiteFiniteVMPS2(mps, mpo, sweep_params);
   } else {
-    e0 = gqmps2::TwoSiteFiniteVMPS2(mps, mpo, sweep_params, world);
+    e0 = qlmps::TwoSiteFiniteVMPS2(mps, mpo, sweep_params, world);
   }
 
   if (world.rank() == 0) {

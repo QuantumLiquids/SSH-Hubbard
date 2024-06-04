@@ -17,24 +17,24 @@ if (${CMAKE_BUILD_TYPE} MATCHES Debug)
     set(CMAKE_VERBOSE_MAKEFILE ON)
 endif ()
 
-option(GQTEN_TIMING_MODE "Timing mode." OFF)
-if (GQTEN_TIMING_MODE)
-    add_definitions(-DGQTEN_TIMING_MODE)
+option(QLTEN_TIMING_MODE "Timing mode." OFF)
+if (QLTEN_TIMING_MODE)
+    add_definitions(-DQLTEN_TIMING_MODE)
 endif ()
 
-option(GQMPS2_TIMING_MODE "Timing mode." OFF)
-if (GQMPS2_TIMING_MODE)
-    add_definitions(-DGQMPS2_TIMING_MODE)
+option(QLMPS_TIMING_MODE "Timing mode." OFF)
+if (QLMPS_TIMING_MODE)
+    add_definitions(-DQLMPS_TIMING_MODE)
 endif ()
 
-option(GQTEN_MPI_TIMING_MODE "Timing mode." OFF)
-if (GQTEN_MPI_TIMING_MODE)
-    add_definitions(-DGQTEN_MPI_TIMING_MODE)
+option(QLTEN_MPI_TIMING_MODE "Timing mode." OFF)
+if (QLTEN_MPI_TIMING_MODE)
+    add_definitions(-DQLTEN_MPI_TIMING_MODE)
 endif ()
 
-option(GQMPS2_MPI_TIMING_MODE "Timing mode." OFF)
-if (GQMPS2_MPI_TIMING_MODE)
-    add_definitions(-DGQMPS2_MPI_TIMING_MODE)
+option(QLMPS_MPI_TIMING_MODE "Timing mode." OFF)
+if (QLMPS_MPI_TIMING_MODE)
+    add_definitions(-DQLMPS_MPI_TIMING_MODE)
 endif ()
 
 # Compilation and linking control.
@@ -82,8 +82,8 @@ elseif (UNIX)
 endif ()
 
 
-find_path(TENSOR_HEADER_PATH "gqten")
-find_path(MPS2_HEADER_PATH "gqmps2")
+find_path(TENSOR_HEADER_PATH "qlten")
+find_path(MPS2_HEADER_PATH "qlmps")
 find_package(hptt)
 find_package(Boost
         1.74.0
