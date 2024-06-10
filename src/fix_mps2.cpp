@@ -88,7 +88,7 @@ int main(int argc, char *argv[]) {
   std::cout << "Load renv, lenv, and mpo tensors" << "\n";
 
   bool new_code;
-  if (lenv.GetIndexes()[0].GetDir() == QltenIndexDirType::OUT) {
+  if (lenv.GetIndexes()[0].GetDir() == TenIndexDirType::OUT) {
     new_code = false;
   } else {
     new_code = true;
@@ -198,7 +198,7 @@ int main(int argc, char *argv[]) {
       &eff_ham_mul_two_site_state,
       params);
   Tensor u, vt;
-  using DTenT = Qltensor<QLTEN_Double, U1U1QN>;
+  using DTenT = QLTensor<QLTEN_Double, U1U1QN>;
   DTenT s;
   QLTEN_Double actual_trunc_err;
   size_t D;

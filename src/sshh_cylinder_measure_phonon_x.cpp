@@ -69,7 +69,6 @@ int main(int argc, char *argv[]) {
 
   SiteVec<TenElemT, U1U1QN> sites = SiteVec<TenElemT, U1U1QN>(pb_out_set);
   FiniteMPST mps(sites);
-  qlten::hp_numeric::SetTensorTransposeNumThreads(params.TotalThreads);
   qlten::hp_numeric::SetTensorManipulationThreads(params.TotalThreads);
 
   Timer onesite_timer("measure phonon displacement");
@@ -122,7 +121,7 @@ int main(int argc, char *argv[]) {
     if (world.rank() == 0) {
       x_vec.resize(x1_vec.size());
       for (size_t i = 0; i < x1.size(); i++) {
-        x_vec[i] = 2 * x1_vec[i] + 2 * x2_vec[i] + x3_vec[i] + x3_vec[i];
+        x_vec[i] = 2 * x1_vec[i] + 2 * x2_vec[i] + x3_vec[i] + x4_vec[i];
         x_res.push_back(MeasuResElem({i}, x_vec[i]));
       }
     }

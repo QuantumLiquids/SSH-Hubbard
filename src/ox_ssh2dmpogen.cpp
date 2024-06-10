@@ -286,7 +286,7 @@ int main(int argc, char *argv[]) {
 
   for(size_t i=0; i<mpo.size();i++){
     std::string filename = kMpoPath + "/" +
-        kMpoTenBaseName + std::to_string(i) + "." + kQltenFileSuffix;
+        kMpoTenBaseName + std::to_string(i) + "." + kQLTenFileSuffix;
     mpo.DumpTen(i,filename);
   }
 

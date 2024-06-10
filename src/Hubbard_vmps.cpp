@@ -32,10 +32,9 @@ int main(int argc, char *argv[]) {
   clock_t startTime, endTime;
   startTime = clock();
 
-  qlten::hp_numeric::SetTensorTransposeNumThreads(params.TotalThreads);
   qlten::hp_numeric::SetTensorManipulationThreads(params.TotalThreads);
 
-  qlmps::SweepParams sweep_params(
+  qlmps::FiniteVMPSSweepParams sweep_params(
       params.Sweeps,
       params.Dmin, params.Dmax, params.CutOff,
       qlmps::LanczosParams(params.LanczErr, params.MaxLanczIter)
@@ -86,7 +85,7 @@ int main(int argc, char *argv[]) {
   if (IsPathExist(kMpoPath)) {
     for (size_t i = 0; i < mpo.size(); i++) {
       std::string filename = kMpoPath + "/" +
-          kMpoTenBaseName + std::to_string(i) + "." + kQltenFileSuffix;
+          kMpoTenBaseName + std::to_string(i) + "." + kQLTenFileSuffix;
       mpo.LoadTen(i, filename);
     }
 
@@ -141,7 +140,7 @@ int main(int argc, char *argv[]) {
       if (world.rank() == 1) {
         std::cout << "D_max = " << D << std::endl;
       }
-      qlmps::SweepParams sweep_params(
+      qlmps::FiniteVMPSSweepParams sweep_params(
           params.Sweeps,
           D, D, params.CutOff,
           qlmps::LanczosParams(params.LanczErr, MaxLanczIterSet[i])

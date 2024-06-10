@@ -65,7 +65,7 @@ inline  void DumpMaxSVSet(
 );
 
 inline void DumpSVBlk(std::ofstream &ofs, const std::vector<long> &sites);
-inline MaxSVSet MaxSVInEachBlock(const Qltensor<QLTEN_Double, U1U1QN>& s,const std::string& file_basename);
+inline MaxSVSet MaxSVInEachBlock(const QLTensor<QLTEN_Double, U1U1QN>& s,const std::string& file_basename);
 
 /**
 Function to perform single-site update finite vMPS algorithm.
@@ -79,7 +79,7 @@ The difference to SingleSiteFiniteVMPS in Package QLMPS is
 template <typename TenElemT, typename QNT>
 QLTEN_Double SingleSiteFiniteVMPS2(
     FiniteMPS<TenElemT, QNT> &mps,
-    const MPO<Qltensor<TenElemT, QNT>> &mpo,
+    const MPO<QLTensor<TenElemT, QNT>> &mpo,
     FiniteVMPSSweepParams &sweep_params
 ){
     assert(mps.size() == mpo.size());
@@ -155,12 +155,12 @@ Single-site update DMRG algorithm refer to 10.1103/PhysRevB.91.155115
 template <typename TenElemT, typename QNT>
 double SingleSiteFiniteVMPSSweep2(
     FiniteMPS<TenElemT, QNT> &mps,
-    const MPO<Qltensor<TenElemT, QNT>> &mpo,
+    const MPO<QLTensor<TenElemT, QNT>> &mpo,
     const FiniteVMPSSweepParams &sweep_params,
     double& noise_start
 ) {
   auto N = mps.size();
-  using TenT = Qltensor<TenElemT, QNT>;
+  using TenT = QLTensor<TenElemT, QNT>;
   TenVec<TenT> lenvs(N), renvs(N);
   double e0(0.0), actual_e0(0.0), actual_laststep_e0(0.0);
 
@@ -233,9 +233,9 @@ its environment tensors and `mps[next_site]`.
 template <typename TenElemT, typename QNT>
 double SingleSiteFiniteVMPSUpdate2(
     FiniteMPS<TenElemT, QNT> &mps,
-    TenVec<Qltensor<TenElemT, QNT>> &lenvs,
-    TenVec<Qltensor<TenElemT, QNT>> &renvs,
-    const MPO<Qltensor<TenElemT, QNT>> &mpo,
+    TenVec<QLTensor<TenElemT, QNT>> &lenvs,
+    TenVec<QLTensor<TenElemT, QNT>> &renvs,
+    const MPO<QLTensor<TenElemT, QNT>> &mpo,
     const FiniteVMPSSweepParams &sweep_params,
     const char dir,
     const size_t target_site,
@@ -263,7 +263,7 @@ double SingleSiteFiniteVMPSUpdate2(
       exit(3);
   }
 
-  using TenT = Qltensor<TenElemT, QNT>;
+  using TenT = QLTensor<TenElemT, QNT>;
 
     //particle number operator
   static TenT nf = TenT();
@@ -353,7 +353,7 @@ double SingleSiteFiniteVMPSUpdate2(
 #endif
 
   TenT u, vt;
-  Qltensor<QLTEN_Double, QNT> s;
+  QLTensor<QLTEN_Double, QNT> s;
   QLTEN_Double actual_trunc_err;
   size_t D;
   auto zero_div = Div(mps[target_site]) - Div(mps[target_site]);
@@ -448,7 +448,7 @@ double SingleSiteFiniteVMPSUpdate2(
 
 
 inline MaxSVSet MaxSVInEachBlock(
-  const Qltensor<QLTEN_Double, U1U1QN>& s,
+  const QLTensor<QLTEN_Double, U1U1QN>& s,
   const std::string& file_basename
 ){
   assert(s.Rank()==2);

@@ -6,7 +6,7 @@
 
 using TenElemT = qlten::QLTEN_Double;
 using U1U1QN = qlten::QN<U1QNVal, U1QNVal>;
-using Tensor = qlten::Qltensor<TenElemT, U1U1QN>;
+using Tensor = qlten::QLTensor<TenElemT, U1U1QN>;
 
 
 //Fermionic operators

@@ -36,8 +36,8 @@ using namespace qlten;
 template<typename TenElemT, typename QNT>
 inline void LoadRelatedTensOnTwoSiteAlgWhenNoisedRightMoving(
     FiniteMPS<TenElemT, QNT> &mps,
-    TenVec<Qltensor<TenElemT, QNT>> &lenvs,
-    TenVec<Qltensor<TenElemT, QNT>> &renvs,
+    TenVec<QLTensor<TenElemT, QNT>> &lenvs,
+    TenVec<QLTensor<TenElemT, QNT>> &renvs,
     const size_t target_site,
     const size_t left_boundary,
     const FiniteVMPSSweepParams &sweep_params
@@ -46,8 +46,8 @@ inline void LoadRelatedTensOnTwoSiteAlgWhenNoisedRightMoving(
 template<typename TenElemT, typename QNT>
 inline void LoadRelatedTensOnTwoSiteAlgWhenNoisedLeftMoving(
     FiniteMPS<TenElemT, QNT> &mps,
-    TenVec<Qltensor<TenElemT, QNT>> &lenvs,
-    TenVec<Qltensor<TenElemT, QNT>> &renvs,
+    TenVec<QLTensor<TenElemT, QNT>> &lenvs,
+    TenVec<QLTensor<TenElemT, QNT>> &renvs,
     const size_t target_site,
     const size_t right_boundary,
     const FiniteVMPSSweepParams &sweep_params
@@ -60,7 +60,7 @@ inline void LoadRelatedTensOnTwoSiteAlgWhenNoisedLeftMoving(
 template<typename TenElemT, typename QNT>
 inline QLTEN_Double TwoSiteFiniteVMPS2(
     FiniteMPS<TenElemT, QNT> &mps,
-    const MPO<Qltensor<TenElemT, QNT>> &mpo,
+    const MPO<QLTensor<TenElemT, QNT>> &mpo,
     FiniteVMPSSweepParams &sweep_params,
     mpi::communicator &world
 ) {
@@ -76,7 +76,7 @@ inline QLTEN_Double TwoSiteFiniteVMPS2(
 template<typename TenElemT, typename QNT>
 QLTEN_Double MasterTwoSiteFiniteVMPS2(
     FiniteMPS<TenElemT, QNT> &mps,
-    const MPO<Qltensor<TenElemT, QNT>> &mpo,
+    const MPO<QLTensor<TenElemT, QNT>> &mpo,
     FiniteVMPSSweepParams &sweep_params,
     mpi::communicator world
 ) {
@@ -140,7 +140,7 @@ QLTEN_Double MasterTwoSiteFiniteVMPS2(
 template<typename TenElemT, typename QNT>
 double TwoSiteFiniteVMPSSweep2(
     FiniteMPS<TenElemT, QNT> &mps,
-    const MPO<Qltensor<TenElemT, QNT>> &mpo,
+    const MPO<QLTensor<TenElemT, QNT>> &mpo,
     const FiniteVMPSSweepParams &sweep_params,
     const size_t left_boundary,
     const size_t right_boundary,
@@ -148,7 +148,7 @@ double TwoSiteFiniteVMPSSweep2(
     mpi::communicator world
 ) {
   auto N = mps.size();
-  using TenT = Qltensor<TenElemT, QNT>;
+  using TenT = QLTensor<TenElemT, QNT>;
   TenVec<TenT> lenvs(N - 1);
   TenVec<TenT> renvs(N - 1);
   double e0;
@@ -226,9 +226,9 @@ double TwoSiteFiniteVMPSSweep2(
 template<typename TenElemT, typename QNT>
 double MasterTwoSiteFiniteVMPSUpdate2(
     FiniteMPS<TenElemT, QNT> &mps,
-    TenVec<Qltensor<TenElemT, QNT>> &lenvs,
-    TenVec<Qltensor<TenElemT, QNT>> &renvs,
-    const MPO<Qltensor<TenElemT, QNT>> &mpo,
+    TenVec<QLTensor<TenElemT, QNT>> &lenvs,
+    TenVec<QLTensor<TenElemT, QNT>> &renvs,
+    const MPO<QLTensor<TenElemT, QNT>> &mpo,
     const FiniteVMPSSweepParams &sweep_params,
     const char dir,
     const size_t target_site,
@@ -265,7 +265,7 @@ double MasterTwoSiteFiniteVMPSUpdate2(
   }
 
   // Lanczos
-  using TenT = Qltensor<TenElemT, QNT>;
+  using TenT = QLTensor<TenElemT, QNT>;
   std::vector<TenT *> eff_ham(4);
   eff_ham[0] = lenvs(lenv_len);
   // Safe const casts for MPO local tensors.
@@ -369,7 +369,7 @@ double MasterTwoSiteFiniteVMPSUpdate2(
 #endif
 
   TenT u, vt;
-  using DTenT = Qltensor<QLTEN_Double, QNT>;
+  using DTenT = QLTensor<QLTEN_Double, QNT>;
   DTenT s;
   QLTEN_Double actual_trunc_err;
   size_t D;

@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
   const std::string kMpoTenBaseName = "mpo_ten";
   for (size_t i = N - from; i > N - to; i--) {
     std::string filename = kMpoPath + "/" +
-        kMpoTenBaseName + std::to_string(i) + "." + kQltenFileSuffix;
+        kMpoTenBaseName + std::to_string(i) + "." + kQLTenFileSuffix;
     mpo.LoadTen(i, filename);
   }
 
@@ -88,7 +88,7 @@ int main(int argc, char *argv[]) {
     renv({0, 0, 0}) = 1;
     mps.dealloc(N - 1);
     string file = GenEnvTenName("r", 0, temp_path);
-    WriteQltensorTOFile(renv, file);
+    WriteQLTensorTOFile(renv, file);
     from = 1;
   }
 
@@ -125,7 +125,7 @@ int main(int argc, char *argv[]) {
       renv = std::move(UpdateSiteRenvs(renv, mps[N - i], mpo[N - i]));
     }
 
-    WriteQltensorTOFile(renv, file);
+    WriteQLTensorTOFile(renv, file);
     mps.dealloc(N - i);
   }
 

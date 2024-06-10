@@ -578,7 +578,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    qlten::hp_numeric::SetTensorTransposeNumThreads(params.TotalThreads);
+
     qlten::hp_numeric::SetTensorManipulationTotalThreads(params.TotalThreads);
     qlmps::SingleVMPSSweepParams sweep_params(
         params.Sweeps,

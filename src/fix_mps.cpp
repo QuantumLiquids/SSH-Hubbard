@@ -79,7 +79,7 @@ int main(int argc, char *argv[]){
     std::cout << "Load renv, lenv, and mpo tensors" << "\n";
 
     bool new_code;
-    if(lenv.GetIndexes()[0].GetDir() == QltenIndexDirType::OUT ){
+    if(lenv.GetIndexes()[0].GetDir() == TenIndexDirType::OUT ){
       new_code = false;
     } else{
       new_code = true;

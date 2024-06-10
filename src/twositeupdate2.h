@@ -55,7 +55,7 @@ inline size_t CountLines(std::string filename);
 template<typename TenElemT, typename QNT>
 double TwoSiteFiniteVMPSSweep2(//also a overload
     FiniteMPS<TenElemT, QNT> &mps,
-    const MPO<Qltensor<TenElemT, QNT>> &mpo,
+    const MPO<QLTensor<TenElemT, QNT>> &mpo,
     const FiniteVMPSSweepParams &sweep_params,
     const size_t left_boundary,
     const size_t right_boundary,
@@ -74,7 +74,7 @@ bool IsQNCovered(const QNSectorVec<QNT> &, const QNSectorVec<QNT> &);
 template<typename TenElemT, typename QNT>
 QLTEN_Double TwoSiteFiniteVMPS2( //same function name, overload by class of SweepParams
     FiniteMPS<TenElemT, QNT> &mps,
-    const MPO<Qltensor<TenElemT, QNT>> &mpo,
+    const MPO<QLTensor<TenElemT, QNT>> &mpo,
     FiniteVMPSSweepParams &sweep_params
 ) {
   assert(mps.size() == mpo.size());
@@ -127,14 +127,14 @@ Two-site (noised) update DMRG algorithm refer to 10.1103/PhysRevB.91.155115
 template<typename TenElemT, typename QNT>
 double TwoSiteFiniteVMPSSweep2(//also a overload
     FiniteMPS<TenElemT, QNT> &mps,
-    const MPO<Qltensor<TenElemT, QNT>> &mpo,
+    const MPO<QLTensor<TenElemT, QNT>> &mpo,
     const FiniteVMPSSweepParams &sweep_params,
     const size_t left_boundary,
     const size_t right_boundary,
     double &noise_start
 ) {
   auto N = mps.size();
-  using TenT = Qltensor<TenElemT, QNT>;
+  using TenT = QLTensor<TenElemT, QNT>;
   TenVec<TenT> lenvs(N), renvs(N);
   double e0;
 
@@ -189,9 +189,9 @@ When using this function, one must make sure memory at least contains `mps[targe
 template<typename TenElemT, typename QNT>
 double TwoSiteFiniteVMPSUpdate2(
     FiniteMPS<TenElemT, QNT> &mps,
-    TenVec<Qltensor<TenElemT, QNT>> &lenvs,
-    TenVec<Qltensor<TenElemT, QNT>> &renvs,
-    const MPO<Qltensor<TenElemT, QNT>> &mpo,
+    TenVec<QLTensor<TenElemT, QNT>> &lenvs,
+    TenVec<QLTensor<TenElemT, QNT>> &renvs,
+    const MPO<QLTensor<TenElemT, QNT>> &mpo,
     const FiniteVMPSSweepParams &sweep_params,
     const char dir,
     const size_t target_site,
@@ -227,7 +227,7 @@ double TwoSiteFiniteVMPSUpdate2(
       exit(1);
   }
 
-  using TenT = Qltensor<TenElemT, QNT>;
+  using TenT = QLTensor<TenElemT, QNT>;
 
   std::vector<TenT *> eff_ham(4);
   eff_ham[0] = lenvs(lenv_len);
@@ -326,7 +326,7 @@ double TwoSiteFiniteVMPSUpdate2(
 #endif
 
   TenT u, vt;
-  using DTenT = Qltensor<QLTEN_Double, QNT>;
+  using DTenT = QLTensor<QLTEN_Double, QNT>;
   DTenT s;
   QLTEN_Double actual_trunc_err;
   size_t D;

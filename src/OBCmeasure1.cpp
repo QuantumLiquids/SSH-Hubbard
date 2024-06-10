@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
 
     SiteVec<TenElemT, U1U1QN> sites=SiteVec<TenElemT, U1U1QN>(pb_out_set);
     FiniteMPST mps(sites);
-    qlten::hp_numeric::SetTensorTransposeNumThreads(params.TotalThreads);
+
     qlten::hp_numeric::SetTensorManipulationThreads(params.TotalThreads);
 
     Timer onesite_timer("measure one site operators");

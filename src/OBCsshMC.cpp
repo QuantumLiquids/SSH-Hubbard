@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
   const std::string kMpoTenBaseName = "mpo_ten";
   for (size_t i = 0; i < mpo.size(); i++) {
     std::string filename = kMpoPath + "/" +
-        kMpoTenBaseName + std::to_string(i) + "." + kQltenFileSuffix;
+        kMpoTenBaseName + std::to_string(i) + "." + kQLTenFileSuffix;
     mpo.LoadTen(i, filename);
   }
 
@@ -79,7 +79,7 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  qlten::hp_numeric::SetTensorTransposeNumThreads(params.TotalThreads);
+
   qlten::hp_numeric::SetTensorManipulationThreads(params.TotalThreads);
   qlmps::FiniteVMPSSweepParams sweep_params(
       params.Sweeps,
