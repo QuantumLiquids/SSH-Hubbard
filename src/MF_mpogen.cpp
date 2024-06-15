@@ -1,8 +1,6 @@
 #include "gqdouble.h"
 #include "operators.h"
-#include <time.h>
 #include <vector>
-#include <stdlib.h>     // system
 #include "qlmps/qlmps.h"
 
 using namespace qlmps;
@@ -12,6 +10,10 @@ using namespace std;
 #include "params_case.h"
 
 int main(int argc, char *argv[]) {
+  if (argc < 3) {
+    std::cerr << "Usage: " << argv[0] << " <params file> <phonon x file>" << std::endl;
+    return 1;
+  }
   CaseParams params(argv[1]);
 
   const size_t Lx = params.Lx, Ly = params.Ly;
@@ -23,6 +25,7 @@ int main(int argc, char *argv[]) {
   cout << "Model parameter: t =" << t << ", g =" << g << ", U =" << U << ",omega=" << omega << endl;
 
   const char *filename = argv[2];
+  std::cout << "phonon x filename : " << filename << std::endl;
   std::ifstream ifs(filename, std::ofstream::binary);
   if (!ifs) {
     std::cerr << "Error opening file: " << filename << std::endl;
