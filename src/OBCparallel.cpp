@@ -65,7 +65,7 @@ int main(int argc, char *argv[]) {
 
   if (world.rank() == 0) {
     if (params.TotalThreads > 2) {
-      qlten::hp_numeric::SetTensorTransposeNumThreads(params.TotalThreads - 2);
+
       qlten::hp_numeric::SetTensorManipulationThreads(params.TotalThreads - 2);
     } else {
 
