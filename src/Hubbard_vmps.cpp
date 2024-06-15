@@ -14,7 +14,7 @@ using namespace std;
 
 int main(int argc, char *argv[]) {
   namespace mpi = boost::mpi;
-  mpi::environment env();
+  mpi::environment env;
   mpi::communicator world;
 
   CaseParams params(argv[1]);
@@ -116,22 +116,24 @@ int main(int argc, char *argv[]) {
       sz_label++;
     }
   }
-
-  if (IsPathExist(kMpsPath)) {
-    if (N == GetNumofMps()) {
-      cout << "The number of mps files is consistent with mps size." << endl;
-      cout << "Directly use mps from files." << endl;
+  if (world.rank() == 0) {
+    if (IsPathExist(kMpsPath)) {
+      if (N == GetNumofMps()) {
+        cout << "The number of mps files is consistent with mps size." << endl;
+        cout << "Directly use mps from files." << endl;
+      } else {
+        qlmps::DirectStateInitMps(mps, stat_labs);
+        cout << "Initial mps as direct product state." << endl;
+        mps.Dump(sweep_params.mps_path, true);
+      }
     } else {
       qlmps::DirectStateInitMps(mps, stat_labs);
       cout << "Initial mps as direct product state." << endl;
       mps.Dump(sweep_params.mps_path, true);
     }
-  } else {
-    qlmps::DirectStateInitMps(mps, stat_labs);
-    cout << "Initial mps as direct product state." << endl;
-    mps.Dump(sweep_params.mps_path, true);
   }
 
+  world.barrier();
   if (!has_bond_dimension_parameter) {
     e0 = qlmps::TwoSiteFiniteVMPS(mps, mpo, sweep_params, world);
   } else {
