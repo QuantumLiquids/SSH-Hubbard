@@ -315,7 +315,7 @@ double TwoSiteFiniteVMPSSweep2_StartToLeft(
       );
     }
     if (i == start_site) {
-      TwoSiteMPINoisedVMPSSweepParams sweep_params2 = sweep_params;
+      FiniteVMPSSweepParams sweep_params2 = sweep_params;
       sweep_params2.lancz_params.max_iterations = 100;
       e0 = MasterTwoSiteFiniteVMPSUpdate2(mps, lenvs, renvs, mpo, sweep_params2, 'l', i, noise, world);
     } else {
@@ -346,7 +346,7 @@ double MasterTwoSiteFiniteVMPSUpdate2(
     TenVec<QLTensor<TenElemT, QNT>> &lenvs,
     TenVec<QLTensor<TenElemT, QNT>> &renvs,
     const MPO<QLTensor<TenElemT, QNT>> &mpo,
-    const TwoSiteMPINoisedVMPSSweepParams &sweep_params,
+    const FiniteVMPSSweepParams &sweep_params,
     const char dir,
     const size_t target_site,
     double noise,

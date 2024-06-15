@@ -22,9 +22,20 @@ int main(int argc, char *argv[]) {
   float t = params.t, g = params.g, U = params.U, omega = params.omega;
   cout << "Model parameter: t =" << t << ", g =" << g << ", U =" << U << ",omega=" << omega << endl;
 
-  std::ifstream ifs(argv[2], std::ofstream::binary);
-  double *x_vec = new double[N + (Lx - 1) * Ly];
-  ifs.read((char *) x_vec, (N + (Lx - 1) * Ly) * sizeof(double));
+  const char *filename = argv[2];
+  std::ifstream ifs(filename, std::ofstream::binary);
+  if (!ifs) {
+    std::cerr << "Error opening file: " << filename << std::endl;
+    return 1;
+  }
+  size_t array_size = N + (Lx - 1) * Ly;
+  double *x_vec = new double[array_size];
+  ifs.read(reinterpret_cast<char *>(x_vec), array_size * sizeof(double));
+  if (!ifs) {
+    std::cerr << "Error reading file: " << filename << std::endl;
+    delete[] x_vec;
+    return 1;
+  }
   ifs.close();
 
   clock_t startTime, endTime;
