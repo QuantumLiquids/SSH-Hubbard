@@ -1,9 +1,6 @@
-#include <iostream>
+
 #include "qlmps/qlmps.h"
 #include "qlten/qlten.h"
-#include <time.h>
-#include <vector>
-#include <stdlib.h>     // system
 #include "params_case.h"
 #include "gqdouble.h"
 #include "myutil.h"
@@ -78,9 +75,6 @@ int main(int argc, char *argv[]) {
   const SiteVec<TenElemT, U1U1QN> sites = SiteVec<TenElemT, U1U1QN>(N, pb_outF);
   qlmps::MPOGenerator<TenElemT, U1U1QN> mpo_gen(sites, qn0);
 
-  std::string kMpoPath = "mpo";
-  const std::string kMpoTenBaseName = "mpo_ten";
-
   qlmps::MPO<Tensor> mpo(N);
   if (IsPathExist(kMpoPath)) {
     for (size_t i = 0; i < mpo.size(); i++) {
@@ -90,6 +84,9 @@ int main(int argc, char *argv[]) {
     }
 
     cout << "MPO loaded." << endl;
+    for (size_t i = 0; i < mpo.size(); i++) {
+      mpo[i].ConciseShow();
+    }
   } else {
     cout << "No mpo directory. exiting" << std::endl;
     exit(0);
