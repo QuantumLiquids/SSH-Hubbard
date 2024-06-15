@@ -10,6 +10,7 @@ using namespace std;
 #include "params_case.h"
 
 int main(int argc, char *argv[]) {
+  std::cout << "argument num :" << argc << std::endl;
   if (argc < 3) {
     std::cerr << "Usage: " << argv[0] << " <params file> <phonon x file>" << std::endl;
     return 1;
@@ -32,6 +33,7 @@ int main(int argc, char *argv[]) {
     return 1;
   }
   size_t array_size = N + (Lx - 1) * Ly;
+  std::cout << "array size : " << array_size << std::endl;
   double *x_vec = new double[array_size];
   ifs.read(reinterpret_cast<char *>(x_vec), array_size * sizeof(double));
   if (!ifs) {
@@ -40,13 +42,13 @@ int main(int argc, char *argv[]) {
     return 1;
   }
   ifs.close();
-
+  std::cout << "load the phonon x data" << std::endl;
   clock_t startTime, endTime;
   startTime = clock();
 
 
   // average reflection symmetry
-  std::vector<double> x_vec_reverse(x_vec_reverse);
+  std::vector<double> x_vec_reverse(array_size);
   for (size_t i = 0; i < N + (Lx - 1) * Ly; i++) {
     x_vec_reverse[i] = x_vec[i];
   }
