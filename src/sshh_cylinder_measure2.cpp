@@ -14,9 +14,6 @@
 
 #include "qlmps/qlmps.h"
 #include "qlten/qlten.h"
-#include <time.h>
-#include <stdlib.h>
-
 #include "myutil.h"
 #include "my_measure_appendix.h"
 

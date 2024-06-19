@@ -39,7 +39,7 @@ int main(int argc, char *argv[]){
     std::cout << "thread = " << thread << std::endl;
 
 
-    qlten::hp_numeric::SetTensorTransposeNumThreads(thread);
+
     qlten::hp_numeric::SetTensorManipulationThreads(thread);
 
 

@@ -41,7 +41,7 @@ int main(int argc, char *argv[]){
     std::cout << "site = " << site << std::endl;
     std::cout << "thread = " << thread << std::endl;
 
-    qlten::hp_numeric::SetTensorTransposeNumThreads(thread);
+
     qlten::hp_numeric::SetTensorManipulationThreads(thread);
     const size_t N = GetNumofMps();
     const string temp_path = kRuntimeTempPath;

@@ -1,8 +1,6 @@
 #include "gqdouble.h"
 #include "operators.h"
-#include <time.h>
 #include <vector>
-#include <stdlib.h>     // system
 #include "qlmps/qlmps.h"
 #include "singlesiteupdate2.h"
 #include "twositeupdate2.h"
@@ -28,7 +26,7 @@ int main(int argc, char *argv[]) {
   cout << "The number of phonon pseudosite (total) =" << (2 * Lx * Ly - Ly) * Np << endl;
   cout << "The total number of sites = " << N << endl;
   float t = params.t, g = params.g, U = params.U, omega = params.omega;
-  cout << "Model parameter: t =" << t << ", g =" << g << ", U =" << U << ",omega=" << omega << endl;
+  cout << "Model parameter: t = " << t << ", g = " << g << ", U = " << U << ", omega = " << omega << endl;
   clock_t startTime, endTime;
   startTime = clock();
   OperatorInitial();
@@ -36,8 +34,8 @@ int main(int argc, char *argv[]) {
   vector<long> Tx(N, -1), Ty(N, -1), ElectronSite(Lx * Ly);
   auto iter = ElectronSite.begin();
   // translation along x(for electron) and translation along y(for electron);
-  for (int i = 0; i < N; ++i) {
-    int residue = i % ((2 * Np + 1) * Ly);
+  for (size_t i = 0; i < N; ++i) {
+    size_t residue = i % ((2 * Np + 1) * Ly);
     if (residue < (Np + 1) * Ly && residue % (Np + 1) == 0) {
       pb_out_set[i] = pb_outF;
       *iter = i;
@@ -56,16 +54,9 @@ int main(int argc, char *argv[]) {
   using FiniteMPST = qlmps::FiniteMPS<TenElemT, U1U1QN>;
   FiniteMPST mps(sites);
 
-  if (world.rank() == 0) {
-    if (params.TotalThreads > 2) {
-
+  if (world.rank() == 0&&params.TotalThreads > 2) {
       qlten::hp_numeric::SetTensorManipulationThreads(params.TotalThreads - 2);
-    } else {
-
-      qlten::hp_numeric::SetTensorManipulationThreads(params.TotalThreads);
-    }
   } else {
-
     qlten::hp_numeric::SetTensorManipulationThreads(params.TotalThreads);
   }
   qlmps::FiniteVMPSSweepParams sweep_params(
@@ -112,9 +103,9 @@ int main(int argc, char *argv[]) {
   }
   double e0;
   if (world.size() == 1) {
-    e0 = qlmps::TwoSiteFiniteVMPS2(mps, mpo, sweep_params);
+    e0 = qlmps::TwoSiteFiniteVMPS(mps, mpo, sweep_params);
   } else {
-    e0 = qlmps::TwoSiteFiniteVMPS2(mps, mpo, sweep_params, world);
+    e0 = qlmps::TwoSiteFiniteVMPS(mps, mpo, sweep_params, world);
   }
 
   if (world.rank() == 0) {
