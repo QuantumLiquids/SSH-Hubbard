@@ -800,9 +800,6 @@ int main(int argc, char *argv[]) {
   auto mpo = mpo_gen.Gen();
   cout << "MPO generated." << endl;
 
-  const std::string kMpoPath = "mpo";
-  const std::string kMpoTenBaseName = "mpo_ten";
-
   if (!IsPathExist(kMpoPath)) {
     CreatPath(kMpoPath);
   }

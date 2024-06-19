@@ -330,7 +330,7 @@ double TwoSiteFiniteVMPSSweep2_StartToLeft(
         std::ref(lenvs),
         std::ref(renvs),
         i,
-        std::ref(sweep_params_no_noise)
+        std::ref(sweep_params)
     );
     if (i > left_boundary + 2) {
       load_related_tens_thread.join();
