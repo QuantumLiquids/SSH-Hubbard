@@ -51,8 +51,6 @@ int main(int argc, char *argv[]) {
   SiteVec<TenElemT, U1U1QN> sites = SiteVec<TenElemT, U1U1QN>(pb_out_set);
 
   MPO<Tensor> mpo(N);
-  const std::string kMpoPath = "mpo";
-  const std::string kMpoTenBaseName = "mpo_ten";
   for (size_t i = 0; i < mpo.size(); i++) {
     std::string filename = kMpoPath + "/" +
         kMpoTenBaseName + std::to_string(i) + "." + kQLTenFileSuffix;
