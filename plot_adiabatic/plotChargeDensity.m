@@ -1,14 +1,20 @@
+Lx=16; Ly=4;
+omega = 5; 
+g = 2.4495;
+Np=0;
 
-Lx=32; Ly=4;
-omega = 5; g = 2.4495; U = 8; Numhole = Lx*Ly/8;
+U = 8; Numhole = Lx*Ly/8;
 
-Dset=[10000];%bond dimension set
+
+Dset=[10000];
+
 trunc_err = 1e7*[3.70e-06];
 selected_fit_data=[1];
 extrapolation_poly_degree = 2;
 D=Dset(1);
-FileNamePostfix=['mf_ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'hole',num2str(Numhole),'D',num2str(D),'.json'];
-ChargeDensityData = jsondecode(fileread(['../../data/nf',FileNamePostfix]));
+% FileNamePostfix=['mf_ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'hole',num2str(Numhole),'D',num2str(D),'.json'];
+FileNamePostfix = '.json';
+ChargeDensityData = jsondecode(fileread(['nf.json']));
 distance = zeros(1, size(ChargeDensityData,1));
 for i=1:numel(distance)
     FermionSite = Site2FermionSite(ChargeDensityData(i, 1),Ly,Np);
@@ -19,8 +25,8 @@ ChargeDensity = zeros( numel(Dset), numel(distance) );
 
 for j = 1:numel(Dset)
     D=Dset(j);
-    FileNamePostfix=['mf_ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'hole',num2str(Numhole),'D',num2str(D),'.json'];
-    ChargeDensityData = jsondecode(fileread(['../../data/nf',FileNamePostfix]));
+    % FileNamePostfix=['mf_ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'hole',num2str(Numhole),'D',num2str(D),'.json'];
+    ChargeDensityData = jsondecode(fileread(['nf.json']));
     ChargeDensity(j, :) = transpose(ChargeDensityData(:,2));
     charge_density_avg = mean(ChargeDensityData(:,2));
     if (charge_density_avg-0.875) > 1e-8

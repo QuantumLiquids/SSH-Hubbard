@@ -2,12 +2,11 @@ addpath('../');
 Lx=32; Ly=4;
 omega = 5; 
 g = 2.4495;
-Np=0;
 
 U = 8; Numhole = Lx*Ly/8;
 
 
-Dset=[10000];%bond dimension set
+Dset=[8000];%bond dimension set
 trunc_err = 1e7*[3.70e-06];
 %D14000 old version(come from 16000) 2.52e-06
 
@@ -16,7 +15,7 @@ selected_fit_data=[1];
 
 D = Dset(1);
 
-FileNamePostfix=['mf_ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
+FileNamePostfix=['mf_ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'hole',num2str(Numhole),'D',num2str(D),'.json'];
 ChargeCorrelation = jsondecode(fileread(['../../data/nfnf',FileNamePostfix]));
 distance = zeros(1,numel(ChargeCorrelation));
 for i=1:numel(ChargeCorrelation)
@@ -30,7 +29,7 @@ end
 ReducedChargeCorrelation = zeros(numel(Dset), numel(ChargeCorrelation));
 for j = 1:numel(Dset)
     D = Dset(j);
-    FileNamePostfix=['ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
+    FileNamePostfix=['mf_ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'hole',num2str(Numhole),'D',num2str(D),'.json'];
     ChargeDensity = jsondecode(fileread(['../../data/nf',FileNamePostfix]));
     ChargeCorrelation = jsondecode(fileread(['../../data/nfnf',FileNamePostfix]));
     for i=1:numel(ChargeCorrelation)

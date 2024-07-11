@@ -461,7 +461,7 @@ inline MaxSVSet MaxSVInEachBlock(
   MaxSVSet max_sv_set; 
   max_sv_set.reserve(bidbm_s.size());
   for(auto& [blkidx, datablk] : bidbm_s ){
-    const U1U1QN qn = datablk.GetQNBlkInfo().qnscts[0].GetQn();
+    const U1U1QN qn = datablk.GetBlkQNInfo().qnscts[0].GetQn();
     const long degeneracy=datablk.shape[0];
     int Nval = qn.GetQNVal(0).GetVal();
     int Szval = qn.GetQNVal(1).GetVal();
