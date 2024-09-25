@@ -785,12 +785,13 @@ int main(int argc, char *argv[]) {
   }
 
   bool Perturbation = params.Perturbation;
-  float PerturbationAmplitude = params.PA;
-  int ChargePeriod = 4;
+  double PerturbationAmplitude = params.PA;
+  size_t ChargePeriod = params.PerturbationPeriod;
   if (Perturbation) {
     for (size_t i = 0; i < ElectronSite.size(); i++) {
-      int x = i / Ly;
-      double amplitude = -PerturbationAmplitude * cos(M_PI / ChargePeriod + x * (2 * M_PI / ChargePeriod));
+      size_t x = i / Ly;
+      double amplitude =
+          -PerturbationAmplitude * cos(M_PI / (double) ChargePeriod + (double) x * (2 * M_PI / (double) ChargePeriod));
       mpo_gen.AddTerm(amplitude, nf, ElectronSite[i]);
     }
     cout << "Add perturbation, mu = " << PerturbationAmplitude << endl;

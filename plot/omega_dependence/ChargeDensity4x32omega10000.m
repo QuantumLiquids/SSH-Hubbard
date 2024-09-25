@@ -1,10 +1,10 @@
 clear;
-addpath '/Users/hao-xin/Documents/GitHub/SSH-Hubbard/plot'
-Lx=24; Ly=4;
-omega = 100; g = 10.9545; Np = 1; U = 8; Numhole = Lx*Ly/8;
+addpath '../'
+Lx=32; Ly=4;
+omega = 10000; g = 38.7298; Np = 1; U = 8; Numhole = Lx*Ly/8;
 
 
-Dset=[2000,4000,6000,8000];
+Dset=[8000];
 % trunc_err=  1e7*[3.37e-06,2.82e-06,2.49e-06, 2.21e-06,1.98e-06,2.01e-6]; %middle bond
 
 extrapolation_poly_degree = 2;
