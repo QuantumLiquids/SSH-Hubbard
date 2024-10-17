@@ -1,3 +1,12 @@
+clear;
+marker_colors{1} = [019, 103, 131]/256;
+marker_colors{2} = [255,158,002] / 256;
+marker_colors{3} = [251,056,071] / 256;
+marker_colors{4} = [131,064,028] / 256;
+marker_colors{5} = [075,116,178] / 256;
+marker_colors{6} = [107,112,092] / 256;
+addpath('../');
+
 figure;
 Lx=32; Ly=4;
 omega = 5; g = 2.4495; Np = 3; U = 8; Numhole = Lx*Ly/8;
@@ -54,7 +63,9 @@ end
 fprintf("mean error bar = %.6f\n", mean(error_bar));
 
 ChargeDensity_ex = (ChargeDensity_ex + ChargeDensity_ex(end:-1:1))/2;
-h_ex = plot(distance + 1, ChargeDensity_ex,'o'); hold on;
+h_ex = plot(distance + 1, ChargeDensity_ex,'diamond'); hold on;
+h_ex.MarkerSize = 6;
+h_ex.Color = marker_colors{5};
 
 cos_fix_x = Lx/4:3*Lx/4-1;
 % cos_fix_x = Lx/4+1:3*Lx/4-2;
@@ -66,7 +77,8 @@ b = mdl.Coefficients.Estimate;
 Acdw = b(3);
 fprintf("A_cdw = %.6f\n",Acdw);
 continous_cos_x = min(cos_fix_x):0.01:max(cos_fix_x);
-plot(continous_cos_x + 1, modelfun(b,continous_cos_x),'-');
+fl = plot(continous_cos_x + 1, modelfun(b,continous_cos_x),'--');
+fl.Color = marker_colors{6};
 
 % l=legend([h_data',h_ex],'$D=9000$', '$14000$','$16000$','$17000$','extrapolation, $D=\infty$');
 % set(l,'Box','off');set(l,'Interpreter','latex');
@@ -76,16 +88,19 @@ plot(continous_cos_x + 1, modelfun(b,continous_cos_x),'-');
 
 % set(h_ex, 'Markersize',12);
 
-set(gca,'fontsize',24);
+set(gca,'fontsize',20);
 set(gca,'linewidth',1.5);
-set(get(gca,'Children'),'linewidth',2.5); % Set line width 1.5 pounds
-set(get(gca,'Children'),'markersize',9); % Set line width 1.5 pound
+set(get(gca,'Children'),'linewidth',2); % Set line width 1.5 pounds
+set(get(gca,'Children'),'markersize',6); % Set line width 1.5 pound
 xlabel('$x$','Interpreter','latex');
 ylabel('$n(x)$','Interpreter','latex');
-set(get(gca,'XLabel'),'FontSize',24); 
-set(get(gca,'YLabel'),'FontSize',24); 
+set(get(gca,'XLabel'),'FontSize',20); 
+set(get(gca,'YLabel'),'FontSize',20); 
+
+set(gca,'Children',[h_ex, fl]);
+
 
 set(gca,'XLim',[9,24]);
 % set(gca,'Ylim',[0.85,0.94]);
-set(gcf,'position',[1000,1000,450,350]);
+set(gcf,'position',[1000,500,400,350]);
 

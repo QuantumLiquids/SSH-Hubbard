@@ -1,3 +1,11 @@
+clear;
+marker_colors{1} = [019, 103, 131]/256;
+marker_colors{2} = [255,158,002] / 256;
+marker_colors{3} = [251,056,071] / 256;
+marker_colors{4} = [131,064,028] / 256;
+marker_colors{5} = [075,116,178] / 256;
+marker_colors{6} = [107,112,092] / 256;
+
 Lx=48; Ly=4;
 omega = 5; 
 g = 2.4495;
@@ -5,14 +13,15 @@ Np=3;
 
 U = 0; Numhole = Lx*Ly/8;
 
-Dset=[10000,11000,12000,13000,14000];%bond dimension set
+Dset=[10000,11000,12000,14000,14000];%bond dimension set
+%Data for 13000 is lost, use 14000 to replace (10/17/2024)
 trunc_err=1e7*[3.64e-06,3.32e-06,3.04e-06,2.81e-06,2.53e-06];
 
 addpath('../');
 D = Dset(1);
 
 extrapolation_poly_degree = 2;
-selected_fit_data=2:4;
+selected_fit_data=[2,3, 5];
 
 FileNamePostfix=['ssh',num2str(Ly),'x',num2str(Lx),'U',num2str(U),'g',num2str(g),'omega',num2str(omega),'Np',num2str(Np),'hole',num2str(Numhole),'D',num2str(D),'.json'];
 ChargeCorrelation = jsondecode(fileread(['../../data/nfnf',FileNamePostfix]));
@@ -55,6 +64,8 @@ ReducedChargeCorrelation_ex = mean(reshape(ReducedChargeCorrelation_ex,4,[]));
 hex = loglog(distance, abs(ReducedChargeCorrelation_ex),'o');hold on;
 
 
+hex.MarkerSize = 6;
+hex.Color = marker_colors{1};
 
 
 
@@ -78,7 +89,9 @@ end
 [p]= fit(log(fit_x'),log(abs(fit_y')),'poly1');
 fprintf('Kc=%.5f\n',-p.p1);
 x = fit_x(1):0.5:fit_x(end)+8;
-fl=loglog(x,exp(p.p2)*x.^p.p1,'-.');
+fl=loglog(x,exp(p.p2)*x.^p.p1,'--');
+fl.Color = marker_colors{6};
+
 % T=text(8,4.5e-3,['$K_{c}=',num2str(-p.p1),'$']);
 % set(T,'Interpreter','latex');set(T,'Fontsize',24);
 range=confint(p, 0.95);
@@ -95,19 +108,21 @@ fprintf('error bar of Kc = %.12f\n', (range(2,1)-range(1,1))/2);
 
 set(hex, 'Markersize',9);
 
-set(gca,'fontsize',24);
+set(gca,'fontsize',20);
 set(gca,'linewidth',1.5);
 set(get(gca,'Children'),'linewidth',2); % Set line width 1.5 pounds
 xlabel('$r$','Interpreter','latex');
 % ylabel('$|\langle n(x)n(0)\rangle -\langle n(x)\rangle \langle n(0)\rangle|$','Interpreter','latex');
 ylabel('$D(r)$','Interpreter','latex');
-set(get(gca,'XLabel'),'FontSize',24); 
-set(get(gca,'YLabel'),'FontSize',24); 
+set(get(gca,'XLabel'),'FontSize',20); 
+set(get(gca,'YLabel'),'FontSize',20); 
 
 set(gca,'Xlim',[2,16]);
-set(gcf,'position',[1000,1000,400,350]);
+set(gca,'Ylim',[1e-5, 1e-1]);
+set(gcf,'position',[1000,500,400,350]);
 
-set(gca, 'XTick', [2,5,10,15]);
-set(gca,'XTickLabel',{'2','5','10','15'});
-set(gca, 'YTick', [1e-5,1e-4,1e-3,1e-2,1e-1]);
+set(gca, 'XTick', [2,4,8,16]);
+set(gca,'XTickLabel',{'2','4','8','16'});
+set(gca, 'YTick', [1e-5,1e-3,1e-1]);
+
 % set(gca,'YTickLabel',{'1e-4','1e-3','1e-2','1e-1'});

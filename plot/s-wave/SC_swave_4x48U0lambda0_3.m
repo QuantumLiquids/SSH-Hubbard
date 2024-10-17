@@ -1,4 +1,11 @@
 clear;
+marker_colors{1} = [019, 103, 131]/256;
+marker_colors{2} = [255,158,002] / 256;
+marker_colors{3} = [251,056,071] / 256;
+marker_colors{4} = [131,064,028] / 256;
+marker_colors{5} = [075,116,178] / 256;
+marker_colors{6} = [107,112,092] / 256;
+
 figure;
 Lx=48; Ly=4;
 omega = 5; 
@@ -48,7 +55,7 @@ for i=1:numel(distance)
     scs_ex(i)=p.p3;
 end
 
-h=loglog(distance, scs_ex,'o');hold on;
+h=loglog(distance, scs_ex,'s');hold on;
 % h = errorbar(distance, scs_ex, scs_ex_error,'o');hold on;
 % set(gca, 'XScale','log', 'YScale','log')
 
@@ -64,9 +71,10 @@ end
 [p] = fit(log(fit_x'),log(abs(fit_y')),'poly1');
 fprintf('Ksc=%.5f\n',-p.p1);
 x = fit_x(1)-1:0.5:fit_x(end)+6;
-fl=loglog(x,exp(p.p2)*x.^p.p1,'-.');
+fl=loglog(x,exp(p.p2)*x.^p.p1,'--');
 range=confint(p, 0.95);
 fprintf('error bar of Ksc = %.12f\n', (range(2,1)-range(1,1))/2);
+fl.Color = marker_colors{6};
 
 % T=text(6,3e-2,['$K_{sc}=',num2str(-p.p1),'$']);
 % set(T,'Interpreter','latex');set(T,'Fontsize',24);
@@ -104,31 +112,38 @@ for i=1:numel(distance)
     p = fit(fit_x(selected_fit_data)',scsyy(selected_fit_data,i),'poly2');
     scsyy_ex(i)=p.p3;
 end
-h2 = loglog(distance, scsyy_ex,'x');hold on;
+h2 = loglog(distance, scsyy_ex,'>');hold on;
 
 
 set(gca, 'Xlim', [2,16]);
 % set(gca, 'Ylim', [2*scs_ex(end),scs_ex(2)]);
 set(gca, 'Ylim', [1e-4,scs_ex(2)]);
 
+h.MarkerSize = 6;
+h2.MarkerSize = 6;
+h.Color = marker_colors{3};
+h2.Color = marker_colors{4};
 
 l=legend([h,h2],'$\Phi_s(r)$', '$\Phi_{yy}(r)$');
 set(l,'Box','off');set(l,'Interpreter','latex');
-set(l,'Fontsize',28);
+set(l,'Fontsize',22);
 set(l,'Location','SouthWest');
 
-set(gca,'fontsize',24);
+set(gca,'fontsize',20);
 set(gca,'linewidth',1.5);
 set([h,h2], 'Markersize',9);
 set(get(gca,'Children'),'linewidth',2); % Set line width 1.5 pounds
 xlabel('$r$','Interpreter','latex');
 %ylabel('$|\langle\Delta_s^\dagger(x)\Delta_s(0)\rangle|$','Interpreter','latex');
 ylabel('SC correlation','Interpreter','latex');
-set(get(gca,'XLabel'),'FontSize',24); 
-set(get(gca,'YLabel'),'FontSize',24); 
+set(get(gca,'XLabel'),'FontSize',20); 
+set(get(gca,'YLabel'),'FontSize',20); 
+set(get(gca,'XLabel'),'FontName','Arial');
+set(get(gca,'YLabel'),'FontName','Arial');
 
 set(gca,'Xlim',[2,16]);
-set(gcf,'position',[1000,1000,400,350]);
+set(gcf,'position',[1000,500,400,350]);
 
-set(gca, 'XTick', [2,5,10,15]);
-set(gca,'XTickLabel',{'2','5','10','15'});
+set(gca, 'XTick', [2,4,8,16]);
+set(gca,'XTickLabel',{'2','4','8','16'});
+set(gca, 'YTick', [1e-4, 1e-3, 1e-2]);

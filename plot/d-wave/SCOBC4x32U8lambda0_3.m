@@ -1,3 +1,11 @@
+clear;
+marker_colors{1} = [019, 103, 131]/256;
+marker_colors{2} = [255,158,002] / 256;
+marker_colors{3} = [251,056,071] / 256;
+marker_colors{4} = [131,064,028] / 256;
+marker_colors{5} = [075,116,178] / 256;
+marker_colors{6} = [107,112,092] / 256;
+
 
 Lx=32; Ly=4;
 omega = 5; 
@@ -81,7 +89,7 @@ for i=1:numel(distance)
         scsyx_ex(i)=p.p2;
     end
 end
-h1=loglog(distance, -scsyx_ex,'-^');hold on;
+h1=loglog(distance, -scsyx_ex  * 0.3,'-^');hold on;
 
 
 %%======Pyy'======%%
@@ -96,7 +104,7 @@ for i=1:numel(distance)
         scsyyp_ex(i)=p.p2;
     end
 end
-h2=loglog(distance, scsyyp_ex,'-x');hold on;
+h2=loglog(distance, scsyyp_ex ,'-<');hold on;
 
 
 fit_x=[2:15];
@@ -111,12 +119,14 @@ end
 p = fit(log(fit_x'),log(abs(fit_y')),'poly1');
 fprintf('Ksc=%.5f\n',-p.p1);
 x = fit_x(1)-5:0.5:fit_x(end)+10;
-fl=loglog(x,exp(p.p2)*x.^p.p1,'-.');
+fl=loglog(x,exp(p.p2)*x.^p.p1 *0.9,'--');
+fl.Color = marker_colors{6};
+fl.LineWidth = 3;
 range=confint(p, 0.8);
 fprintf('error bar of Kc = %.12f\n', (range(2,1)-range(1,1))/2);
 
 % T=text(10,2.5e-3,['$K_{sc}=',num2str(-p.p1),'$']);
-% set(T,'Interpreter','latex');set(T,'Fontsize',24);
+% set(T,'Interpreter','latex');set(T,'Fontsize',20);
 
 
 
@@ -135,7 +145,7 @@ for i=1:numel(distance)
         scsyypp_ex(i)=p.p2;
     end
 end
-h3=loglog(distance, scsyypp_ex,'-s');hold on;
+h3=loglog(distance, scsyypp_ex * 0.1,'->');hold on;
 
 
 % %%======Compare with PBC with the same D=====%%
@@ -162,27 +172,39 @@ h3=loglog(distance, scsyypp_ex,'-s');hold on;
 % 
 % h4=loglog(distance,scsyy,'s');hold on;
 
-
+T=text(8,4.5e-3,'OBC');
+set(T,'Fontsize',22);
 % l=legend([h1,h2,h3,h4], '$-\Phi_{xy}(x)$',  '$\Phi_{yy}^{\prime}(x)$', '$\Phi_{yy}(x)$','$\Phi_{yy}(x)$ in PBC, for comparison');
-l=legend([h1,h2,h3], '$-\Phi_{xy}(r)$, OBC',  '$\Phi_{yy}^{\prime}(r)$', '$\Phi_{yy}(r)$');
+l=legend([h2,h1,h3], ...
+    '$\Phi_{yy}^{\prime}(r)$', ...
+    '$\Phi_{xy}(r)\times (-0.3) $', ...
+    '$\Phi_{yy}(r)\times 0.1$');
+
+h1.MarkerSize = 6;
+h2.MarkerSize = 6;
+h3.MarkerSize = 6;
+
+h1.Color = marker_colors{2};
+h2.Color = marker_colors{1};
+h3.Color = marker_colors{4};
+
 
 set(l,'Box','off');set(l,'Interpreter','latex');
-set(l,'Fontsize',28);
-set(l,'Location','SouthWest');
+set(l,'Fontsize',20);
+set(l,'Location','Best');
 
+set(gca,'Children',[h1,h2,h3, T, fl]);
 
-set(gca,'fontsize',24);
+set(gca,'fontsize',20);
 set(gca,'linewidth',1.5);
-set(get(gca,'Children'),'linewidth',2.5); % Set line width 1.5 pounds
-set(get(gca,'Children'),'markersize',9); % Set line width 1.5 pounds
+set(get(gca,'Children'),'linewidth',2); % Set line width 1.5 pounds
 xlabel('$r$','Interpreter','latex');
 % ylabel('SC correlation','Interpreter','latex');
 ylabel('$\Phi(r)$','Interpreter','latex');
-set(get(gca,'XLabel'),'FontSize',24); 
-set(get(gca,'YLabel'),'FontSize',24); 
-set(gca,'Xlim',[1,16]);
-set(gca,'Ylim',[1e-5,2e-2]);
+set(get(gca,'XLabel'),'FontSize',20); 
+set(get(gca,'YLabel'),'FontSize',20); 
+set(gca,'Xlim',[2,16]);
+set(gca,'Ylim',[1e-5,1e-2]);
 set(gca, 'YTick', [1e-5,1e-4,1e-3,1e-2]);
-set(gcf,'position',[1000,1000,450,350]);
-set(gca, 'XTick', [1,2,5,10,15]);
-set(gca,'XTickLabel',{'1','2','5','10','15'});
+set(gcf,'position',[1000,500,400,350]);
+set(gca, 'XTick', [2,4,8,16]);

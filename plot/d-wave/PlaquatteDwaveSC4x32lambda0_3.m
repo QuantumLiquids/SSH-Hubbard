@@ -1,4 +1,12 @@
-% figure;
+clear;
+marker_colors{1} = [019, 103, 131]/256;
+marker_colors{2} = [255,158,002] / 256;
+marker_colors{3} = [251,056,071] / 256;
+marker_colors{4} = [131,064,028] / 256;
+marker_colors{5} = [075,116,178] / 256;
+marker_colors{6} = [107,112,092] / 256;
+
+figure;
 Lx=32; Ly=4;
 omega = 5; 
 g = 2.4495;
@@ -42,7 +50,7 @@ for i=1:numel(distance)
 end
 distance = mean(transpose(reshape(distance,[],4)));
 scsyy_ex = mean(transpose(reshape(scsyy_ex,[],4)));
-h0=loglog(distance, scsyy_ex,'-o');hold on;
+h0=loglog(distance, scsyy_ex * 0.3,'-o');hold on;
 
 % fit_x=[3,6,8,10,11];
 fit_x=[3:15];
@@ -56,7 +64,9 @@ end
 p = fit(log(fit_x'),log(abs(fit_y')),'poly1');
 fprintf('Ksc=%.5f\n',-p.p1);
 x = fit_x(1)-5:0.5:fit_x(end)+10;
-fl=loglog(x,exp(p.p2)*x.^p.p1,'-.');
+fl=loglog(x,exp(p.p2)*x.^p.p1,'--');
+fl.Color = marker_colors{6};
+fl.LineWidth = 3;
 range=confint(p, 0.95);
 fprintf('error bar of Ksc = %.12f\n', (range(2,1)-range(1,1))/2);
 
@@ -93,7 +103,7 @@ for i=1:numel(distance)
     p = fit(fit_x(selected_fit_data)',scsyx(selected_fit_data,i),'poly2');
     scsyx_ex(i)=p.p3;
 end
-h1=plot(distance, abs(scsyx_ex),'-^');hold on;
+h1=plot(distance, abs(scsyx_ex) ,'-^');hold on;
 
 %%======Pyy'======%%
 scsyyp = scsPS(:, Pyx_data_size+1:2*Pyx_data_size);
@@ -120,34 +130,43 @@ h2=plot(distance, -scsyyp_ex,'-x');hold on;
 % h3=plot(distance, scsyypp_ex,'-s');hold on;
 
 % l=legend([h0,h2,h3,h1],'$\Phi_{yy}(r)$, cylinder',  '$-\Phi_{yy}^{\prime}(r)$', '$\Phi_{yy}^{\prime\prime}(r)$', '$|\Phi_{yx}(r)|$');
-l=legend([h0,h2,h1],'$\Phi_{yy}(r)$, cylinder',  '$-\Phi_{yy}^{\prime}(r)$', '$|\Phi_{yx}(r)|$');
+T=text(6,4.5e-3,'Cylinder');
+set(T,'Fontsize',22);
+l=legend([h2,h1,h0], ...
+    '$-\Phi_{yy}^{\prime}(r)$', ...
+    '$|\Phi_{yx}(r)|$',...
+    '$\Phi_{yy}(r) \times 0.3$');
 
 set(l,'Box','off');set(l,'Interpreter','latex');
-set(l,'Fontsize',28);
-set(l,'Location','SouthWest');
+set(l,'Fontsize',20);
+set(l,'Location','Best');
+
+h0.MarkerSize = 6;
+h1.MarkerSize = 6;
+h2.MarkerSize = 6;
+
+h2.Marker = '<'; % yy'
+h2.Color = marker_colors{1};%yy'
+
+h0.Marker = '>';
+h0.Color = marker_colors{4};%yy
+
+h1.Marker = '^';
+h1.Color = marker_colors{2};%yx
 
 
-set(gca, 'Xlim', [2,15]);
-
-set(gca,'fontsize',24);
+set(gca,'fontsize',20);
 set(gca,'linewidth',1.5);
-set(get(gca,'Children'),'linewidth',2.5); % Set line width 1.5 pounds
-set(get(gca,'Children'),'markersize',10); % Set line width 1.5 pound
+set(get(gca,'Children'),'linewidth',2); % Set line width 1.5 pounds
 xlabel('$r$','Interpreter','latex');
+% ylabel('SC correlation','Interpreter','latex');
 ylabel('$\Phi(r)$','Interpreter','latex');
-set(get(gca,'XLabel'),'FontSize',24); 
-set(get(gca,'YLabel'),'FontSize',24); 
-
-set(gca, 'Xlim',[1,16]);
-
-set(gca, 'XTick', [1,2,5,10,15]);
-set(gca,'XTickLabel',{'1','2','5','10','15'});
-
-set(gca, 'YTick', [1e-7,1e-5,1e-3]);
-% set(gca,'XTickLabel',{'1','2','5','10','15'});
-
-
-set(gcf,'position',[1000,1000,450,350]);
-
+set(get(gca,'XLabel'),'FontSize',20); 
+set(get(gca,'YLabel'),'FontSize',20); 
+set(gca,'Xlim',[2,16]);
+set(gca,'Ylim',[1e-7,1e-2]);
+set(gca, 'YTick', [1e-7, 1e-6, 1e-5,1e-4,1e-3,1e-2]);
+set(gcf,'position',[1000,500,400,350]);
+set(gca, 'XTick', [2,4,8,16]);
 
 
