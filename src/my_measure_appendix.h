@@ -144,6 +144,9 @@ inline MeasuRes<TenElemT> MeasureTwoSiteFermionOp(
     const MPI_Comm& comm
 ) {
   assert(mps.empty());
+  int rank, mpi_size;
+  MPI_Comm_rank(comm, &rank);
+  MPI_Comm_size(comm, &mpi_size);
 
   const size_t left_boundary = FindLeftBoundary(mps);
   const size_t initial_center = left_boundary + 1;
@@ -177,8 +180,16 @@ inline MeasuRes<TenElemT> MeasureTwoSiteFermionOp(
   if (group == 0) {
     for (size_t recv_group = 1; recv_group < Ly; recv_group++) {
       const size_t site1 = sites_set[recv_group * event_size_every_group][0];
-      std::vector<TenElemT> recved_avgs;
-      world.recv(recv_group, recv_group, recved_avgs);
+      std::vector<TenElemT> recved_avgs(event_size_every_group);
+      MPI_Recv(
+          recved_avgs.data(),
+          static_cast<int>(event_size_every_group * sizeof(TenElemT)),
+          MPI_BYTE,
+          static_cast<int>(recv_group),
+          static_cast<int>(recv_group),
+          comm,
+          MPI_STATUS_IGNORE
+      );
       for (size_t i = 0; i < event_size_every_group; i++) {
         const size_t site2 = sites_set[recv_group * event_size_every_group + i][1];
         measure_res.push_back(MeasuResElem<TenElemT>({site1, site2}, recved_avgs[i]));
@@ -190,7 +201,14 @@ inline MeasuRes<TenElemT> MeasureTwoSiteFermionOp(
     for (size_t i = 0; i < event_size_every_group; i++) {
       avgs.push_back(measure_res[i].avg);
     }
-    world.send(0, group, avgs);
+    MPI_Send(
+        avgs.data(),
+        static_cast<int>(avgs.size() * sizeof(TenElemT)),
+        MPI_BYTE,
+        0,
+        static_cast<int>(group),
+        comm
+    );
   }
   if (group == 0) {
     DumpMeasuRes(measure_res, res_file_basename);

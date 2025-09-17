@@ -6,6 +6,7 @@
 #include "qlten/qlten.h"
 #include <time.h>
 #include <stdlib.h>
+#include <mpi.h>
 
 #include "myutil.h"
 #include "my_measure_appendix.h"
@@ -91,30 +92,33 @@ int main(int argc, char *argv[]) {
         for (size_t i = 0; i < x1.size(); i++) {
           x1_vec.push_back(x1[i].avg);
         }
-        world.recv(1, 1, x2_vec);
-        world.recv(2, 2, x3_vec);
-        world.recv(3, 3, x4_vec);
+        x2_vec.resize(x1_vec.size());
+        x3_vec.resize(x1_vec.size());
+        x4_vec.resize(x1_vec.size());
+        MPI_Recv(x2_vec.data(), static_cast<int>(x2_vec.size() * sizeof(double)), MPI_BYTE, 1, 1, comm, MPI_STATUS_IGNORE);
+        MPI_Recv(x3_vec.data(), static_cast<int>(x3_vec.size() * sizeof(double)), MPI_BYTE, 2, 2, comm, MPI_STATUS_IGNORE);
+        MPI_Recv(x4_vec.data(), static_cast<int>(x4_vec.size() * sizeof(double)), MPI_BYTE, 3, 3, comm, MPI_STATUS_IGNORE);
         break;
       case 1:x2 = MeasureOnePhoneOp(mps, op_vec2, Bsite_set, "phonon_x2");
         x2_vec.reserve(x2.size());
         for (size_t i = 0; i < x2.size(); i++) {
           x2_vec.push_back(x2[i].avg);
         }
-        world.send(0, 1, x2_vec);
+        MPI_Send(x2_vec.data(), static_cast<int>(x2_vec.size() * sizeof(double)), MPI_BYTE, 0, 1, comm);
         break;
       case 2:x3 = MeasureOnePhoneOp(mps, op_vec3, Bsite_set, "phonon_x3");
         x3_vec.reserve(x3.size());
         for (size_t i = 0; i < x3.size(); i++) {
           x3_vec.push_back(x3[i].avg);
         }
-        world.send(0, 2, x3_vec);
+        MPI_Send(x3_vec.data(), static_cast<int>(x3_vec.size() * sizeof(double)), MPI_BYTE, 0, 2, comm);
         break;
       case 3:x4 = MeasureOnePhoneOp(mps, op_vec4, Bsite_set, "phonon_x4");
         x4_vec.reserve(x4.size());
         for (size_t i = 0; i < x4.size(); i++) {
           x4_vec.push_back(x4[i].avg);
         }
-        world.send(0, 3, x4_vec);
+        MPI_Send(x4_vec.data(), static_cast<int>(x4_vec.size() * sizeof(double)), MPI_BYTE, 0, 3, comm);
         break;
       default:break;
     }

@@ -2,13 +2,14 @@
 #define MY_MEASURE_H
 
 #include "qlmps/one_dim_tn/mps/finite_mps/finite_mps.h"    // FiniteMPS
-#include "qlmps/one_dim_tn/mps/finite_mps/finite_mps_measu.h"
+#include "qlmps/one_dim_tn/mps/finite_mps/finite_mps_measu_memory.h"
 #include "qlten/qlten.h"
 
 #include <string>
 #include <fstream>
 #include <iomanip>
 #include <algorithm>
+#include <mpi.h>
 
 
 namespace qlmps {
@@ -287,8 +288,16 @@ inline MeasuRes<TenElemT> MeasureTwoSiteOp(
   if (group == 0) {
     for (size_t recv_group = 1; recv_group < Ly; recv_group++) {
       const size_t site1 = sites_set[recv_group * event_size_every_group][0];
-      std::vector<TenElemT> recved_avgs;
-      world.recv(recv_group, recv_group, recved_avgs);
+      std::vector<TenElemT> recved_avgs(event_size_every_group);
+      MPI_Recv(
+          recved_avgs.data(),
+          static_cast<int>(event_size_every_group * sizeof(TenElemT)),
+          MPI_BYTE,
+          static_cast<int>(recv_group),
+          static_cast<int>(recv_group),
+          comm,
+          MPI_STATUS_IGNORE
+      );
       for (size_t i = 0; i < event_size_every_group; i++) {
         const size_t site2 = sites_set[recv_group * event_size_every_group + i][1];
         measure_res.push_back(MeasuResElem<TenElemT>({site1, site2}, recved_avgs[i]));
@@ -300,7 +309,14 @@ inline MeasuRes<TenElemT> MeasureTwoSiteOp(
     for (size_t i = 0; i < event_size_every_group; i++) {
       avgs.push_back(measure_res[i].avg);
     }
-    world.send(0, group, avgs);
+    MPI_Send(
+        avgs.data(),
+        static_cast<int>(avgs.size() * sizeof(TenElemT)),
+        MPI_BYTE,
+        0,
+        static_cast<int>(group),
+        comm
+    );
   }
   if (group == 0) {
     DumpMeasuRes(measure_res, res_file_basename);

@@ -30,7 +30,7 @@
 #include "qlmps/algorithm/vmps/two_site_update_finite_vmps_impl.h"      // helper functions
 #include "qlmps/one_dim_tn/mpo/mpo.h"                                   // MPO
 #include "qlmps/one_dim_tn/mps/finite_mps/finite_mps.h"
-#include "qlmps/one_dim_tn/mps/finite_mps/finite_mps_measu.h"           // FiniteMPS
+#include "qlmps/one_dim_tn/mps/finite_mps/finite_mps_measu_memory.h"           // FiniteMPS
 #include "qlmps/utilities.h"                                            // IsPathExist, CreatPath
 #include "qlmps/one_dim_tn/framework/ten_vec.h"                         // TenVec
 

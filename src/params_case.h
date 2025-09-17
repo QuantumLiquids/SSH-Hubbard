@@ -20,7 +20,6 @@ struct CaseParams : public CaseParamsParserBasic {
     LanczErr = ParseDouble("LanczErr");
     MaxLanczIter = ParseInt("MaxLanczIter");
     TotalThreads = ParseInt("TotalThreads");
-    SvdOuterThreads = ParseInt("SvdOuterThreads");
     Perturbation = ParseBool("Perturbation");
     if (Perturbation) {
       PA = ParseDouble("PerturbationAmplitude");
@@ -47,7 +46,6 @@ struct CaseParams : public CaseParamsParserBasic {
   double LanczErr;
   long MaxLanczIter;
   int TotalThreads;
-  int SvdOuterThreads;
   std::vector<double> noise;
   bool Perturbation;
   double PA;

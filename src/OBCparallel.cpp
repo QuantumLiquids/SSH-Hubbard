@@ -8,6 +8,7 @@
 #include "twositeupdate2.h"
 #include "myutil.h"
 #include "two_site_update_noised_finite_vmps_mpi_impl2.h"
+#include <mpi.h>
 
 using namespace qlmps;
 using namespace qlten;
@@ -16,13 +17,11 @@ using namespace std;
 #include "params_case.h"
 
 int main(int argc, char *argv[]) {
-  namespace mpi = boost::mpi;
-  mpi::environment env(mpi::threading::multiple);
-  if (env.thread_level() < mpi::threading::multiple) {
-    std::cout << "thread level of env is not right." << std::endl;
-    env.abort(-1);
-  }
-  mpi::communicator world;
+  MPI_Init(nullptr, nullptr);
+  MPI_Comm comm = MPI_COMM_WORLD;
+  int rank, mpi_size;
+  MPI_Comm_rank(comm, &rank);
+  MPI_Comm_size(comm, &mpi_size);
   CaseParams params(argv[1]);
   unsigned Lx = params.Lx, Ly = params.Ly, Np = params.Np;
   unsigned N = Lx * Ly + (2 * Lx * Ly - Ly - Lx) * Np;
@@ -87,11 +86,11 @@ int main(int argc, char *argv[]) {
       cout << "Directly use mps from files." << endl;
     } else {
       cout << "mps file number do not right" << endl;
-      env.abort(-1);
+      MPI_Abort(comm, -1);
     }
   } else {
     cout << " no mps file" << endl;
-    env.abort(-1);
+    MPI_Abort(comm, -1);
   }
   auto e0 = qlmps::TwoSiteFiniteVMPS2(mps, mpo, sweep_params, comm);
   if (rank == 0) {
@@ -99,6 +98,7 @@ int main(int argc, char *argv[]) {
     endTime = clock();
     cout << "CPU Time : " << (double) (endTime - startTime) / CLOCKS_PER_SEC << "s" << endl;
   }
+  MPI_Finalize();
   return 0;
 
 }
