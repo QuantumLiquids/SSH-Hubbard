@@ -212,7 +212,7 @@ int main(int argc, char *argv[]) {
     cout << "MRO generated." << endl;
 
     // dmrg
-    double e0 = qlmps::FiniteDMRG(mps, mro, sweep_params, world);
+    double e0 = qlmps::FiniteDMRG(mps, mro, sweep_params, comm);
 
 
     //measure hopping and update the phonon displacement

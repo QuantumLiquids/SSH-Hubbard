@@ -6,8 +6,8 @@
         mpirun -n 4 ./measureSC_ps params.json
     note: processor number must be 4.
     Optional arguments:
-      --start=
-      --end=
+      --startx=
+      --endx=
 */
 #include "gqdouble.h"
 #include "operators.h"

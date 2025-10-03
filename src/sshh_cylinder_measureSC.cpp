@@ -5,12 +5,12 @@
         mpirun -n 4 ./measureSC
     note: processor number must be 4, because there are four group of operators
     Optional arguments:
-      --start=
-      --end=
+      --startx=
+      --endx=
 */
 
 #include <ctime>
-#include <stdlib.h>
+#include <cstdlib>
 
 
 #include "qlmps/qlmps.h"

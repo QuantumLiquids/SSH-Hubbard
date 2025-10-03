@@ -5,8 +5,8 @@
         mpirun -n 4 ./OBCmeasureSC
     note: processor number must be 4.
     Optional arguments:
-      --start=
-      --end=
+      --startx=
+      --endx=
 */
 #include "gqdouble.h"
 #include "operators.h"

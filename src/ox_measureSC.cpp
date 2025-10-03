@@ -6,8 +6,8 @@
         mpirun -n 4 ./ox_measureSC_ps2
     note: processor number must be 4.
     Optional arguments:
-      --start=
-      --end=
+      --startx=
+      --endx=
 */
 #include "gqdouble.h"
 #include "operators.h"

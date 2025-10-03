@@ -5,8 +5,8 @@
       mpirun -n $Ly ./OBCmeasure
     note: processor number must be Ly.
         Optional arguments:
-      --start=
-      --end=
+      --startx=
+      --endx=
 */
 #include "gqdouble.h"
 #include "operators.h"

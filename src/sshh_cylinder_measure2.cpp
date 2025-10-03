@@ -2,11 +2,11 @@
     measure.cpp
     for measure2 two point function
     usage:
-      mpirun -n ${Ly} ./measure
+      mpirun -n ${Ly} ./measure2
     note: processor number must take as ${Ly}
         Optional arguments:
-      --start=
-      --end=
+      --startx=
+      --endx=
 */
 #include "gqdouble.h"
 #include "operators.h"

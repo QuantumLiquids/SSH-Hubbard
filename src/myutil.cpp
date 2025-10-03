@@ -40,8 +40,8 @@ bool Parser(const int argc, char *argv[],
             size_t &end) {
   int nOptionIndex = 1;
 
-  std::string arguement1 = "--start=";
-  std::string arguement2 = "--end=";
+  std::string arguement1 = "--startx=";
+  std::string arguement2 = "--endx=";
   bool start_argument_has(false), end_argument_has(false);
   while (nOptionIndex < argc) {
     if (strncmp(argv[nOptionIndex], arguement1.c_str(), arguement1.size()) == 0) {
@@ -57,12 +57,12 @@ bool Parser(const int argc, char *argv[],
   }
 
   if (start_argument_has != end_argument_has) {
-    std::cout << "Only setting one start/end argument, exit(1)." << std::endl;
+    std::cout << "Only setting one startx/endx argument, exit(1)." << std::endl;
     exit(1);
   }
 
   if (!start_argument_has) {
-    std::cout << "Note: no start/end argument, set it by default (L/4, 3*L/4)." << std::endl;
+    std::cout << "Note: no startx/endx argument, set it by default (L/4, 3*L/4)." << std::endl;
   }
 
   return start_argument_has;
