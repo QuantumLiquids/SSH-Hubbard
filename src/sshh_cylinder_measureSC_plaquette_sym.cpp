@@ -168,6 +168,7 @@ int main(int argc, char *argv[]) {
   endTime = clock();
   cout << "CPU Time : " << (double) (endTime - startTime) / CLOCKS_PER_SEC << "s" << endl;
 
+  MPI_Finalize();
   return 0;
 
 }
