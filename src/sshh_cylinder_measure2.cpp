@@ -89,7 +89,7 @@ int main(int argc, char *argv[]) {
 
   qlten::hp_numeric::SetTensorManipulationThreads(params.TotalThreads);
 
-  vector<vector<size_t>> two_point_sites_setF;
+  vector<vector<size_t> > two_point_sites_setF;
 
   two_point_sites_setF.reserve(Ly * (endx - beginx));
   for (size_t y = 0; y < Ly; ++y) {
@@ -108,13 +108,21 @@ int main(int argc, char *argv[]) {
   }
 
   Timer twosite_timer("measure two site operators");
-  if (argc
-      == 2) {   //2023 Jun 12, to reply referee A in PRL, avoid repeat to calculate the bosonic operators' correlations.
+  if (argc == 2) {
+    //2023 Jun 12, to reply referee A in PRL, avoid repeat to calculate the bosonic operators' correlations.
     MeasureTwoSiteOp(mps, sz, sz, two_point_sites_setF, Ly, "szsz" + file_name_postfix, comm);
     MeasureTwoSiteOp(mps, sp, sm, two_point_sites_setF, Ly, "spsm" + file_name_postfix, comm);
     MeasureTwoSiteOp(mps, sm, sp, two_point_sites_setF, Ly, "smsp" + file_name_postfix, comm);
     MeasureTwoSiteOp(mps, nf, nf, two_point_sites_setF, Ly, "nfnf" + file_name_postfix, comm);
     MeasureTwoSiteOp(mps, cupccdnc, cdnacupa, two_point_sites_setF, Ly, "onsitesc" + file_name_postfix, comm);
+#ifndef NDEBUG
+    auto id_measure_res = MeasureTwoSiteOp(mps, id, id, two_point_sites_setF, Ly, "idid" + file_name_postfix, comm);
+    for (auto single_res : id_measure_res) {
+      if (std::abs(single_res.avg - TenElemT(1)) > 0.01) {// error may ~ truncerr ~ 1e-5
+        std::cerr << single_res.avg << std::endl;
+      }
+    }
+#endif
   }
   qlmps::MeasureTwoSiteFermionOp(mps,
                                  bupc,
@@ -129,7 +137,7 @@ int main(int argc, char *argv[]) {
                                  two_point_sites_setF,
                                  Ly,
                                  "single_particle" + file_name_postfix,
-                                 comm);// correlation <c^dag_spindown(i) c_spindown(j)>
+                                 comm); // correlation <c^dag_spindown(i) c_spindown(j)>
   cout << "measured two point function.<====" << endl;
   twosite_timer.PrintElapsed();
 
@@ -139,4 +147,3 @@ int main(int argc, char *argv[]) {
   MPI_Finalize();
   return 0;
 }
-

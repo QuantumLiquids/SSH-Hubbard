@@ -28,14 +28,14 @@ using namespace qlten;
  */
 template<typename TenElemT, typename QNT>
 inline MeasuRes<TenElemT> MeasureTwoSiteFermionOpGroup(
-    FiniteMPS<TenElemT, QNT> &mps,
-    const size_t initial_center,
-    const QLTensor<TenElemT, QNT> &phys_ops1,
-    const QLTensor<TenElemT, QNT> &phys_ops2,
-    const size_t site1,
-    const std::vector<size_t> &site2_set
+  FiniteMPS<TenElemT, QNT> &mps,
+  const size_t initial_center,
+  const QLTensor<TenElemT, QNT> &phys_ops1,
+  const QLTensor<TenElemT, QNT> &phys_ops2,
+  const size_t site1,
+  const std::vector<size_t> &site2_set
 ) {
-  std::string mps_path = kMpsPath;//usual case
+  std::string mps_path = kMpsPath; //usual case
   const size_t bonson_op_dim(2);
   using Tensor = QLTensor<TenElemT, QNT>;
 
@@ -55,6 +55,7 @@ inline MeasuRes<TenElemT> MeasureTwoSiteFermionOpGroup(
   }
 
   //move the center to site1
+  mps.LoadTen(initial_center, GenMPSTenName(mps_path, initial_center));
   for (size_t j = initial_center; j < site1; j++) {
     mps.LoadTen(j + 1, GenMPSTenName(mps_path, j + 1));
     mps.LeftCanonicalizeTen(j);
@@ -68,19 +69,21 @@ inline MeasuRes<TenElemT> MeasureTwoSiteFermionOpGroup(
   std::vector<size_t> head_mps_ten_ctrct_axes2{0, 2};
   std::vector<size_t> head_mps_ten_ctrct_axes3{0, 1};
   QLTensor<TenElemT, QNT> temp_ten0;
-  auto ptemp_ten = new QLTensor<TenElemT, QNT>;//TODO: delete
+  auto ptemp_ten = new QLTensor<TenElemT, QNT>; //TODO: delete
   Contract(
-      &mps[site1], &phys_ops1,
-      {{1}, {0}},
-      &temp_ten0
+    &mps[site1],
+    &phys_ops1,
+    {{1}, {0}},
+    &temp_ten0
   );
   QLTensor<TenElemT, QNT> mps_ten_dag = Dag(mps[site1]);
   Contract(
-      &temp_ten0, &mps_ten_dag,
-      {head_mps_ten_ctrct_axes2, head_mps_ten_ctrct_axes3},
-      ptemp_ten
+    &temp_ten0,
+    &mps_ten_dag,
+    {head_mps_ten_ctrct_axes2, head_mps_ten_ctrct_axes3},
+    ptemp_ten
   );
-  mps_ten_dag.GetBlkSparDataTen().Clear();//Save memory
+  mps_ten_dag.GetBlkSparDataTen().Clear(); //Save memory
   mps.dealloc(site1);
 
   size_t eated_site = site1; //the last site has been contracted
@@ -111,13 +114,14 @@ inline MeasuRes<TenElemT> MeasureTwoSiteFermionOpGroup(
     Contract(&temp_ten2, &phys_ops2, {{0}, {0}}, &temp_ten3);
     mps_ten_dag = Dag(mps[site2]);
     Contract(
-        &temp_ten3, &mps_ten_dag,
-        {tail_mps_ten_ctrct_axes1, tail_mps_ten_ctrct_axes2},
-        &res_ten
+      &temp_ten3,
+      &mps_ten_dag,
+      {tail_mps_ten_ctrct_axes1, tail_mps_ten_ctrct_axes2},
+      &res_ten
     );
     measure_res[event] = MeasuResElem<TenElemT>({site1, site2}, res_ten());
 
-    mps.dealloc(site2);//according now code this site2 will load again in next loop. This may be optimized one day.
+    mps.dealloc(site2); //according now code this site2 will load again in next loop. This may be optimized one day.
   }
   delete ptemp_ten;
   return measure_res;
@@ -135,24 +139,18 @@ MPI version, memory optimized version
 */
 template<typename TenElemT, typename QNT>
 inline MeasuRes<TenElemT> MeasureTwoSiteFermionOp(
-    FiniteMPS<TenElemT, QNT> &mps,
-    const QLTensor<TenElemT, QNT> &phys_ops1,
-    const QLTensor<TenElemT, QNT> &phys_ops2,
-    const std::vector<std::vector<size_t>> &sites_set,
-    const size_t Ly,
-    const std::string &res_file_basename,
-    const MPI_Comm& comm
+  FiniteMPS<TenElemT, QNT> &mps,
+  const QLTensor<TenElemT, QNT> &phys_ops1,
+  const QLTensor<TenElemT, QNT> &phys_ops2,
+  const std::vector<std::vector<size_t> > &sites_set,
+  const size_t Ly,
+  const std::string &res_file_basename,
+  const MPI_Comm &comm
 ) {
   assert(mps.empty());
   int rank, mpi_size;
   MPI_Comm_rank(comm, &rank);
   MPI_Comm_size(comm, &mpi_size);
-
-  const size_t left_boundary = FindLeftBoundary(mps);
-  const size_t initial_center = left_boundary + 1;
-  for (size_t i = 0; i < initial_center; i++) {
-    mps.dealloc(i);
-  }
 
   assert(sites_set[0].size() == 2);
   const size_t total_event_size = sites_set.size();
@@ -171,7 +169,7 @@ inline MeasuRes<TenElemT> MeasureTwoSiteFermionOp(
     for (size_t i = 0; i < event_size_every_group; i++) {
       site2_set.push_back(sites_set[group * event_size_every_group + i][1]);
     }
-    measure_res = MeasureTwoSiteFermionOpGroup(mps, initial_center, phys_ops1, phys_ops2, site1, site2_set);
+    measure_res = MeasureTwoSiteFermionOpGroup(mps, 0, phys_ops1, phys_ops2, site1, site2_set);
   }
   if (group >= Ly) {
     std::cout << "warning: processor " << rank << " are idle." << std::endl;
@@ -182,13 +180,13 @@ inline MeasuRes<TenElemT> MeasureTwoSiteFermionOp(
       const size_t site1 = sites_set[recv_group * event_size_every_group][0];
       std::vector<TenElemT> recved_avgs(event_size_every_group);
       MPI_Recv(
-          recved_avgs.data(),
-          static_cast<int>(event_size_every_group * sizeof(TenElemT)),
-          MPI_BYTE,
-          static_cast<int>(recv_group),
-          static_cast<int>(recv_group),
-          comm,
-          MPI_STATUS_IGNORE
+        recved_avgs.data(),
+        static_cast<int>(event_size_every_group * sizeof(TenElemT)),
+        MPI_BYTE,
+        static_cast<int>(recv_group),
+        static_cast<int>(recv_group),
+        comm,
+        MPI_STATUS_IGNORE
       );
       for (size_t i = 0; i < event_size_every_group; i++) {
         const size_t site2 = sites_set[recv_group * event_size_every_group + i][1];
@@ -202,12 +200,12 @@ inline MeasuRes<TenElemT> MeasureTwoSiteFermionOp(
       avgs.push_back(measure_res[i].avg);
     }
     MPI_Send(
-        avgs.data(),
-        static_cast<int>(avgs.size() * sizeof(TenElemT)),
-        MPI_BYTE,
-        0,
-        static_cast<int>(group),
-        comm
+      avgs.data(),
+      static_cast<int>(avgs.size() * sizeof(TenElemT)),
+      MPI_BYTE,
+      0,
+      static_cast<int>(group),
+      comm
     );
   }
   if (group == 0) {
@@ -218,10 +216,11 @@ inline MeasuRes<TenElemT> MeasureTwoSiteFermionOp(
 
 template<typename TenElemT, typename QNT>
 MeasuRes<TenElemT> MeasureOnePhoneOp(
-    FiniteMPS<TenElemT, QNT> &mps,
-    const std::vector<QLTensor<TenElemT, QNT>> &op_vec,
-    const std::vector<size_t> &boson_set, // pseudo-sites
-    const std::string &res_file_basename
+  FiniteMPS<TenElemT, QNT> &mps,
+  const std::vector<QLTensor<TenElemT, QNT> > &op_vec,
+  const std::vector<size_t> &boson_set,
+  // pseudo-sites
+  const std::string &res_file_basename
 ) {
   size_t N = mps.size();
   size_t Nps = op_vec.size(); // pseudo-site number
@@ -232,7 +231,8 @@ MeasuRes<TenElemT> MeasureOnePhoneOp(
   const size_t left_boundary = FindLeftBoundary(mps);
   const size_t initial_center = left_boundary + 1;
 
-  for (size_t i = initial_center; i > 1; i--) { // canonicalize to first pseudo-site of phonon
+  for (size_t i = initial_center; i > 1; i--) {
+    // canonicalize to first pseudo-site of phonon
     mps.RightCanonicalizeTen(i);
   }
 
@@ -267,6 +267,5 @@ MeasuRes<TenElemT> MeasureOnePhoneOp(
   DumpMeasuRes(measu_res, res_file_basename);
   return measu_res;
 }
-
 }
 #endif //MY_MEASURE_APPENDIX_H

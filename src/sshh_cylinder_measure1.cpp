@@ -68,9 +68,13 @@ int main(int argc, char *argv[]) {
   qlten::hp_numeric::SetTensorManipulationThreads(params.TotalThreads);
 
   Timer onesite_timer("measure one site operators");
-  MeasureOneSiteOp(mps, {sz, nf}, Fsite_set, {"sz", "nf"});
+#ifndef NDEBUG
+  MeasureOneSiteOp(mps, qlmps::kMpsPath, {sz, nf, id}, Fsite_set, {"sz", "nf", "id"});
+#else
+  MeasureOneSiteOp(mps, qlmps::kMpsPath, {sz, nf}, Fsite_set, {"sz", "nf"});
+#endif
   if (Np > 0) {
-    MeasureOneSiteOp(mps, n_a, Bsite_set, "nphonon");
+    MeasureOneSiteOp(mps, qlmps::kMpsPath, {n_a}, Bsite_set, {"nphonon"});
   }
   cout << "measured one point function.<====" << endl;
   onesite_timer.PrintElapsed();
@@ -79,6 +83,4 @@ int main(int argc, char *argv[]) {
   cout << "CPU Time : " << (double) (endTime - startTime) / CLOCKS_PER_SEC << "s" << endl;
 
   return 0;
-
 }
-

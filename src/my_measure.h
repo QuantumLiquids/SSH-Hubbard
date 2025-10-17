@@ -22,151 +22,14 @@ size_t FindLeftBoundary(FiniteMPS<TenElemT, QNT> &mps) {
   assert(mps.empty());
   size_t N = mps.size();
   const std::string mps_path = kMpsPath; //only for usual usage.
-  const size_t left_middle_site = N / 2 - 1; //only for system large case, almost always work in phonon project
-  using TenT = QLTensor<TenElemT, QNT>;
   mps.LoadTen(0, GenMPSTenName(mps_path, 0));
-  size_t left_boundary(0);
-  for (size_t i = 0; i < left_middle_site; i++) {
-    mps.LoadTen(i + 1, GenMPSTenName(mps_path, i + 1));
-
-    TenT &mps_ten = mps[i];
-    ShapeT mps_ten_shape = mps_ten.GetShape();
-    if (mps_ten_shape[0] * mps_ten_shape[1] > mps_ten_shape[2]) {
-      left_boundary = i;
-      size_t Dmax = mps_ten_shape[2];
-      std::cout << "Bond dimension should be D = " << Dmax << "\n";
-      std::cout << "left boundary site = " << left_boundary << "\n";
-      break;
-    }
-    if (i == left_middle_site - 1) {
-      left_boundary = i;
-    }
+  if (N > 1) {
+    mps.LoadTen(1, GenMPSTenName(mps_path, 1));
   }
-  return left_boundary;
+  return 0;
 }
 
-/**
-Measure a single one-site operator on specific sites of the finite MPS.
-Memory are optimized and the input mps should be a empty mps.
-The disk data will not change when and after measuring.
-
-@tparam TenElemT Type of the tensor element.
-@tparam QNT Quantum number type.
-
-@param mps To-be-measured MPS.
-@param op The single one-site operator.
-@param sites The sites will be measured.
-@param res_file_basename The basename of the output file.
-*/
-template<typename TenElemT, typename QNT>
-MeasuRes<TenElemT> MeasureOneSiteOp(
-    FiniteMPS<TenElemT, QNT> &mps,
-    const QLTensor<TenElemT, QNT> &op,
-    const std::vector<size_t> &sites,
-    const std::string &res_file_basename
-) {
-  size_t N = mps.size();
-  size_t res_num = sites.size();
-  MeasuRes<TenElemT> measu_res;
-  measu_res.reserve(res_num);
-
-  //Find the canonical center. We suppose the center = first site which is not complete orthogonal transformation + 1
-  const size_t left_boundary = FindLeftBoundary(mps);
-  const size_t initial_center = left_boundary + 1;
-  //below we suppose sites[0] == 0
-  for (size_t i = initial_center; i > 0; i--) {
-    mps.RightCanonicalizeTen(i);
-  }
-
-  const std::string mps_path = kMpsPath;
-
-  for (size_t i = 0; i < sites.size(); i++) {
-    const size_t site = sites[i];
-    if (i == 0) {
-      measu_res.push_back(OneSiteOpAvg(mps[site], op, site, N));
-      continue;
-    }
-
-    const size_t last_site = sites[i - 1];
-    for (size_t j = last_site; j < site; j++) {
-      if (j >= initial_center) {
-        mps.LoadTen(j + 1, GenMPSTenName(mps_path, j + 1));
-      }
-      mps.LeftCanonicalizeTen(j);
-      mps.dealloc(j);
-    }
-    measu_res.push_back(OneSiteOpAvg(mps[site], op, site, N));
-    std::cout << "measured site " << site << "\n";
-  }
-  mps.dealloc(sites.back());
-  DumpMeasuRes(measu_res, res_file_basename);
-  return measu_res;
-}
-
-/**
-Measure a list of one-site operators on specified sites of the finite MPS.
-
-@tparam TenElemT Type of the tensor element.
-@tparam QNT Quantum number type.
-
-@param mps To-be-measured MPS.
-@param ops A list of one-site operators.
-@param sites The sites will be measured.
-@param res_file_basename The basename of the output file.
-*/
-template<typename TenElemT, typename QNT>
-MeasuResSet<TenElemT> MeasureOneSiteOp(
-    FiniteMPS<TenElemT, QNT> &mps,
-    const std::vector<QLTensor<TenElemT, QNT>> &ops,
-    const std::vector<size_t> &sites,
-    const std::vector<std::string> &res_file_basenames
-) {
-  auto op_num = ops.size();
-  assert(op_num == res_file_basenames.size());
-  auto N = mps.size();
-  size_t res_num = sites.size();
-  MeasuResSet<TenElemT> measu_res_set(op_num);
-  for (MeasuRes<TenElemT> &measu_res: measu_res_set) {
-    measu_res.reserve(res_num);
-  }
-
-  //Find the canonical center. We suppose the center = first site which is not complete orthogonal transformation + 1
-  const size_t left_boundary = FindLeftBoundary(mps);
-  const size_t initial_center = left_boundary + 1;
-  //below we suppose sites[0] == 0
-  for (size_t i = initial_center; i > 0; i--) {
-    mps.RightCanonicalizeTen(i);
-  }
-  const std::string mps_path = kMpsPath;
-
-  for (size_t i = 0; i < sites.size(); i++) {
-    const size_t site = sites[i];
-    if (i == 0) {
-      for (size_t j = 0; j < op_num; ++j) {
-        measu_res_set[j].push_back(OneSiteOpAvg(mps[site], ops[j], site, N));
-      }
-      continue;
-    }
-
-    const size_t last_site = sites[i - 1];
-    for (size_t j = last_site; j < site; j++) {
-      if (j >= initial_center) {
-        mps.LoadTen(j + 1, GenMPSTenName(mps_path, j + 1));
-      }
-      mps.LeftCanonicalizeTen(j);
-      mps.dealloc(j);
-    }
-    for (size_t j = 0; j < op_num; ++j) {
-      measu_res_set[j].push_back(OneSiteOpAvg(mps[site], ops[j], site, N));
-    }
-    std::cout << "measured site " << site << std::endl;
-  }
-  mps.dealloc(sites.back());
-  for (size_t i = 0; i < op_num; ++i) {
-    DumpMeasuRes(measu_res_set[i], res_file_basenames[i]);
-  }
-  return measu_res_set;
-}
+// replace legacy measure one site ops by UltraDMRG build-in functions.
 
 /**
 Measure a two-site operator without insertion operator.
@@ -227,7 +90,7 @@ inline MeasuResElem<TenElemT> TwoSiteOpAvg(
 }
 
 /**
-Measure a two-site operator without insertion operator.
+Measure a two-site bosonic operator (without insertion operator).
 MPI version, memory optimized version
 
 @tparam TenElemT Type of the tensor element, real or complex.
@@ -250,11 +113,7 @@ inline MeasuRes<TenElemT> MeasureTwoSiteOp(
   int rank, mpi_size;
   MPI_Comm_rank(comm, &rank);
   MPI_Comm_size(comm, &mpi_size);
-  const size_t left_boundary = FindLeftBoundary(mps);
-  const size_t initial_center = left_boundary + 1;
-  for (size_t i = 0; i < initial_center; i++) {
-    mps.dealloc(i);
-  }
+  const size_t initial_center = 0;
 
   assert(sites_set[0].size() == 2);
   const size_t total_event_size = sites_set.size();
@@ -351,6 +210,7 @@ inline MeasuRes<TenElemT> MeasureTwoSiteOpGroup(
 ) {
   std::string mps_path = kMpsPath;//usual case
   //move the center to site1
+  mps.LoadTen(0, GenMPSTenName(mps_path, 0));
   for (size_t j = initial_center; j < site1; j++) {
     mps.LoadTen(j + 1, GenMPSTenName(mps_path, j + 1));
     mps.LeftCanonicalizeTen(j);
@@ -436,10 +296,6 @@ inline MeasuRes<TenElemT> MeasureElectronPhonon4PointFunction(
     const std::string &res_file_basename
 ) {
   assert(mps.empty());
-  const size_t left_boundary = FindLeftBoundary(mps);
-  for (size_t i = 0; i <= left_boundary + 1; i++) {
-    mps.dealloc(i);
-  }
   std::cout << "note: Ly = " << Ly << std::endl;
   assert(phys_ops.size() == 4); // 4-point function
   assert(sites_set.size() % Ly == 0);
@@ -471,8 +327,7 @@ inline MeasuRes<TenElemT> MeasureElectronPhonon4PointFunction(
     );
     auto measure_res_group = MeasureElectronPhonon4PointFunctionGroup(mps,
                                                                       phys_ops,
-                                                                      sites_set_group,
-                                                                      left_boundary + 1
+                                                                      sites_set_group
     );
     measure_res.insert(measure_res.end(), measure_res_group.begin(), measure_res_group.end());
   }
@@ -509,8 +364,7 @@ template<typename TenElemT, typename QNT>
 inline MeasuRes<TenElemT> MeasureElectronPhonon4PointFunctionGroup(
     FiniteMPS<TenElemT, QNT> &mps, //input and output mps is empty
     const std::vector<QLTensor<TenElemT, QNT>> &phys_ops,
-    const std::vector<std::vector<size_t>> &sites_set,
-    const size_t initial_center
+    const std::vector<std::vector<size_t>> &sites_set
 ) {
   assert(mps.empty());
   std::string mps_path = kMpsPath;
@@ -536,8 +390,8 @@ inline MeasuRes<TenElemT> MeasureElectronPhonon4PointFunctionGroup(
     f({3, 3}) = 1;
     is_f_initial = true;
   }
-  mps.LoadTen(initial_center, GenMPSTenName(mps_path, initial_center));
-  for (size_t j = initial_center; j < site1; j++) {
+  mps.LoadTen(0, GenMPSTenName(mps_path, 0));
+  for (size_t j = 0; j < site1; j++) {
     mps.LoadTen(j + 1, GenMPSTenName(mps_path, j + 1));
     mps.LeftCanonicalizeTen(j);
     mps.dealloc(j);
