@@ -251,7 +251,7 @@ double TwoSiteFiniteVMPSSweep2_StartToRight(
       );
     }
     // LoadRelatedTensOnTwoSiteAlgWhenNoisedLeftMoving(mps, lenvs, renvs, i, right_boundary, sweep_params);
-    e0 = MasterTwoSiteFiniteVMPSUpdate2(mps, lenvs, renvs, mpo, sweep_params, 'l', i, noise, world);
+    e0 = MasterTwoSiteFiniteVMPSUpdate2(mps, lenvs, renvs, mpo, sweep_params, 'l', i, noise, comm);
     if (i < right_boundary) {
       dump_related_tens_thread.join();
     }
@@ -409,7 +409,7 @@ double MasterTwoSiteFiniteVMPSUpdate2(
   auto lancz_res = MasterLanczosSolver(
       eff_ham, init_state,
       sweep_params.lancz_params,
-      world
+      comm
   );
 #ifdef QLMPS_TIMING_MODE
   auto lancz_elapsed_time = lancz_timer.PrintElapsed();
